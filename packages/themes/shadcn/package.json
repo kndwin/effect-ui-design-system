@@ -1,0 +1,13 @@
+{
+  "name": "@acme/theme-shadcn",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/shadcn.theme.ts"
+  },
+  "dependencies": {
+    "@acme/components": "workspace:*",
+    "@acme/design-system": "workspace:*"
+  }
+}

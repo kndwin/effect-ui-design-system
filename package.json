@@ -1,0 +1,35 @@
+{
+  "name": "acme-ds",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "bun --bun x tsc -p tsconfig.json",
+    "lint": "bun --bun x oxlint --disable-nested-config -c oxlint.config.ts && bun tools/lint/src/feature/ast-grep/ast-grep.build.ts",
+    "fmt": "bun --bun x oxfmt",
+    "fmt:check": "bun --bun x oxfmt --check",
+    "test": "pnpm -r --workspace-concurrency=1 test",
+    "docs": "pnpm --filter docs dev",
+    "build": "pnpm --filter docs build",
+    "ci": "pnpm fmt:check && pnpm lint && pnpm check && pnpm test && pnpm test:rules && pnpm build",
+    "test:rules": "bun --bun x vitest run --config tools/lint/vitest.config.ts"
+  },
+  "dependencies": {
+    "@effect/ui": "link:vendor/effect-ui/packages/ui",
+    "@effect/ui-kit": "link:vendor/effect-ui/packages/ui-kit",
+    "effect": "4.1.6"
+  },
+  "devDependencies": {
+    "@ast-grep/cli": "^0.51.3",
+    "@effect/platform-bun": "4.1.6",
+    "@effect/vitest": "4.1.6",
+    "@types/node": "^22.20.7",
+    "bun": "1.4.5",
+    "effect-oxlint": "0.5.1",
+    "oxfmt": "^0.80.0",
+    "oxlint": "^1.95.0",
+    "typescript": "7.0.2",
+    "vite": "8.3.8",
+    "vitest": "5.1.1"
+  },
+  "packageManager": "pnpm@11.20.0"
+}

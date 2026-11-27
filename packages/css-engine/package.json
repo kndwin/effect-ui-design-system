@@ -1,0 +1,26 @@
+{
+  "name": "@acme/css-engine",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./rules": "./src/platform/rules/rules.schema.ts",
+    "./runtime": "./src/feature/recipe/runtime.pure.ts",
+    "./vite": "./src/platform/vite/vite.build.ts"
+  },
+  "scripts": {
+    "test": "bun --bun x vitest run"
+  },
+  "dependencies": {
+    "effect": "4.1.6"
+  },
+  "devDependencies": {
+    "@effect/vitest": "4.1.6",
+    "@types/node": "22",
+    "vite": "8.3.8",
+    "vitest": "5.1.1"
+  },
+  "peerDependencies": {
+    "vite": "*"
+  }
+}

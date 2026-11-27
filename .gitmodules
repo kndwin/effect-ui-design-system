@@ -1,0 +1,3 @@
+[submodule "vendor/effect-ui"]
+	path = vendor/effect-ui
+	url = https://github.com/Effect-TS/ui.git

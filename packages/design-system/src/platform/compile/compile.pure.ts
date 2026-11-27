@@ -1,0 +1,70 @@
+import type { Output, Recipe, StyleRule } from "@acme/css-engine/rules"
+import { Array, Match, Predicate, Record, Result } from "effect"
+import type { Definition } from "../../feature/style/style.make.ts"
+import { mapSlotRuleToSelectors } from "../../feature/style/style.pure.map.ts"
+import { isStyleDefinition } from "../../feature/style/style.pure.predicate.ts"
+import type { Theme } from "../../feature/theme/theme.make.ts"
+import type { ComposeOutputInput } from "./compile.schema.ts"
+
+const isTheme = (u: unknown): u is Theme => Predicate.isObject(u) && (u as { "~acme"?: unknown })["~acme"] === "Theme"
+
+const toRule = (rule: unknown, partStates: Readonly<Record<string, string>>): StyleRule => {
+  const { decl, selectors, media } = mapSlotRuleToSelectors({ rule: rule as never, partStates })
+  return {
+    ...decl,
+    ...Match.value(Record.isEmptyRecord(selectors)).pipe(
+      Match.when(true, () => ({})),
+      Match.orElse(() => ({ selectors: selectors as Record<string, StyleRule> }))
+    ),
+    ...Match.value(Record.isEmptyRecord(media)).pipe(
+      Match.when(true, () => ({})),
+      Match.orElse(() => ({ "@media": media as Record<string, StyleRule> }))
+    )
+  }
+}
+
+const recipeOf = (exportName: string, def: Definition, slot: string): Recipe => {
+  const states = def.kit.parts[slot]?.states ?? {}
+  return {
+    kind: "recipe",
+    debugId: `${exportName.replace(/Style$/, "")}_${slot}`,
+    base: toRule(def.base[slot], states),
+    variants: Record.map(def.variants, (v) =>
+      Record.fromEntries(
+        Array.map(v.values, (value) => [value, toRule((v.styles as Record<string, any>)[value]?.[slot], states)])
+      )
+    ),
+    defaultVariants: Record.filterMap(def.variants, (v) =>
+      Match.value(v.default === undefined).pipe(
+        Match.when(true, () => Result.failVoid),
+        Match.orElse(() => Result.succeed(String(v.default)))
+      )
+    ),
+    compoundVariants: Array.flatMap(def.compound, (c) =>
+      Match.value(c[slot]).pipe(
+        Match.when(true, () => [{ variants: c.when, style: toRule(c[slot], states) }]),
+        Match.orElse(() => [])
+      )
+    )
+  }
+}
+
+const styleOutput = (exportName: string, def: Definition): Output => ({
+  recipes: Record.fromEntries(Array.map(def.slots, (slot) => [slot, recipeOf(exportName, def, slot)])),
+  recipesAt: "slots",
+  runtime: {
+    kit: def.kit.name,
+    variants: Record.map(def.variants, (v) => ({ values: v.values, default: v.default }))
+  }
+})
+
+export const composeOutput = ({ value, exportName }: ComposeOutputInput): Output | undefined => {
+  if (isStyleDefinition({ value })) return styleOutput(exportName, value as Definition)
+  if (isTheme(value)) {
+    return {
+      runtime: value as unknown as Record<string, unknown>,
+      globals: Array.map(value.rules, (r) => ({ kind: "global", ...r }))
+    }
+  }
+  return undefined
+}

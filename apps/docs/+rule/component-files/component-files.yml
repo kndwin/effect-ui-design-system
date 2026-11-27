@@ -1,0 +1,33 @@
+id: component-files/app-component
+language: TypeScript
+severity: error
+message: An app's *.component.ts exports an Html.component, or makes one from its *.define.ts. See +rule/component-files/component-files.md.
+rule:
+  kind: program
+  not:
+    has:
+      stopBy: end
+      any:
+        - pattern: $HTML.component({ $$$ })
+        - pattern: $DEF.make({ $$$ })
+---
+id: component-files/example-metadata
+language: TypeScript
+severity: error
+message: A docs example exports `title` and `order`, and its Html.component as the default export. See +rule/component-files/component-files.md.
+files:
+  - src/platform/example/catalog/**/*.component.ts
+rule:
+  kind: program
+  not:
+    all:
+      - has:
+          stopBy: end
+          pattern: export const title = $T
+      - has:
+          stopBy: end
+          pattern: export const order = $O
+      - has:
+          stopBy: end
+          kind: export_statement
+          regex: ^export default
