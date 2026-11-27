@@ -38,7 +38,16 @@
     "./separator": "./src/feature/separator/separator.component.ts",
     "./scroll-area": "./src/feature/scroll-area/scroll-area.component.ts",
     "./toolbar": "./src/feature/toolbar/toolbar.component.ts",
-    "./navigation-menu": "./src/feature/navigation-menu/navigation-menu.component.ts"
+    "./navigation-menu": "./src/feature/navigation-menu/navigation-menu.component.ts",
+    "./progress": "./src/feature/progress/progress.component.ts",
+    "./meter": "./src/feature/progress/meter.component.ts",
+    "./checkbox-group": "./src/feature/checkbox/checkbox-group.component.ts",
+    "./toggle-group": "./src/feature/toggle/toggle-group.component.ts",
+    "./fieldset": "./src/feature/fieldset/fieldset.component.ts",
+    "./form": "./src/feature/form/form.component.ts",
+    "./number-field": "./src/feature/number-field/number-field.component.ts",
+    "./otp-field": "./src/feature/otp-field/otp-field.component.ts",
+    "./preview-card": "./src/feature/preview-card/preview-card.component.ts"
   },
   "scripts": {
     "test": "bun --bun x vitest run"

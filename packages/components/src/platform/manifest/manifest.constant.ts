@@ -1,4 +1,12 @@
 import * as Manifest from "@acme/design-system/Manifest"
+import { ProgressStyle } from "../../feature/progress/progress.component.style.ts"
+import { CheckboxGroupStyle } from "../../feature/checkbox/checkbox-group.component.style.ts"
+import { ToggleGroupStyle } from "../../feature/toggle/toggle-group.component.style.ts"
+import { FieldsetStyle } from "../../feature/fieldset/fieldset.component.style.ts"
+import { FormStyle } from "../../feature/form/form.component.style.ts"
+import { NumberFieldStyle } from "../../feature/number-field/number-field.component.style.ts"
+import { OtpFieldStyle } from "../../feature/otp-field/otp-field.component.style.ts"
+import { PreviewCardStyle } from "../../feature/preview-card/preview-card.component.style.ts"
 import { TabsStyle } from "../../feature/tabs/tabs.component.style.ts"
 import { AccordionStyle } from "../../feature/accordion/accordion.component.style.ts"
 import { CollapsibleStyle } from "../../feature/collapsible/collapsible.component.style.ts"
@@ -77,6 +85,14 @@ export const manifest = Manifest.make({
     LayoutContentStyle,
     LayoutFooterStyle,
     TextStyle,
-    SwatchStyle
+    SwatchStyle,
+    ProgressStyle,
+    CheckboxGroupStyle,
+    ToggleGroupStyle,
+    FieldsetStyle,
+    FormStyle,
+    NumberFieldStyle,
+    OtpFieldStyle,
+    PreviewCardStyle
   ]
 })
