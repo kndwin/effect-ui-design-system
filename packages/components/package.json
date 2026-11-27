@@ -47,7 +47,18 @@
     "./form": "./src/feature/form/form.component.ts",
     "./number-field": "./src/feature/number-field/number-field.component.ts",
     "./otp-field": "./src/feature/otp-field/otp-field.component.ts",
-    "./preview-card": "./src/feature/preview-card/preview-card.component.ts"
+    "./preview-card": "./src/feature/preview-card/preview-card.component.ts",
+    "./calendar": "./src/feature/date/calendar.component.ts",
+    "./range-calendar": "./src/feature/date/range-calendar.component.ts",
+    "./date-field": "./src/feature/date/date-field.component.ts",
+    "./date-picker": "./src/feature/date/date-picker.component.ts",
+    "./combobox": "./src/feature/combobox/combobox.component.ts",
+    "./autocomplete": "./src/feature/combobox/autocomplete.component.ts",
+    "./context-menu": "./src/feature/menu/context-menu.component.ts",
+    "./menubar": "./src/feature/menu/menubar.component.ts",
+    "./file-drop": "./src/feature/file-drop/file-drop.component.ts",
+    "./sortable-list": "./src/feature/sortable-list/sortable-list.component.ts",
+    "./virtual-list": "./src/feature/virtual-list/virtual-list.component.ts"
   },
   "scripts": {
     "test": "bun --bun x vitest run"

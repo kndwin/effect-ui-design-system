@@ -102,6 +102,68 @@ const componentPages: {
     kit: "PreviewCard",
     lead: "A card that opens on hovering or focusing a link, after a delay. The link keeps working and no focus is trapped."
   },
+  combobox: {
+    title: "Combobox",
+    kit: "Combobox",
+    lead: "A text input that filters a list and picks one value. Typing narrows the options; the clear button and the trigger sit inside the input."
+  },
+  autocomplete: {
+    title: "Autocomplete",
+    kit: "Autocomplete",
+    source: "feature/combobox/combobox",
+    lead: "Free text with suggestions. The value is whatever is typed; picking a suggestion fills it in. It shares the Combobox style."
+  },
+  "date-field": {
+    title: "Date Field",
+    kit: "DateField",
+    source: "feature/date/date-field",
+    lead: "A typed date input that reads and writes the locale's pattern, and commits a DateTime on blur or Enter."
+  },
+  "date-picker": {
+    title: "Date Picker",
+    kit: "DatePicker",
+    source: "feature/date/date-field",
+    lead: "A Date Field with a calendar popup. The input stays typeable; the popup's days reuse the Calendar style."
+  },
+  calendar: {
+    title: "Calendar",
+    kit: "Calendar",
+    source: "feature/date/calendar",
+    lead: "A month grid for picking one day, with arrow-key movement, today marked, and localized weekday names."
+  },
+  "range-calendar": {
+    title: "Range Calendar",
+    kit: "RangeCalendar",
+    source: "feature/date/calendar",
+    lead: "Pick a start and an end. Days in between get data-in-range; the ends are filled. It shares the Calendar style."
+  },
+  "file-drop": {
+    title: "File Drop",
+    kit: "FileDrop",
+    lead: "A drop zone with a real button for keyboard users. It filters by accept and multiple, and marks the zone while files are dragged over."
+  },
+  "context-menu": {
+    title: "Context Menu",
+    kit: "ContextMenu",
+    source: "feature/menu/context-menu",
+    lead: "A menu that opens at the pointer on right-click or long-press. Items reuse the Menu style."
+  },
+  menubar: {
+    title: "Menubar",
+    kit: "Menubar",
+    source: "feature/menu/menubar",
+    lead: "A row of menus. Arrow keys move between them, and once one is open, hovering another opens it instead."
+  },
+  "sortable-list": {
+    title: "Sortable List",
+    kit: "SortableList",
+    lead: "Reorder rows by dragging the handle or with the keyboard: Space picks up, arrows move, Space drops. Each step is announced."
+  },
+  "virtual-list": {
+    title: "Virtual List",
+    kit: "VirtualList",
+    lead: "Only the rows in view are in the DOM. A thousand rows scroll like ten."
+  },
   toggle: {
     title: "Toggle",
     kit: "Toggle",
