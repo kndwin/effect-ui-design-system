@@ -6,9 +6,10 @@ import { Schema } from "effect"
 export const title = "Destructive, wrapped"
 export const order = 5
 
-const code = `Error: Theme "astryx" (dark) has invalid token values:
-  Colors.accent: expected #hex, rgb(), hsl() or oklch() (got "purple")
-    at Module.make (packages/ds/src/Theme.ts:51:9)`
+const code = `InvalidTokensError: Theme "astryx" (dark) has invalid token values:
+expected #hex, rgb(), hsl() or oklch()
+  at ["Colors"]["accent"]
+    at make (packages/design-system/src/theme/theme.make.ts)`
 
 export default Html.component({ name: "CodeBlockError", model: Schema.Null, message: Schema.Never }).make({
   init: () => null,

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest"
+import { assert, describe, it } from "@effect/vitest"
 import { Card, untouched } from "./fixtures/card.style.fixture.ts"
 
 type Compiled = { readonly name: string; readonly classes: { readonly root: (p?: object) => string } }
@@ -11,10 +11,10 @@ describe("css-engine", () => {
     const sm = card.classes.root()
     const lg = card.classes.root({ size: "lg" })
     // Assert
-    expect(card.name).toBe("Card")
-    expect(sm).toMatch(/Card_root.* .*size_sm/)
-    expect(lg).toMatch(/size_lg/)
-    expect(lg).not.toMatch(/size_sm/)
+    assert.strictEqual(card.name, "Card")
+    assert.match(sm, /Card_root.* .*size_sm/)
+    assert.match(lg, /size_lg/)
+    assert.notMatch(lg, /size_sm/)
   })
 
   it("leaves exports the adapter ignores alone", () => {
@@ -23,6 +23,6 @@ describe("css-engine", () => {
     // Act
     const passedThrough = value === 42
     // Assert
-    expect(passedThrough).toBe(true)
+    assert.strictEqual(passedThrough, true)
   })
 })

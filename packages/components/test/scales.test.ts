@@ -1,6 +1,6 @@
 import { Schema } from "effect"
-import { describe, expect, it } from "vitest"
-import { Tone } from "./scales.pure.ts"
+import { assert, describe, it } from "@effect/vitest"
+import { Tone } from "../src/scales.schema.ts"
 
 describe("scales", () => {
   it("are Schemas apps can decode with", () => {
@@ -9,7 +9,7 @@ describe("scales", () => {
     // Act
     const tone = decode("primary")
     // Assert
-    expect(tone).toBe("primary")
-    expect(() => decode("warning")).toThrow()
+    assert.strictEqual(tone, "primary")
+    assert.throws(() => decode("warning"))
   })
 })

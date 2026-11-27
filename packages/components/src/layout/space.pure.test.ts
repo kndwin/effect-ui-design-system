@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest"
-import { Space } from "../scales.pure.ts"
+import { assert, describe, it } from "@effect/vitest"
+import { Space } from "../scales.schema.ts"
 import { space } from "./space.pure.ts"
 
 const rule = (gap: unknown) => ({ gap })
@@ -11,8 +11,8 @@ describe("space", () => {
     // Act
     const steps = space(toRule)
     // Assert
-    expect(Object.keys(steps)).toEqual(Space.literals)
-    expect(steps["4"].root).toEqual({ gap: "var(--spacing-4)" })
-    expect(steps["0"].root).toEqual({ gap: 0 })
+    assert.deepStrictEqual(Object.keys(steps), [...Space.literals])
+    assert.deepStrictEqual<unknown>(steps["4"].root, { gap: "var(--spacing-4)" })
+    assert.deepStrictEqual(steps["0"].root, { gap: 0 })
   })
 })

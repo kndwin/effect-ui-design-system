@@ -1,5 +1,6 @@
-import { Exit, Schema, SchemaIssue } from "effect"
-import { type AnyGroup, cssVarName, GroupTypeId, type Input } from "../tokens/token.pure.ts"
+import { Array, Cause, Data, Exit, Record, Schema, SchemaIssue } from "effect"
+import { GroupTypeId } from "../tokens/token.constant.ts"
+import { type AnyGroup, cssVarName, type Input } from "../tokens/token.pure.ts"
 
 export type Contract = Readonly<Record<string, AnyGroup>>
 
@@ -20,6 +21,48 @@ export interface Theme<Name extends string = string, Mode extends string = strin
   }
 }
 
+export class InvalidTokensError extends Data.TaggedError("InvalidTokensError")<{
+  readonly theme: string
+  readonly mode: string | undefined
+  readonly issue: SchemaIssue.Issue
+}> {
+  override get message() {
+    const label = `Theme "${this.theme}"${this.mode ? ` (${this.mode})` : ""}`
+    return `${label} has invalid token values:\n${SchemaIssue.makeFormatterDefault()(this.issue)}`
+  }
+}
+
+const schemaOf = (tokens: Contract, partial: boolean): Schema.Codec<unknown> => {
+  const optional = (s: Schema.Top) => (partial ? Schema.optionalKey(s) : s)
+  const groups = Record.map(tokens, (g) =>
+    optional(
+      Schema.Struct(
+        Record.fromEntries(Array.map(g[GroupTypeId].keys, (key) => [String(key), optional(g[GroupTypeId].value)]))
+      )
+    )
+  )
+  return Schema.Struct(groups) as unknown as Schema.Codec<unknown>
+}
+
+const decode = (tokens: Contract, values: unknown, theme: string, mode?: string): Record<string, string> => {
+  const exit = Schema.decodeUnknownExit(schemaOf(tokens, mode !== undefined), {
+    errors: "all",
+    onExcessProperty: "error"
+  })(values)
+  if (Exit.isFailure(exit)) {
+    const error = Cause.squash(exit.cause)
+    if (Schema.isSchemaError(error)) throw new InvalidTokensError({ theme, mode, issue: error.issue })
+    throw error
+  }
+  const decoded = exit.value as Readonly<Record<string, Readonly<Record<string, string>> | undefined>>
+  return Object.assign(
+    {},
+    ...Record.toEntries(tokens).map(([group, g]) =>
+      Record.mapKeys(decoded[group] ?? {}, (key) => cssVarName(g[GroupTypeId].prefix, key))
+    )
+  )
+}
+
 export const make = <const T extends Contract, const Name extends string, const Mode extends string = never>(
   tokens: T,
   options: {
@@ -34,53 +77,18 @@ export const make = <const T extends Contract, const Name extends string, const 
     const self = `[data-theme="${name}"]${mode ? `[data-mode="${mode}"]` : ""}`
     return options.default ? `${mode ? `:root[data-mode="${mode}"]` : ":root"}, ${self}` : self
   }
-
-  const base = decode(tokens, options.values, false, `Theme "${name}"`)
-  const rules = [{ selector: scope(), vars: base }]
-
-  const modes: Record<string, Record<string, string>> = {}
-  for (const [mode, values] of Object.entries(options.modes ?? {}) as Array<[string, ModeValues<T>]>) {
-    modes[mode] = decode(tokens, values, true, `Theme "${name}" (${mode})`)
-    rules.push({ selector: scope(mode), vars: modes[mode] })
-  }
+  const base = decode(tokens, options.values, name)
+  const modes = Record.map((options.modes ?? {}) as Record<string, ModeValues<T>>, (values, mode) =>
+    decode(tokens, values, name, mode)
+  )
   return {
     "~acme": "Theme",
     name,
-    rules,
-    modes: Object.keys(modes) as Array<Mode>,
+    rules: [
+      { selector: scope(), vars: base },
+      ...Record.toEntries(modes).map(([mode, vars]) => ({ selector: scope(mode), vars }))
+    ],
+    modes: Record.keys(modes) as Array<Mode>,
     vars: { base, modes: modes as Record<Mode, Record<string, string>> }
   }
 }
-
-const decode = (tokens: Contract, values: unknown, partial: boolean, label: string): Record<string, string> => {
-  const fields: Record<string, Schema.Top> = {}
-  for (const [groupName, g] of Object.entries(tokens)) {
-    const meta = g[GroupTypeId]
-    const keyFields: Record<string, Schema.Top> = {}
-    for (const key of meta.keys) keyFields[key] = partial ? Schema.optionalKey(meta.value) : meta.value
-    fields[groupName] = partial ? Schema.optionalKey(Schema.Struct(keyFields)) : Schema.Struct(keyFields)
-  }
-  const exit = Schema.decodeUnknownExit(Schema.Struct(fields) as unknown as Schema.Codec<unknown>, {
-    errors: "all",
-    onExcessProperty: "error"
-  })(values)
-  if (Exit.isFailure(exit)) {
-    const err: any = (exit.cause as any).reasons?.[0]?.error ?? exit.cause
-    const { issues } = SchemaIssue.makeFormatterStandardSchemaV1()(err.issue)
-    const lines = issues.map((i) => {
-      const path = (i.path ?? []).map((p) => (typeof p === "object" ? p.key : p)) as Array<PropertyKey>
-      return `  ${path.map(String).join(".")}: ${i.message} (got ${JSON.stringify(getPath(values, path))})`
-    })
-    throw new Error(`${label} has invalid token values:\n${lines.join("\n")}`)
-  }
-  const decoded = exit.value as Record<string, Record<string, string> | undefined>
-  const vars: Record<string, string> = {}
-  for (const [groupName, g] of Object.entries(tokens)) {
-    for (const [key, value] of Object.entries(decoded[groupName] ?? {}))
-      vars[cssVarName(g[GroupTypeId].prefix, key)] = value
-  }
-  return vars
-}
-
-const getPath = (v: unknown, path: ReadonlyArray<PropertyKey>): unknown =>
-  path.reduce<any>((acc, k) => (acc === null || acc === undefined ? acc : acc[k as any]), v)

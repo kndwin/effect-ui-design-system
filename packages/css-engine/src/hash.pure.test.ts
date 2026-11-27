@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest"
+import { assert, describe, it } from "@effect/vitest"
 import { className, hash } from "./hash.pure.ts"
 
 describe("hash", () => {
@@ -8,8 +8,8 @@ describe("hash", () => {
     // Act
     const [first, again, other] = inputs.map(hash)
     // Assert
-    expect(first).toBe(again)
-    expect(first).not.toBe(other)
+    assert.strictEqual(first, again)
+    assert.notStrictEqual(first, other)
   })
 
   it("makes readable class names in debug and short ones otherwise", () => {
@@ -19,8 +19,8 @@ describe("hash", () => {
     const debug = className(...args, true)
     const short = className(...args, false)
     // Assert
-    expect(debug).toMatch(/^Button_root_tone_primary__[a-z0-9]+$/)
-    expect(short).toMatch(/^a[a-z0-9]+$/)
+    assert.match(debug, /^Button_root_tone_primary__[a-z0-9]+$/)
+    assert.match(short, /^a[a-z0-9]+$/)
   })
 
   it("scopes names by file", () => {
@@ -29,6 +29,6 @@ describe("hash", () => {
     // Act
     const [a, b] = files.map((f) => className(f, "Card", "", false))
     // Assert
-    expect(a).not.toBe(b)
+    assert.notStrictEqual(a, b)
   })
 })

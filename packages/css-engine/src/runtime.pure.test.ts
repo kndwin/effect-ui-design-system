@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest"
+import { assert, describe, it } from "@effect/vitest"
 import { recipe } from "./runtime.pure.ts"
 
 const card = recipe({
@@ -15,7 +15,7 @@ describe("recipe runtime", () => {
     // Act
     const classes = card(props)
     // Assert
-    expect(classes).toBe("base sm narrow")
+    assert.strictEqual(classes, "base sm narrow")
   })
 
   it("uses given props, booleans included", () => {
@@ -24,7 +24,7 @@ describe("recipe runtime", () => {
     // Act
     const classes = card(props)
     // Assert
-    expect(classes).toBe("base lg wide lg-wide")
+    assert.strictEqual(classes, "base lg wide lg-wide")
   })
 
   it("ignores undefined props", () => {
@@ -33,6 +33,6 @@ describe("recipe runtime", () => {
     // Act
     const classes = card(props)
     // Assert
-    expect(classes).toBe("base sm narrow")
+    assert.strictEqual(classes, "base sm narrow")
   })
 })

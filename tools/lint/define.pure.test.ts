@@ -1,5 +1,5 @@
 import { Rule, RuleContext } from "effect-oxlint"
-import { describe, expect, it } from "vitest"
+import { assert, describe, it } from "@effect/vitest"
 import { rules } from "./define.pure.ts"
 
 describe("rules", () => {
@@ -16,7 +16,7 @@ describe("rules", () => {
     // Act
     const module = rules("file:///repo/+rule/x/x.lint.ts", { x: rule })
     // Assert
-    expect(module.url).toBe("file:///repo/+rule/x/x.lint.ts")
-    expect(Object.keys(module.rules)).toEqual(["x"])
+    assert.strictEqual(module.url, "file:///repo/+rule/x/x.lint.ts")
+    assert.deepStrictEqual(Object.keys(module.rules), ["x"])
   })
 })

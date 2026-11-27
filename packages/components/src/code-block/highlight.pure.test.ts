@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest"
+import { assert, describe, it } from "@effect/vitest"
 import { highlight } from "./highlight.pure.ts"
 
 describe("highlight", () => {
@@ -8,12 +8,15 @@ describe("highlight", () => {
     // Act
     const tokens = highlight(code, "ts")
     // Assert
-    expect(tokens.map(([, text]) => text).join("")).toBe(code)
-    expect(tokens.filter(([kind]) => kind !== "plain")).toEqual([
-      ["keyword", "const"],
-      ["string", '"x"'],
-      ["comment", "// note"]
-    ])
+    assert.strictEqual(tokens.map(([, text]) => text).join(""), code)
+    assert.deepStrictEqual(
+      tokens.filter(([kind]) => kind !== "plain"),
+      [
+        ["keyword", "const"],
+        ["string", '"x"'],
+        ["comment", "// note"]
+      ]
+    )
   })
 
   it("marks shell commands, flags and comments", () => {
@@ -22,7 +25,7 @@ describe("highlight", () => {
     // Act
     const kinds = highlight(code, "shell").filter(([kind]) => kind !== "plain")
     // Assert
-    expect(kinds).toEqual([
+    assert.deepStrictEqual(kinds, [
       ["keyword", "pnpm"],
       ["number", " --save"],
       ["comment", "# why"]
@@ -35,6 +38,6 @@ describe("highlight", () => {
     // Act
     const tokens = highlight(code, "plain")
     // Assert
-    expect(tokens).toEqual([["plain", code]])
+    assert.deepStrictEqual(tokens, [["plain", code]])
   })
 })

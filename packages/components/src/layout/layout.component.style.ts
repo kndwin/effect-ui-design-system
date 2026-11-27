@@ -7,9 +7,9 @@ import {
   LayoutFooterParts,
   LayoutHeaderParts,
   LayoutPanelParts
-} from "./layout.parts.pure.ts"
+} from "./layout.parts.constant.ts"
 import { Colors, Font, Size, Spacing, Stroke, Text } from "../contract.token.ts"
-import { Side } from "../scales.pure.ts"
+import { Side } from "../scales.schema.ts"
 
 const rule = { borderStyle: "solid", borderColor: Colors.border, borderWidth: 0 } as const
 

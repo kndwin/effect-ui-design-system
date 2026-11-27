@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "@acme/css-engine": "workspace:*",
+    "@effect/vitest": "4.1.6",
     "@types/node": "^22.20.7",
     "vite": "8.3.8",
     "vitest": "5.1.1"

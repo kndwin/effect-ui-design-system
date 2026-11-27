@@ -20,6 +20,8 @@
   },
   "devDependencies": {
     "@ast-grep/cli": "^0.51.3",
+    "@effect/platform-node": "4.1.6",
+    "@effect/vitest": "4.1.6",
     "@types/node": "^22.20.7",
     "effect-oxlint": "0.5.1",
     "oxfmt": "^0.80.0",

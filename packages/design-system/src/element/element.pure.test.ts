@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest"
-import { render } from "./element.pure.ts"
+import { assert, describe, it } from "@effect/vitest"
+import { render, styled } from "./element.pure.ts"
 
 const element = {
   added: [] as Array<string | false | null | undefined>,
@@ -16,6 +16,23 @@ describe("render", () => {
     // Act
     const out = render(element, classes, "extra")
     // Assert
-    expect(out.added).toEqual(["Stack_root__x", "extra"])
+    assert.deepStrictEqual(out.added, ["Stack_root__x", "extra"])
+  })
+})
+
+describe("styled", () => {
+  it("applies a compiled style's root classes for the given props, then the caller's", () => {
+    // Arrange
+    const style = {
+      kit: "Box" as const,
+      variants: { pad: { values: ["sm", "lg"], default: "sm" } },
+      slots: { root: (p?: Readonly<Record<string, unknown>>) => `Box_root Box_pad_${String(p?.["pad"] ?? "sm")}` }
+    }
+    const Box = styled<"Box", { readonly pad?: "sm" | "lg" }>(style)
+    element.added.length = 0
+    // Act
+    const out = Box(element, { pad: "lg", class: "extra" })
+    // Assert
+    assert.deepStrictEqual(out.added, ["Box_root Box_pad_lg", "extra"])
   })
 })

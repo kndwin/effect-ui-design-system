@@ -1,6 +1,7 @@
+import { Array, HashSet, Predicate, Record } from "effect"
 import type { GlobalRule, StyleRule } from "./rules.pure.ts"
 
-const unitless = new Set([
+const unitless = HashSet.make(
   "animationIterationCount",
   "aspectRatio",
   "columnCount",
@@ -20,9 +21,9 @@ const unitless = new Set([
   "widows",
   "zIndex",
   "zoom"
-])
+)
 
-const nested = new Set(["vars", "selectors", "@media"])
+const nested = HashSet.make("vars", "selectors", "@media")
 
 export const property = (name: string): string =>
   name.startsWith("--")
@@ -32,13 +33,13 @@ export const property = (name: string): string =>
         .replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)
 
 export const value = (name: string, input: unknown): string =>
-  typeof input === "number" && input !== 0 && !unitless.has(name) ? `${input}px` : String(input)
+  typeof input === "number" && input !== 0 && !HashSet.has(unitless, name) ? `${input}px` : String(input)
 
 export const declarations = (style: StyleRule): string =>
   [
-    ...Object.entries(style.vars ?? {}).map(([name, v]) => `${name}:${v}`),
-    ...Object.entries(style)
-      .filter(([name, v]) => !nested.has(name) && v !== undefined && v !== null)
+    ...Record.collect(style.vars ?? {}, (name, v) => `${name}:${v}`),
+    ...Record.toEntries(style)
+      .filter(([name, v]) => !HashSet.has(nested, name) && Predicate.isNotNullish(v))
       .map(([name, v]) => `${property(name)}:${value(name, v)}`)
   ].join(";")
 
@@ -46,10 +47,10 @@ export const rules = (selector: string, style: StyleRule): ReadonlyArray<string>
   const own = declarations(style)
   return [
     ...(own ? [`${selector}{${own}}`] : []),
-    ...Object.entries(style.selectors ?? {}).flatMap(([nestedSelector, s]) =>
-      rules(nestedSelector.replaceAll("&", selector), s)
+    ...Array.flatten(
+      Record.collect(style.selectors ?? {}, (nestedSelector, s) => rules(nestedSelector.replaceAll("&", selector), s))
     ),
-    ...Object.entries(style["@media"] ?? {}).map(([query, s]) => `@media ${query}{${rules(selector, s).join("")}}`)
+    ...Record.collect(style["@media"] ?? {}, (query, s) => `@media ${query}{${rules(selector, s).join("")}}`)
   ]
 }
 

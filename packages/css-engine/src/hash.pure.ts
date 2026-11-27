@@ -1,11 +1,6 @@
-export const hash = (input: string): string => {
-  let h = 0x811c9dc5
-  for (let i = 0; i < input.length; i++) {
-    h ^= input.charCodeAt(i)
-    h = Math.imul(h, 0x01000193)
-  }
-  return (h >>> 0).toString(36)
-}
+import { Hash } from "effect"
+
+export const hash = (input: string): string => (Hash.string(input) >>> 0).toString(36)
 
 const readable = (s: string) => s.replace(/[^A-Za-z0-9_-]/g, "_")
 

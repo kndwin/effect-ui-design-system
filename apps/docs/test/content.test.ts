@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest"
-import { pages, sources } from "./content.pure.ts"
+import { assert, describe, it } from "@effect/vitest"
+import { pages, sources } from "../src/content.constant.ts"
 
 describe("content", () => {
   it("groups pages into the sidebar's sections, in order", () => {
@@ -8,7 +8,7 @@ describe("content", () => {
     // Act
     const order = [...new Set(sections)]
     // Assert
-    expect(order).toEqual(["Getting started", "Components", "Foundations"])
+    assert.deepStrictEqual(order, ["Getting started", "Components", "Foundations"])
   })
 
   it("shows real source files", () => {
@@ -17,8 +17,8 @@ describe("content", () => {
     // Act
     const declaresColors = contract.includes('TokenColor.make("color"')
     // Assert
-    expect(declaresColors).toBe(true)
-    expect(sources.themes.shadcn).toContain("Theme.make(Tokens")
+    assert.strictEqual(declaresColors, true)
+    assert.include(sources.themes.shadcn, "Theme.make(Tokens")
   })
 
   it("gives every component page its style source", () => {
@@ -27,6 +27,6 @@ describe("content", () => {
     // Act
     const withStyles = components.filter((p) => p.style?.includes("Style.make("))
     // Assert
-    expect(withStyles.length).toBe(components.length)
+    assert.strictEqual(withStyles.length, components.length)
   })
 })

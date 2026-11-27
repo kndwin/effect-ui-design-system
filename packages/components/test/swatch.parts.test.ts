@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest"
-import { SwatchParts } from "./swatch.parts.pure.ts"
+import { assert, describe, it } from "@effect/vitest"
+import { SwatchParts } from "../src/swatch/swatch.parts.constant.ts"
 
 describe("swatch parts", () => {
   it("is a single root named Swatch", () => {
@@ -8,6 +8,6 @@ describe("swatch parts", () => {
     // Act
     const shape = [parts.name, Object.keys(parts.parts)]
     // Assert
-    expect(shape).toEqual(["Swatch", ["root"]])
+    assert.deepStrictEqual(shape, ["Swatch", ["root"]])
   })
 })

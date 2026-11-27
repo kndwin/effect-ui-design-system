@@ -1,7 +1,7 @@
 id: component/exports-ui
 language: TypeScript
 severity: error
-message: A *.component.ts file exports UI, an Html.component or a view function. See +rule/component/component.md.
+message: A *.component.ts file exports UI, an Html.component, a view function or Element.styled(Style). See +rule/component/component.md.
 rule:
   kind: program
   not:
@@ -9,6 +9,8 @@ rule:
       stopBy: end
       any:
         - pattern: $HTML.component({ $$$ })
+        - pattern: $EL.styled($STYLE)
+        - pattern: styled($STYLE)
         - kind: export_statement
           has:
             stopBy: end

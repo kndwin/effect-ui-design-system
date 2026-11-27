@@ -1,12 +1,5 @@
-import { type Classable, type Classed, render } from "@acme/design-system/Element"
-import * as Style from "@acme/design-system/Style"
+import * as Element from "@acme/design-system/Element"
 import { GridSpanStyle, GridStyle } from "./grid.component.style.ts"
 
-export type GridProps = Style.Props<typeof GridStyle> & { readonly class?: string | undefined }
-export type GridSpanProps = Style.Props<typeof GridSpanStyle> & { readonly class?: string | undefined }
-
-export const Grid = <E extends Classable>(element: E, options: GridProps = {}): Classed<E> =>
-  render(element, Style.classes(GridStyle, options), options.class)
-
-export const GridSpan = <E extends Classable>(element: E, options: GridSpanProps = {}): Classed<E> =>
-  render(element, Style.classes(GridSpanStyle, options), options.class)
+export const Grid = Element.styled(GridStyle)
+export const GridSpan = Element.styled(GridSpanStyle)

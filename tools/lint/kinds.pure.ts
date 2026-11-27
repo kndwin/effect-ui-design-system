@@ -1,37 +1,5 @@
 import { dirname, relative, sep } from "node:path"
-
-export const kinds: Readonly<Record<string, ReadonlyArray<string>>> = {
-  "file-kind": [".ts"],
-  comments: [".ts"],
-  pure: [".pure.ts", ".make.ts", ".component.style.ts", ".token.ts", ".theme.ts"],
-  make: [".make.ts"],
-  test: [".test.ts"],
-  component: [".component.ts"],
-  "component.style": [".component.style.ts"],
-  token: [".token.ts"],
-  theme: [".theme.ts"],
-  build: [".build.ts"]
-}
-
-export const fileKinds = [
-  { suffix: ".component.style.ts", doc: "component.style" },
-  { suffix: ".component.ts", doc: "component" },
-  { suffix: ".token.ts", doc: "token" },
-  { suffix: ".theme.ts", doc: "theme" },
-  { suffix: ".make.ts", doc: "make" },
-  { suffix: ".pure.test.ts", doc: "test", colocated: true },
-  { suffix: ".pure.ts", doc: "pure" },
-  { suffix: ".build.ts", doc: "build" },
-  { suffix: ".d.ts" },
-  { suffix: ".test.ts", doc: "test", test: true },
-  { suffix: ".test-d.ts", test: true },
-  { suffix: ".fixture.ts", test: true },
-  { name: "main.ts" }
-] as const
-
-export type FileKind = (typeof fileKinds)[number]
-
-export const allowed = fileKinds.map((k) => ("name" in k ? k.name : `*${k.suffix}`)).join(", ")
+import { type FileKind, fileKinds, kinds } from "./kinds.constant.ts"
 
 const skipped = /(^|\/)(node_modules|vendor|dist|\.git)\//
 
@@ -55,4 +23,17 @@ export const inScope = (ruleFile: string, file: string): boolean => {
   const within = posix(relative(scopeOf(ruleFile), file))
   if (within.startsWith("..") || skipped.test(`/${within}`)) return false
   return (kinds[ruleKindOf(ruleFile)] ?? []).some((suffix) => within.endsWith(suffix))
+}
+
+const kebab = /^[a-z0-9]+(-[a-z0-9]+)*$/
+
+export const kebabProblem = (path: string): string | undefined => {
+  const within = posix(path).match(/(?:^|\/)(?:packages\/(?:themes\/)?[^/]+|apps\/[^/]+)\/((?:src|test)\/.*)$/)?.[1]
+  if (within === undefined) return undefined
+  const segments = within.split("/")
+  const file = segments.at(-1) ?? ""
+  const kind = kindOf(file)
+  const stem = kind === undefined || "name" in kind ? file.replace(/\.ts$/, "") : file.slice(0, -kind.suffix.length)
+  const bad = [...segments.slice(0, -1), ...stem.split(".")].find((s) => !kebab.test(s))
+  return bad === undefined ? undefined : bad
 }

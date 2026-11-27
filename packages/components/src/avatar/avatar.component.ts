@@ -2,9 +2,9 @@ import * as Style from "@acme/design-system/Style"
 import { Avatar as KitAvatar } from "@effect/ui-kit/Avatar"
 import type { Html } from "@effect/ui/html"
 import type { Child } from "@effect/ui/View"
-import { Hue } from "../scales.pure.ts"
+import { Hue } from "../scales.schema.ts"
 import { AvatarStyle } from "./avatar.component.style.ts"
-import { initials, pickByName } from "./avatar.parts.pure.ts"
+import { initials, pickByName } from "./avatar.pure.ts"
 
 export type AvatarProps = Style.Props<typeof AvatarStyle>
 

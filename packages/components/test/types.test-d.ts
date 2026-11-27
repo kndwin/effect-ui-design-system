@@ -2,15 +2,15 @@ import * as Style from "@acme/design-system/Style"
 import * as Theme from "@acme/design-system/Theme"
 import * as TokenColor from "@acme/design-system/TokenColor"
 import * as Variant from "@acme/design-system/Variant"
-import { AvatarParts as AvatarKit } from "../src/avatar/avatar.parts.pure.ts"
-import { ButtonParts as ButtonKit } from "../src/button/button.parts.pure.ts"
+import { AvatarParts as AvatarKit } from "../src/avatar/avatar.parts.constant.ts"
+import { ButtonParts as ButtonKit } from "../src/button/button.parts.constant.ts"
 import { UiSchema } from "@effect/ui"
 import type { Html } from "@effect/ui/html"
 import { Avatar } from "../src/avatar/avatar.component.ts"
 import { Button } from "../src/button/button.component.ts"
 import type { ButtonStyle } from "../src/button/button.component.style.ts"
 import { Colors, Spacing, Tokens } from "../src/contract.token.ts"
-import { Tone } from "../src/scales.pure.ts"
+import { Tone } from "../src/scales.schema.ts"
 
 const M = UiSchema.TaggedEnum({ A: {} })
 declare const h: Html.H<typeof M.Type>

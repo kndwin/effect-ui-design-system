@@ -1,4 +1,4 @@
-import { Context, Data, Effect } from "effect"
+import { Array, Context, Data, Effect, Record } from "effect"
 import { type CompiledExport, moduleSource } from "./codegen.pure.ts"
 import { globalRules } from "./css.pure.ts"
 import { compileRecipe } from "./recipe.pure.ts"
@@ -68,16 +68,14 @@ const lower = (name: string, value: unknown, out: Output | undefined, options: C
   const globals = (out.globals ?? []).flatMap(globalRules)
   if (out.recipes === undefined)
     return { css: globals, exported: { name, value: out.runtime } satisfies CompiledExport }
-  const compiled = Object.entries(out.recipes).map(
-    ([key, r]) => [key, compileRecipe(r, options.scope, options.debug)] as const
-  )
+  const compiled = Record.map(out.recipes, (r) => compileRecipe(r, options.scope, options.debug))
   return {
-    css: [...globals, ...compiled.flatMap(([, c]) => c.css)],
+    css: [...globals, ...Array.flatten(Record.collect(compiled, (_, c) => c.css))],
     exported: {
       name,
       runtime: out.runtime,
       recipesAt: out.recipesAt,
-      recipes: Object.fromEntries(compiled.map(([key, c]) => [key, c.runtime]))
+      recipes: Record.map(compiled, (c) => c.runtime)
     } satisfies CompiledExport
   }
 }
@@ -86,13 +84,13 @@ export const compileFile = Effect.fn("css-engine/compileFile")(function* (file: 
   const loader = yield* ModuleLoader
   const mod = yield* loader.load(file)
   const compile = yield* adapterOf(options, file)
-  const lowered = yield* Effect.forEach(Object.entries(mod), ([name, value]) =>
+  const lowered = yield* Effect.forEach(Record.toEntries(mod), ([name, value]) =>
     run(compile, options, name, value).pipe(Effect.map((out) => lower(name, value, out, options)))
   )
   return {
-    css: lowered.flatMap((l) => l.css).join("\n"),
+    css: Array.flatMap(lowered, (l) => l.css).join("\n"),
     code: moduleSource(
-      lowered.map((l) => l.exported),
+      Array.map(lowered, (l) => l.exported),
       { css: options.cssImport, runtime: options.runtimeImport }
     )
   } satisfies CompiledFile

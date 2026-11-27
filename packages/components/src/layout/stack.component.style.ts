@@ -1,7 +1,7 @@
 import * as Style from "@acme/design-system/Style"
 import * as Variant from "@acme/design-system/Variant"
-import { StackParts, StackItemParts } from "./layout.parts.pure.ts"
-import { Align, Direction, Justify, Space } from "../scales.pure.ts"
+import { StackParts, StackItemParts } from "./layout.parts.constant.ts"
+import { Align, Direction, Justify, Space } from "../scales.schema.ts"
 import { space } from "./space.pure.ts"
 
 export const StackStyle = Style.make(StackParts)({

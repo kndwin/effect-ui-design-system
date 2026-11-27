@@ -24,25 +24,25 @@ pnpm ci      # oxfmt → oxlint + ast-grep → tsc (TypeScript 7) → every pack
 ```
 packages/
   design-system/   @acme/design-system: the generic library. No ui-kit, no CSS engine.
-    src/tokens/      token.pure.ts, token-color.make.ts, token-length.make.ts, … (one per kind)
+    src/tokens/      token.constant.ts, token.pure.ts, token-color.make.ts, … (one per kind)
     src/theme/       theme.make.ts        Theme.make(Tokens, { name, values, modes })
-    src/style/       style.make.ts        Style.make(Parts)({ base, variants, compound }); rule.pure.ts
+    src/style/       style.make.ts        Style.make(Parts)({ base, variants, compound }); rule.constant.ts
     src/variant/     variant.make.ts      Variant.make(Schema, …), Variant.flag(…)
     src/kit/         kit.make.ts          Kit.make / Kit.single: the parts-and-states descriptor type
-    src/element/     element.pure.ts      apply a component's classes to any element
+    src/element/     element.pure.ts      Element.styled(Style): a component from a style, for any element
     src/manifest/    manifest.make.ts     tokens + components, as data
     src/compile/     compile.pure.ts      the adapter for @acme/css-engine
   components/      @acme/components
     src/contract.token.ts   🔒 the token contract
-    src/scales.pure.ts      🔒 variant value lists (Schemas)
-    src/<name>/<name>.parts.pure.ts        the ui-kit DOM contract: parts and states
+    src/scales.schema.ts    🔒 variant value lists (Schemas)
+    src/<name>/<name>.parts.constant.ts    the ui-kit DOM contract: parts and states
     src/<name>/<name>.component.style.ts   how it looks (data)
-    src/<name>/<name>.component.ts         what it renders; wires ui-kit; exports itself
+    src/<name>/<name>.component.ts         what it renders; wires ui-kit; or just Element.styled(Style)
       button avatar code-block text swatch, layout/ (Stack, Grid, Center, Section, Layout…)
   themes/          @acme/theme-shadcn, @acme/theme-astryx   (<name>.theme.ts)
   css-engine/      @acme/css-engine: generic, Effect-based, no design-system knowledge
 apps/docs/         composed only from @acme/components; no stylesheet
-tools/lint/        finds every +rule/<rule>/<rule>.{lint.ts,yml}, runs them, tests every <rule>.md
+tools/lint/        finds every +rule/<rule>/<rule>.{lint.ts,yml}, runs them, tests every <rule>.md (all Effect programs)
 ```
 
 No barrels: each package lists its modules in `package.json` `exports`
@@ -62,18 +62,20 @@ A rule applies to files of its kind in the folder holding `+rule/`, and below.
 The ✅/❌ blocks in each `<rule>.md` are the rule tests. Each ✅ passes both tools, and each ❌
 fails with the id its heading names (`→ component.style/tokens-only`).
 
-| rule              | where                 | covers                                                                                            |
-| :---------------- | :-------------------- | :------------------------------------------------------------------------------------------------ |
-| `file-kind`       | root                  | allowed kinds, a rule doc above every file, colocated tests, no barrels or re-exports             |
-| `comments`        | root                  | no comments in any `.ts`, except `@ts-expect-error` and `// Arrange / Act / Assert` in tests      |
-| `pure`            | root                  | `*.pure.ts`, `*.make.ts` and the data kinds: no effects; every `*.pure.ts` has a `*.pure.test.ts` |
-| `make`            | root                  | a `*.make.ts` exports `make`                                                                      |
-| `test`            | root                  | every test is `// Arrange`, `// Act`, `// Assert`                                                 |
-| `component`       | root                  | `*.component.ts` exports UI                                                                       |
-| `component.style` | `packages/components` | only `Style.make(…)` exports, tokens only, `@acme/*` imports only                                 |
-| `token`           | `packages/components` | the contract: only `Token*.make(…)` groups                                                        |
-| `theme`           | `packages/themes`     | only `Theme.make(Tokens, …)`                                                                      |
-| `build`           | `packages/css-engine` | build-time Node code (doc only)                                                                   |
+| rule              | where                 | covers                                                                                       |
+| :---------------- | :-------------------- | :------------------------------------------------------------------------------------------- |
+| `file-kind`       | root                  | allowed kinds, kebab-case names, a rule doc above every file, colocated tests, no barrels    |
+| `comments`        | root                  | no comments in any `.ts`, except `@ts-expect-error` and `// Arrange / Act / Assert` in tests |
+| `pure`            | root                  | data kinds have no effects; `*.pure.ts` exports only functions and has a `*.pure.test.ts`    |
+| `schema`          | root                  | a `*.schema.ts` exports only Schemas, and imports only `effect`, `@effect/ui` and schemas    |
+| `constant`        | root                  | a `*.constant.ts` exports values, no functions                                               |
+| `make`            | root                  | a `*.make.ts` exports `make`                                                                 |
+| `test`            | root                  | tests import `@effect/vitest`, and every test is `// Arrange`, `// Act`, `// Assert`         |
+| `component`       | root                  | `*.component.ts` exports UI: `Html.component`, a view function or `Element.styled(Style)`    |
+| `component.style` | `packages/components` | only `Style.make(…)` exports, tokens only, `@acme/*` imports only                            |
+| `token`           | `packages/components` | the contract: only `Token*.make(…)` groups                                                   |
+| `theme`           | `packages/themes`     | only `Theme.make(Tokens, …)`                                                                 |
+| `build`           | `packages/css-engine` | build-time Node code (doc only)                                                              |
 
 ## The CSS engine: `@acme/css-engine`
 
@@ -88,7 +90,9 @@ cssEngine({ include: /\.(component\.style|theme)\.ts$/, adapter: "@acme/design-s
   short in builds) and generate the importer's module (`codegen.pure.ts`). That module imports a virtual CSS
   file and a ~20-line browser runtime (`runtime.pure.ts`) that picks variant classes.
 - **Effect:** `engine.build.ts` is an Effect program over a `ModuleLoader` service, with typed
-  `EvaluationError` / `AdapterError`. A bad theme value fails the build with its path.
+  `EvaluationError` / `AdapterError`. The Vite plugin runs it on a `ManagedRuntime` whose layer owns the
+  inner Vite server (acquired and released as a scoped resource). A bad theme value fails the build with
+  a typed `InvalidTokensError` and its path.
 - **Hosts:** dev with hot reload, vitest, and production builds. `packages/css-engine/test` compiles a fixture
   with a fixture adapter, with no design system.
 
@@ -101,6 +105,9 @@ export const Tokens = { Colors /* … */ }
 
 // themes/astryx/src/astryx.theme.ts: values, checked against the contract
 export const astryx = Theme.make(Tokens, { name: "astryx", values: { Colors: { accent: "#1b1b1b" /* … */ } /* … */ } })
+
+// components/src/layout/center.component.ts: a styled element is one line
+export const Center = Element.styled(CenterStyle)
 
 // components/src/button/button.component.style.ts: how it looks
 export const ButtonStyle = Style.make(ButtonParts)({

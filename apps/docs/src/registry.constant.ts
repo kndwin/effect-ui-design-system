@@ -1,5 +1,6 @@
 import type { Html } from "@effect/ui/html"
 import type { Child } from "@effect/ui/View"
+import { Array, Order, Record, String } from "effect"
 
 type Embeddable = <Msg>(h: Html.H<Msg>, options: { readonly key: string }) => Child<Msg>
 
@@ -28,17 +29,20 @@ export interface Example {
   readonly source: string
 }
 
-export const examples: ReadonlyArray<Example> = Object.entries(modules)
-  .map(([path, mod]) => {
+const byOrder = Order.mapInput(Order.Number, (e: Example) => e.order)
+
+export const examples: ReadonlyArray<Example> = Array.sort(
+  Array.map(Record.toEntries(modules), ([path, mod]): Example => {
     const [, page, file] = path.match(/\.\/examples\/([^/]+)\/([^/]+)\.component\.ts$/)!
     return {
       id: `${page}-${file}`,
       page: page!,
-      title: mod.title ?? file!,
+      title: mod.title ?? String.capitalize(file!.replaceAll("-", " ")),
       order: mod.order ?? 99,
       file: path.slice(2),
       component: mod.default,
       source: sources[path]!
     }
-  })
-  .toSorted((a, b) => a.order - b.order)
+  }),
+  byOrder
+)

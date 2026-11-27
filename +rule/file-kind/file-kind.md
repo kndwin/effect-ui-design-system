@@ -11,7 +11,9 @@ lint fails without one.
 | `*.token.ts`                                                 | the token contract                         | `+rule/token/token.md`                     |
 | `*.theme.ts`                                                 | only `Theme.make(Tokens, …)`               | `+rule/theme/theme.md`                     |
 | `*.make.ts`                                                  | a module's interface: exports `make`       | `+rule/make/make.md`                       |
-| `*.pure.ts`                                                  | pure functions and data                    | `+rule/pure/pure.md`                       |
+| `*.schema.ts`                                                | Schemas and their types                    | `+rule/schema/schema.md`                   |
+| `*.constant.ts`                                              | plain values and their types               | `+rule/constant/constant.md`               |
+| `*.pure.ts`                                                  | pure functions                             | `+rule/pure/pure.md`                       |
 | `*.pure.test.ts`                                             | the test for the `*.pure.ts` next to it    | `+rule/test/test.md`                       |
 | `*.build.ts`                                                 | build-time Node code (the CSS engine)      | `+rule/build/build.md`                     |
 | `*.d.ts`                                                     | type declarations                          |                                            |
@@ -22,6 +24,8 @@ Also:
 
 - **no barrels.** No `index.ts`, and no `export … from "…"`. Packages list each module in
   `package.json` `exports`.
+- **kebab-case.** Every folder and file name is lowercase words joined by `-`:
+  `code-block/code-block.parts.constant.ts`, `examples/introduction/profile-card.component.ts`.
 
 ## Rule folders
 
@@ -43,6 +47,12 @@ export const Badge = (h: { span: unknown }) => h.span
 
 ```ts bad path=packages/__rules__/src/helpers.ts
 export const double = (n: number) => n * 2
+```
+
+## ❌ not kebab-case → file-kind/kebab-case
+
+```ts bad path=packages/__rules__/src/ProfileCard.component.ts
+export const ProfileCard = (h: { div: unknown }) => h.div
 ```
 
 ## ❌ barrel → file-kind/allowed

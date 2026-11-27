@@ -1,8 +1,8 @@
 import * as Style from "@acme/design-system/Style"
 import * as TokenColor from "@acme/design-system/TokenColor"
 import * as Variant from "@acme/design-system/Variant"
-import { ButtonParts } from "./button.parts.pure.ts"
-import { ControlSize, Tone } from "../scales.pure.ts"
+import { ButtonParts } from "./button.parts.constant.ts"
+import { ControlSize, Tone } from "../scales.schema.ts"
 import {
   Colors,
   Font,

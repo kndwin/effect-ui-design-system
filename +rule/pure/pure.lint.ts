@@ -28,7 +28,31 @@ const isPropertyName = (node: any): boolean => {
 
 const atTopLevel = (node: any) => node.parent?.type === "Program" || node.parent?.parent?.type === "Program"
 
+const isFunction = (node: any) => node?.type === "ArrowFunctionExpression" || node?.type === "FunctionExpression"
+
 export default rules(import.meta.url, {
+  functions: Rule.define({
+    name: "functions",
+    meta: Rule.meta({
+      type: "problem",
+      description: "A *.pure.ts exports only functions and types. See +rule/pure/pure.md."
+    }),
+    create: function* () {
+      const ctx = yield* RuleContext
+      const governed = ctx.filename.endsWith(".pure.ts")
+      const message =
+        "A *.pure.ts exports only functions: constants go in a *.constant.ts and Schemas in a *.schema.ts. See +rule/pure/pure.md."
+      return {
+        ExportNamedDeclaration: (node: any) => {
+          const d = node.declaration
+          if (!governed || d === null || d === undefined) return Effect.void
+          if (d.type === "ClassDeclaration") return report(node, message)
+          if (d.type !== "VariableDeclaration") return Effect.void
+          return d.declarations.every((v: any) => isFunction(v.init)) ? Effect.void : report(node, message)
+        }
+      }
+    }
+  }),
   tested: Rule.define({
     name: "tested",
     meta: Rule.meta({ type: "problem", description: "Every *.pure.ts has a *.pure.test.ts. See +rule/pure/pure.md." }),

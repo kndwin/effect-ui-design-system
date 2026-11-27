@@ -1,0 +1,9 @@
+id: test/imports
+language: TypeScript
+severity: error
+message: Tests import describe, it and assert from @effect/vitest, not vitest. See +rule/test/test.md.
+rule:
+  kind: import_statement
+  has:
+    field: source
+    regex: ^["']vitest["']$
