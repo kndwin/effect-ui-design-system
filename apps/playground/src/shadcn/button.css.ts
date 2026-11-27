@@ -1,9 +1,9 @@
-import * as Style from "@cave/ds/Style"
-import { alpha } from "@cave/ds/Token"
-import * as Variant from "@cave/ds/Variant"
-import { Button } from "@cave/ds/kit/button"
+import { Style, TokenColor, Variant } from "@acme/ds"
+import { Button } from "@acme/ds/kit/button"
 import { ButtonSize, ButtonVariant } from "./scales.ts"
-import { Colors, Motion, Radius, Shadow, Spacing, Stroke, Text } from "./tokens.ts"
+import { Colors, Font, Motion, Radius, Shadow, Spacing, Stroke, Text, Weight } from "./tokens.ts"
+
+const alpha = TokenColor.alpha
 
 export const ButtonStyle = Style.make(Button)({
   // inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium
@@ -13,7 +13,7 @@ export const ButtonStyle = Style.make(Button)({
     root: {
       display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
       gap: Spacing[2], whiteSpace: "nowrap", borderRadius: Radius.md,
-      fontSize: Text.sm, lineHeight: Text.smLeading, fontWeight: 500, fontFamily: "inherit",
+      fontSize: Text.sm, lineHeight: Text.smLeading, fontWeight: Weight.medium, fontFamily: Font.sans,
       borderWidth: Stroke.hairline, borderStyle: "solid", borderColor: alpha(Colors.border, 0),
       cursor: "pointer", outline: "none",
       transitionProperty: "color, background-color, border-color, box-shadow, outline-color",

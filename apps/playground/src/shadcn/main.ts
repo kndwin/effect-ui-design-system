@@ -1,3 +1,4 @@
+import "./themes.css.ts"
 import { BrowserHost } from "@effect/ui/html"
 import { Effect, Layer } from "effect"
 import { Gallery } from "./Gallery.ts"

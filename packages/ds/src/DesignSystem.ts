@@ -1,8 +1,11 @@
 import type { ButtonElement } from "@effect/ui-kit/Button"
+import type { Html } from "@effect/ui/html"
+import type { Child } from "@effect/ui/View"
+import { type AvatarOptions, renderAvatar } from "./kit/avatar.ts"
 import { type ButtonOptions, renderButton } from "./kit/button.ts"
 import { type Props, type Style, classes } from "./Style.ts"
-import type { Theme } from "./Theme.ts"
-import { type AnyGroup, GroupTypeId } from "./Token.ts"
+import type { Contract } from "./Theme.ts"
+import { GroupTypeId } from "./Token.ts"
 
 // Per-kit wrapper signatures. Written out (not computed) so `Msg` stays generic.
 interface Components<P> {
@@ -10,15 +13,26 @@ interface Components<P> {
     h: { readonly button: ButtonElement<Msg> },
     options: ButtonOptions<Msg, R> & P
   ) => ButtonElement<Msg, R>
+  Avatar: <Msg>(h: Html.H<Msg>, options: AvatarOptions & P) => Child<Msg>
 }
 const renderers: { readonly [K in keyof Components<any>]: (h: any, o: any, c: any) => any } = {
-  Button: renderButton
+  Button: renderButton,
+  Avatar: renderAvatar
 }
+
+/**
+ * Variant values a component derives from its other options when the caller
+ * leaves them out, e.g. an Avatar's hue from its name.
+ */
+export type Derive<St> = (options: any) => Partial<Props<St>>
 const variantKeys = (s: Style<any, any, any>) => new Set(Object.keys(s.variants))
 
-export const make = <const S extends ReadonlyArray<Style<keyof Components<any>, any, any>>>(config: {
-  readonly tokens: Readonly<Record<string, AnyGroup>>
-  readonly themes: ReadonlyArray<Theme>
+/**
+ * A component library: a token contract (names only; themes supply values)
+ * plus the styles written against it.
+ */
+export const make = <const T extends Contract, const S extends ReadonlyArray<Style<keyof Components<any>, any, any>>>(config: {
+  readonly tokens: T
   readonly styles: S
 }) => {
   const seen = new Map<string, string>()
@@ -28,27 +42,25 @@ export const make = <const S extends ReadonlyArray<Style<keyof Components<any>, 
     if (other) throw new Error(`Token groups ${other} and ${name} share the prefix "${prefix}"`)
     seen.set(prefix, name)
   }
-  for (const t of config.themes) {
-    for (const p of t.prefixes) {
-      if (!seen.has(p)) throw new Error(`Theme "${t.name}" sets --${p}-* but that group isn't registered`)
-    }
-  }
 
   return {
-    component: <St extends S[number]>(style: St): Components<Props<St>>[St["kit"]] => {
+    tokens: config.tokens,
+    component: <St extends S[number]>(style: St, derive?: Derive<St>): Components<Props<St>>[St["kit"]] => {
       const render = renderers[style.kit as keyof Components<any>]
       const keys = variantKeys(style)
       return ((h: any, options: any) => {
-        const props: Record<string, unknown> = {}
+        const props: Record<string, unknown> = { ...derive?.(options) }
         const rest: Record<string, unknown> = {}
-        for (const [k, v] of Object.entries(options)) (keys.has(k) ? props : rest)[k] = v
+        for (const [k, v] of Object.entries(options)) {
+          if (v !== undefined) (keys.has(k) ? props : rest)[k] = v
+        }
         return render(h, rest, classes(style, props))
       }) as any
     },
     manifest: {
       components: config.styles.map((s) => ({ kit: s.kit, slots: Object.keys(s.slots), variants: s.variants })),
       tokens: Object.fromEntries(
-        Object.entries(config.tokens).map(([n, g]) => [n, { prefix: g[GroupTypeId].prefix, keys: Object.keys(g[GroupTypeId].schema.fields) }])
+        Object.entries(config.tokens).map(([n, g]) => [n, { prefix: g[GroupTypeId].prefix, kind: g[GroupTypeId].kind, keys: g[GroupTypeId].keys.map(String) }])
       )
     }
   }

@@ -1,10 +1,11 @@
-# effect-ui design system (PoC)
+# acme design system (PoC)
 
 Typed tokens → Schema-backed variants → per-part styles for
 [`@effect/ui-kit`](https://github.com/Effect-TS/ui), compiled to static CSS with vanilla-extract.
+Components and themes are separate packages: components are written against a **token contract**
+(names and kinds only), and any theme that fills in the contract can style them.
 
-**Status:** milestones 1–3 of the handover (tokens, themes, Button with two variants),
-plus a shadcn/ui Button rebuilt on the same primitives to test that the API is general.
+![Button in acme and astryx, light and dark](apps/docs/screenshots/docs-button-compare.png)
 
 ## Setup
 
@@ -14,49 +15,58 @@ plus a shadcn/ui Button rebuilt on the same primitives to test that the API is g
 ```bash
 git submodule update --init
 pnpm install
-pnpm check   # tsc, including the must-not-compile cases in packages/ds/test/types.test-d.ts
-pnpm test    # server-render + manifest
-pnpm dev     # playground: / (Cave Button) and /shadcn.html (shadcn gallery)
+pnpm check   # tsc in every package, including the must-not-compile cases
+pnpm test    # server render + manifest
+pnpm docs    # docs app: live examples + their source, theme switcher, side-by-side compare
 ```
 
 ## Layout
 
 ```
-packages/ds/src/
-  Token.ts  Theme.ts  Variant.ts  Style.ts  DesignSystem.ts   # the library
-  Kit.ts  Rule.ts                                              # kit descriptor + token-only CSS decl type
-  kit/button.ts       # the ONE place that knows ui-kit Button's DOM contract
-  tokens.ts           🔒 Cave tokens   (plain .ts: groups hold Schemas, which can't be serialised from .css.ts)
-  themes.css.ts       🔒 Cave themes
-  scales.ts           🔒 Tone, Size
-  button.css.ts       # Cave ButtonStyle
-  index.ts            # DS + Button
-apps/playground/src/
-  Editor.ts           # the handover's end-to-end example
-  shadcn/             # a second design system on the same primitives
+packages/
+  ds/                  @acme/ds          the generic library
+    src/TokenColor.ts TokenLength.ts TokenFont.ts TokenWeight.ts TokenShadow.ts TokenDuration.ts
+    src/Theme.ts Variant.ts Style.ts DesignSystem.ts
+    src/kit/button.ts kit/avatar.ts       the ONLY files that know ui-kit's DOM (parts, data attributes)
+  components/          @acme/components  Button + Avatar
+    src/tokens.ts  🔒  the token contract (names + kinds, no values)
+    src/scales.ts  🔒  Tone, Size, AvatarSize, Shape, Hue
+    src/button.css.ts avatar.css.ts index.ts
+  themes/acme/         @acme/theme-acme   🔒 violet, Inter, 8px corners (default, also on :root)
+  themes/astryx/       @acme/theme-astryx 🔒 Astryx-inspired: near-black accent, Figtree, 12px corners
+apps/
+  docs/                examples/<component>/*.ts are rendered live AND shown as source (import.meta.glob + ?raw)
+  playground/          the handover's Editor example + a shadcn/ui Button rebuilt on @acme/ds
 ```
 
 ## Authoring in one screen
 
 ```ts
-export const Colors = Token.group("color", Schema.Struct({ accent: Token.Color, /* … */ }))
+// components/src/tokens.ts: the contract
+export const Colors = TokenColor.make("color", ["surface", "fg", "accent", "accentFg", "danger"])
+export const Radius = TokenLength.make("radius", ["control", "full"])
+export const Tokens = { Colors, Radius, /* … */ }
 
-export const dark = Theme.make({ Colors, Spacing, Radius }, { Colors: { accent: "#7c5cff", … }, … },
-  { name: "dark", default: true })                                   // → :root
+// themes/astryx/src/theme.css.ts: values, checked against the contract
+export const astryx = Theme.make(Tokens, {
+  name: "astryx",
+  values: { Colors: { accent: "#1b1b1b", … }, Radius: { control: 12, full: 9999 }, … },
+  modes: { dark: { Colors: { accent: "#f1f1f1", … } } },
+})                       // → [data-theme="astryx"] and [data-theme="astryx"][data-mode="dark"]
 
-export const ButtonStyle = Style.make(Button)({                      // curried: kit first
-  base: { root: { borderRadius: Radius.md, states: { disabled: { opacity: 0.5 } } } },
-  variants: {
-    tone: Variant.make(Tone, {
-      primary: { root: { background: Colors.accent, color: Colors.accentFg } },
-      …
-    }, { default: "neutral" }),
-  },
+// components/src/button.css.ts: styles reference the contract only
+export const ButtonStyle = Style.make(Button)({
+  base: { root: { borderRadius: Radius.control, states: { disabled: { opacity: 0.5 } } } },
+  variants: { tone: Variant.make(Tone, { primary: { root: { background: Colors.accent } }, … }) },
 })
 
-export const Button = DS.component(ButtonStyle)
-Button(h, { tone: "primary", loading: model.saving, onPress: Msg.Save(), children: "Save" })
+// app
+import "@acme/theme-astryx"
+h.div.attr("data-theme", "astryx").attr("data-mode", "dark").children(
+  Button(h, { tone: "primary", onPress: Msg.Save(), children: "Save" }),
+  Avatar(h, { name: "Ada Lovelace", src: user.photo }),
+)
 ```
 
-Packages that author `.css.ts` styles need `@vanilla-extract/css` and `@vanilla-extract/recipes`
-as direct dependencies, because the compiled output imports them.
+Packages that author `.css.ts` files need `@vanilla-extract/css` (and `@vanilla-extract/recipes`
+for styles) as direct dependencies, because the compiled output imports them.

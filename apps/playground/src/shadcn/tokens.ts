@@ -1,24 +1,22 @@
-// 🔒 shadcn/ui "neutral" tokens, as Token groups.
-import { Schema } from "effect"
-import * as Token from "@cave/ds/Token"
+// 🔒 shadcn/ui "neutral" token contract.
+import { TokenColor, TokenDuration, TokenFont, TokenLength, TokenShadow, TokenWeight } from "@acme/ds"
 
-export const Colors = Token.group("color", Schema.Struct({
-  background: Token.Color, foreground: Token.Color,
-  primary: Token.Color, primaryForeground: Token.Color,
-  secondary: Token.Color, secondaryForeground: Token.Color,
-  accent: Token.Color, accentForeground: Token.Color,
-  destructive: Token.Color, destructiveForeground: Token.Color, // shadcn hard-codes text-white here
-  border: Token.Color, input: Token.Color, ring: Token.Color,
+export const Colors = TokenColor.make("color", [
+  "background", "foreground", "primary", "primaryForeground", "secondary", "secondaryForeground",
+  "accent", "accentForeground", "destructive",
+  "destructiveForeground", // shadcn hard-codes text-white here
+  "border", "input", "ring",
   // shadcn's `dark:` one-offs, turned into semantic tokens so components never branch on theme
-  destructiveSurface: Token.Color, outlineSurface: Token.Color, outlineBorder: Token.Color
-}))
+  "destructiveSurface", "outlineSurface", "outlineBorder"
+])
 // Tailwind's 0.25rem steps, only the ones the button uses
-export const Spacing = Token.group("spacing", Schema.Struct({
-  1: Token.Length, "1.5": Token.Length, 2: Token.Length, 2.5: Token.Length, 3: Token.Length,
-  4: Token.Length, 6: Token.Length, 8: Token.Length, 9: Token.Length, 10: Token.Length
-}))
-export const Radius = Token.group("radius", Schema.Struct({ md: Token.Length }))
-export const Stroke = Token.group("stroke", Schema.Struct({ hairline: Token.Length, ring: Token.Length }))
-export const Text = Token.group("text", Schema.Struct({ sm: Token.Length, smLeading: Token.Length }))
-export const Shadow = Token.group("shadow", Schema.Struct({ xs: Token.Shadow }))
-export const Motion = Token.group("motion", Schema.Struct({ fast: Token.Duration }))
+export const Spacing = TokenLength.make("spacing", [1, "1.5", 2, 3, 4, 6, 8, 9, 10])
+export const Radius = TokenLength.make("radius", ["md"])
+export const Stroke = TokenLength.make("stroke", ["hairline", "ring"])
+export const Text = TokenLength.make("text", ["sm", "smLeading"])
+export const Font = TokenFont.make("font", ["sans"])
+export const Weight = TokenWeight.make("weight", ["medium"])
+export const Shadow = TokenShadow.make("shadow", ["xs"])
+export const Motion = TokenDuration.make("motion", ["fast"])
+
+export const Tokens = { Colors, Spacing, Radius, Stroke, Text, Font, Weight, Shadow, Motion }

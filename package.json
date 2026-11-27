@@ -1,13 +1,14 @@
 {
-  "name": "cave-ds",
+  "name": "acme-ds",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@11.20.0",
   "scripts": {
-    "check": "tsc -p packages/ds && tsc -p apps/playground",
-    "test": "pnpm --filter @cave/ds test",
+    "check": "pnpm -r --workspace-concurrency=1 exec tsc -p . --noEmit",
+    "test": "pnpm --filter @acme/components test",
     "dev": "pnpm --filter playground dev",
-    "build": "pnpm --filter playground build"
+    "build": "pnpm --filter playground --filter docs build",
+    "docs": "pnpm --filter docs dev"
   },
   "dependencies": {
     "@effect/ui": "link:vendor/effect-ui/packages/ui",

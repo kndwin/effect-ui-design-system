@@ -22,11 +22,48 @@ importers:
         specifier: 7.0.2
         version: 7.0.2
 
+  apps/docs:
+    dependencies:
+      '@acme/components':
+        specifier: workspace:*
+        version: link:../../packages/components
+      '@acme/theme-acme':
+        specifier: workspace:*
+        version: link:../../packages/themes/acme
+      '@acme/theme-astryx':
+        specifier: workspace:*
+        version: link:../../packages/themes/astryx
+      '@effect/ui':
+        specifier: link:../../vendor/effect-ui/packages/ui
+        version: link:../../vendor/effect-ui/packages/ui
+      '@effect/ui-kit':
+        specifier: link:../../vendor/effect-ui/packages/ui-kit
+        version: link:../../vendor/effect-ui/packages/ui-kit
+      effect:
+        specifier: 4.1.6
+        version: 4.1.6
+    devDependencies:
+      '@vanilla-extract/vite-plugin':
+        specifier: ^5.2.6
+        version: 5.2.6(@types/node@26.6.11)(esbuild@0.28.2)(vite@8.3.8(@types/node@26.6.11)(esbuild@0.28.2))
+      vite:
+        specifier: 8.3.8
+        version: 8.3.8(@types/node@26.6.11)(esbuild@0.28.2)
+
   apps/playground:
     dependencies:
-      '@cave/ds':
+      '@acme/components':
+        specifier: workspace:*
+        version: link:../../packages/components
+      '@acme/ds':
         specifier: workspace:*
         version: link:../../packages/ds
+      '@acme/theme-acme':
+        specifier: workspace:*
+        version: link:../../packages/themes/acme
+      '@acme/theme-astryx':
+        specifier: workspace:*
+        version: link:../../packages/themes/astryx
       '@effect/ui':
         specifier: link:../../vendor/effect-ui/packages/ui
         version: link:../../vendor/effect-ui/packages/ui
@@ -50,8 +87,11 @@ importers:
         specifier: 8.3.8
         version: 8.3.8(@types/node@26.6.11)(esbuild@0.28.2)
 
-  packages/ds:
+  packages/components:
     dependencies:
+      '@acme/ds':
+        specifier: workspace:*
+        version: link:../ds
       '@vanilla-extract/css':
         specifier: ^1.21.3
         version: 1.21.3
@@ -77,6 +117,49 @@ importers:
       vitest:
         specifier: 5.1.1
         version: 5.1.1(@types/node@26.6.11)(vite@8.3.8(@types/node@26.6.11)(esbuild@0.28.2))
+
+  packages/ds:
+    dependencies:
+      '@vanilla-extract/css':
+        specifier: ^1.21.3
+        version: 1.21.3
+      '@vanilla-extract/recipes':
+        specifier: ^0.5.7
+        version: 0.5.7(@vanilla-extract/css@1.21.3)
+    devDependencies:
+      '@effect/ui':
+        specifier: link:../../vendor/effect-ui/packages/ui
+        version: link:../../vendor/effect-ui/packages/ui
+      '@effect/ui-kit':
+        specifier: link:../../vendor/effect-ui/packages/ui-kit
+        version: link:../../vendor/effect-ui/packages/ui-kit
+      effect:
+        specifier: 4.1.6
+        version: 4.1.6
+
+  packages/themes/acme:
+    dependencies:
+      '@acme/components':
+        specifier: workspace:*
+        version: link:../../components
+      '@acme/ds':
+        specifier: workspace:*
+        version: link:../../ds
+      '@vanilla-extract/css':
+        specifier: ^1.21.3
+        version: 1.21.3
+
+  packages/themes/astryx:
+    dependencies:
+      '@acme/components':
+        specifier: workspace:*
+        version: link:../../components
+      '@acme/ds':
+        specifier: workspace:*
+        version: link:../../ds
+      '@vanilla-extract/css':
+        specifier: ^1.21.3
+        version: 1.21.3
 
 packages:
 

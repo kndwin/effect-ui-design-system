@@ -18,7 +18,7 @@ export const Gallery = Html.component({
     ToggledTheme: ($) => $.evolve({ theme: (t) => (t === "light" ? "dark" : "light") })
   },
   view: (h, model) =>
-    h.div.attr("data-theme", model.theme).class("gallery").children(
+    h.div.attr("data-theme", "shadcn").attr("data-mode", model.theme).class("gallery").children(
       Button(h, { variant: "outline", size: "sm", onPress: Msg.ToggledTheme(), children: `Theme: ${model.theme}` }),
       ...sizes.map((size) =>
         h.div.class("row").children(
