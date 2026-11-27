@@ -1,7 +1,7 @@
-import { Button } from "@acme/components/button"
+import { Button } from "@weft/components/button"
 import { UiSchema } from "@effect/ui"
-import { Text } from "@acme/components/text"
-import { HStack } from "@acme/components/layout/stack"
+import { Text } from "@weft/components/text"
+import { HStack } from "@weft/components/layout/stack"
 import { Html } from "@effect/ui/html"
 import { Schema } from "effect"
 

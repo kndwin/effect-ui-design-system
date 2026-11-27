@@ -1,6 +1,7 @@
-import * as Style from "@acme/design-system/Style"
-import * as TokenColor from "@acme/design-system/TokenColor"
-import * as TokenLength from "@acme/design-system/TokenLength"
+import * as Style from "@weft/design-system/Style"
+import * as TokenColor from "@weft/design-system/TokenColor"
+import * as TokenLength from "@weft/design-system/TokenLength"
+import * as Variant from "@weft/design-system/Variant"
 import {
   Colors,
   Font,
@@ -54,5 +55,6 @@ export const CollapsibleStyle = Style.make(CollapsibleParts)({
       transitionDuration: Motion.fast,
       states: { starting: { height: 0 }, ending: { height: 0 } }
     }
-  }
+  },
+  variants: { fill: Variant.makeFlag({ root: { maxWidth: "none" } }) }
 })

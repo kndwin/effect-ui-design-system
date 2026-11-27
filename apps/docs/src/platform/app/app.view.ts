@@ -1,8 +1,7 @@
-import { Button, ButtonLink } from "@acme/components/button"
-import { Layout, LayoutContent, LayoutHeader, LayoutPanel } from "@acme/components/layout/layout"
-import { HStack, VStack } from "@acme/components/layout/stack"
-import { Swatch } from "@acme/components/swatch"
-import { Text } from "@acme/components/text"
+import { Button, ButtonLink } from "@weft/components/button"
+import { Layout, LayoutContent, LayoutHeader, LayoutPanel } from "@weft/components/layout/layout"
+import { HStack, VStack } from "@weft/components/layout/stack"
+import { Text } from "@weft/components/text"
 import { Head } from "@effect/ui"
 import type { Html } from "@effect/ui/html"
 import { Array, Match } from "effect"
@@ -12,11 +11,13 @@ import { ThemeBuilder } from "../../feature/theme-builder/theme-builder.componen
 import { getOverrides } from "../../feature/theme-builder/customize.pure.ts"
 import { mapVarsToInlineStyle } from "../../feature/theme-builder/customize.pure.map.ts"
 import { isCustomized } from "../../feature/theme-builder/customize.pure.predicate.ts"
+import { TemplatePage } from "../../feature/templates/templates.view.ts"
 import { ThemingPage } from "../../feature/theming/theming.view.ts"
 import { TokensPage } from "../../feature/tokens/tokens.view.ts"
 import { pages } from "../content/content.constant.ts"
 import type { Page } from "../content/content.schema.ts"
-import { getTheme } from "../theme/theme.pure.ts"
+import { getTheme, getThemeVars } from "../theme/theme.pure.ts"
+import { Logo } from "../ui/ui.view.ts"
 import type { Look } from "../theme/theme.schema.ts"
 import { themes } from "../theme/themes.constant.ts"
 import { AppDef } from "./app.define.ts"
@@ -36,10 +37,7 @@ const Header = AppDef.fragment((h, model: AppModel) =>
   LayoutHeader(h.header).children(
     ButtonLink(h.a.attr("href", AppRoute.print(getPageRoute({ id: "introduction", route: model.route }))), {
       tone: "ghost"
-    }).children(
-      Swatch(h.span, { color: "var(--color-accent)" }),
-      Text(h.span, { weight: "semibold", tone: "default" }).children("acme/ui")
-    ),
+    }).children(Logo(h, 20), Text(h.span, { weight: "semibold", tone: "default" }).children("weft")),
     HStack(h.div, { gap: "2", wrap: true, justify: "end" }).children(
       Button(h, {
         size: "sm",
@@ -61,12 +59,12 @@ const Header = AppDef.fragment((h, model: AppModel) =>
         ),
         onPress: AppMessageSchema.PressedPanel(),
         children: Match.value(isCustomized({ choices: model.choices })).pipe(
-          Match.when(true, () => `Theme: ${model.route.search.theme} •`),
+          Match.when(true, () => "Theme: custom"),
           Match.orElse(() => `Theme: ${model.route.search.theme}`)
         )
       }),
       Text(h.a, { size: "sm", tone: "muted" })
-        .attr("href", "https://github.com/kndwin/effect-ui-design-system")
+        .attr("href", "https://github.com/kndwin/weft")
         .attr("target", "_blank")
         .children("GitHub")
     )
@@ -117,7 +115,15 @@ const Body = AppDef.fragment((h, model: AppModel, page: Page) =>
     Introduction: () => IntroductionPage(h, getLook(model)),
     Theming: () => ThemingPage(h),
     Component: () => ComponentDocsPage(h, page, getLook(model)),
-    Tokens: () => TokensPage(h),
+    Template: () => TemplatePage(h, page, getLook(model)),
+    Tokens: () => {
+      const { theme, mode } = model.route.search
+      const base = getTheme({ name: theme })
+      return TokensPage(h, {
+        ...getThemeVars({ theme: base, mode }),
+        ...getOverrides({ choices: model.choices, themes, theme: base, mode })
+      })
+    },
     NotFound: () => []
   })
 )
@@ -183,8 +189,8 @@ export const view = AppDef.view((h, model) => {
 export const head = ({ model }: { readonly model: AppModel }) => [
   Head.title(
     Match.value(getPage({ route: model.route })).pipe(
-      Match.when(undefined, () => "Not found · acme/ui"),
-      Match.orElse((page) => `${page.title} · acme/ui`)
+      Match.when(undefined, () => "Not found · weft"),
+      Match.orElse((page) => `${page.title} · weft`)
     )
   )
 ]

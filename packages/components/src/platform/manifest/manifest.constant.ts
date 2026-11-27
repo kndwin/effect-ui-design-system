@@ -1,4 +1,4 @@
-import * as Manifest from "@acme/design-system/Manifest"
+import * as Manifest from "@weft/design-system/Manifest"
 import { CalendarStyle } from "../../feature/date/calendar.component.style.ts"
 import { DateFieldStyle } from "../../feature/date/date-field.component.style.ts"
 import { ComboboxStyle } from "../../feature/combobox/combobox.component.style.ts"

@@ -4,7 +4,7 @@ import { isStyleDefinition } from "./style.pure.predicate.ts"
 describe("isStyleDefinition", () => {
   it("is true only for an uncompiled Style.make definition", () => {
     // Arrange
-    const values = [{ "~acme": "Style" }, { "~acme": "Theme" }, null, "Style"]
+    const values = [{ "~weft": "Style" }, { "~weft": "Theme" }, null, "Style"]
     // Act
     const results = values.map((value) => isStyleDefinition({ value }))
     // Assert

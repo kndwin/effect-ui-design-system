@@ -27,7 +27,7 @@ file is small and checked on its own.
 import { Command } from "@effect/ui"
 import { Effect } from "effect"
 
-export const CopyText = Command.make("acme/Copy", { args: {} }, () => Effect.void)
+export const CopyText = Command.make("weft/Copy", { args: {} }, () => Effect.void)
 ```
 
 ## ✅ an update that runs a Command
@@ -46,7 +46,7 @@ import { Command } from "@effect/ui"
 import { Effect } from "effect"
 import { CopyDef } from "./copy.define.ts"
 
-const Paste = Command.make("acme/Paste", { args: {} }, () => Effect.void)
+const Paste = Command.make("weft/Paste", { args: {} }, () => Effect.void)
 export const update = CopyDef.update({ Pressed: ($) => $.run(Paste.make({})) })
 ```
 

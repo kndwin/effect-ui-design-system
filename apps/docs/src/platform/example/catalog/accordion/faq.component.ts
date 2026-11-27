@@ -1,5 +1,5 @@
-import { Accordion } from "@acme/components/accordion"
-import { Text } from "@acme/components/text"
+import { Accordion } from "@weft/components/accordion"
+import { Text } from "@weft/components/text"
 import { UiSchema } from "@effect/ui"
 import { Html } from "@effect/ui/html"
 import { Schema } from "effect"

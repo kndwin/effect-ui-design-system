@@ -1,9 +1,9 @@
-import { CodeBlock } from "@acme/components/code-block"
-import { Grid } from "@acme/components/layout/grid"
-import { Section } from "@acme/components/layout/section"
-import { HStack, VStack } from "@acme/components/layout/stack"
-import { manifest } from "@acme/components/manifest"
-import { Text } from "@acme/components/text"
+import { CodeBlock } from "@weft/components/code-block"
+import { Grid } from "@weft/components/layout/grid"
+import { Section } from "@weft/components/layout/section"
+import { HStack, VStack } from "@weft/components/layout/stack"
+import { manifest } from "@weft/components/manifest"
+import { Text } from "@weft/components/text"
 import type { Html } from "@effect/ui/html"
 import { Match, Record } from "effect"
 import type { Page } from "../../platform/content/content.schema.ts"
@@ -15,9 +15,7 @@ import { Heading, InlineCode, Pill } from "../../platform/ui/ui.view.ts"
 export const ComponentDocsPage = <Msg>(h: Html.H<Msg>, page: Page, look: Look) => [
   VStack(h.section, { gap: "4" }).children(
     Heading(h, "Examples"),
-    ...examples
-      .filter((e) => e.page === page.id)
-      .map((e) => ExampleBlock(h, { id: e.id, initialTab: "preview", ...look }))
+    ...examples.filter((e) => e.page === page.id).map((e) => ExampleBlock(h, { id: e.id, ...look }))
   ),
   Match.value(manifest.components.find((c) => c.kit === page.kit)).pipe(
     Match.when(undefined, () => h.span),

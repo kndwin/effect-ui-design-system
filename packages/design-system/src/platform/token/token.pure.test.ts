@@ -8,7 +8,7 @@ describe("token groups", () => {
     const Colors = TokenColor.make("color", keys)
     // Assert
     assert.strictEqual(Colors.accent, "var(--color-accent)")
-    assert.strictEqual(Colors["~acme/ds/TokenGroup"].kind, "Color")
-    assert.deepStrictEqual(Colors["~acme/ds/TokenGroup"].keys, ["surface", "accent"])
+    assert.strictEqual(Colors["~weft/ds/TokenGroup"].kind, "Color")
+    assert.deepStrictEqual(Colors["~weft/ds/TokenGroup"].keys, ["surface", "accent"])
   })
 })

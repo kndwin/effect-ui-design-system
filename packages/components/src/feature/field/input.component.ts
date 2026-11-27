@@ -1,5 +1,5 @@
-import type * as Style from "@acme/design-system/Style"
-import { getStyleClasses } from "@acme/design-system/StyleClasses"
+import type * as Style from "@weft/design-system/Style"
+import { getStyleClasses } from "@weft/design-system/StyleClasses"
 import { Input as KitInput, type InputElement } from "@effect/ui-kit/Input"
 import { Html } from "@effect/ui/html"
 import { InputStyle } from "./input.component.style.ts"

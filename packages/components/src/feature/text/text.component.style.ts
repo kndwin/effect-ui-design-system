@@ -1,5 +1,5 @@
-import * as Style from "@acme/design-system/Style"
-import * as Variant from "@acme/design-system/Variant"
+import * as Style from "@weft/design-system/Style"
+import * as Variant from "@weft/design-system/Variant"
 import { TextParts } from "./text.parts.constant.ts"
 import { Colors, Font, Text, Weight } from "../../platform/token/contract.token.ts"
 import { TextSizeSchema, TextToneSchema, TextWeightSchema } from "../../platform/scale/scales.schema.ts"

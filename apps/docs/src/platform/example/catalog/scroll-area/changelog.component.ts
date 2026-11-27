@@ -1,5 +1,5 @@
-import { ScrollArea } from "@acme/components/scroll-area"
-import { Text } from "@acme/components/text"
+import { ScrollArea } from "@weft/components/scroll-area"
+import { Text } from "@weft/components/text"
 import { Html } from "@effect/ui/html"
 import { Schema } from "effect"
 

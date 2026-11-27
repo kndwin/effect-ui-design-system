@@ -1,5 +1,5 @@
 import { Button } from "../../platform/button/button.component.ts"
-import { getStyleClasses } from "@acme/design-system/StyleClasses"
+import { getStyleClasses } from "@weft/design-system/StyleClasses"
 import { Tooltip as KitTooltip } from "@effect/ui-kit/Tooltip"
 import type { Html } from "@effect/ui/html"
 import type { Child } from "@effect/ui/View"

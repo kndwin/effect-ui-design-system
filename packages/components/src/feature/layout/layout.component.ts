@@ -1,4 +1,4 @@
-import * as Element from "@acme/design-system/Element"
+import * as Element from "@weft/design-system/Element"
 import {
   LayoutContentStyle,
   LayoutFooterStyle,

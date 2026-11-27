@@ -1,5 +1,5 @@
-import { Button } from "@acme/components/button"
-import { HStack } from "@acme/components/layout/stack"
+import { Button } from "@weft/components/button"
+import { HStack } from "@weft/components/layout/stack"
 import { Html } from "@effect/ui/html"
 import { Schema } from "effect"
 

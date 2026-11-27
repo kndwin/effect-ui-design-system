@@ -16,8 +16,11 @@ export const update = AppDef.update({
       }).pipe(Command.asNoop)
     ),
   PickedMode: ($, { mode }) => $.run(Router.patchSearch(AppRoute, $.model.route, { mode }).pipe(Command.asNoop)),
-  PickedTheme: ($, { theme }) => $.run(Router.patchSearch(AppRoute, $.model.route, { theme }).pipe(Command.asNoop)),
+  PickedTheme: ($, { theme }) =>
+    $.evolve({ choices: initialChoices }).run(
+      Router.patchSearch(AppRoute, $.model.route, { theme }).pipe(Command.asNoop)
+    ),
   PressedPanel: ($) => $.evolve({ panel: (open) => !open }),
   Chose: ($, { choices }) => $.evolve({ choices }),
-  ResetChoices: ($) => $.evolve({ choices: initialChoices })
+  ResetChoices: ($) => $.evolve({ choices: { ...initialChoices, custom: true } })
 })

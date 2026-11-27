@@ -1,5 +1,5 @@
 import { Button } from "../../platform/button/button.component.ts"
-import { getStyleClasses } from "@acme/design-system/StyleClasses"
+import { getStyleClasses } from "@weft/design-system/StyleClasses"
 import { Menu as KitMenu } from "@effect/ui-kit/Menu"
 import type { Html } from "@effect/ui/html"
 import type { Child } from "@effect/ui/View"
@@ -16,6 +16,7 @@ export const Menu = <Msg>(
     readonly onPick: (event: { readonly value: string }) => NoInfer<Msg> | undefined
     readonly trigger: string
     readonly items: ReadonlyArray<MenuItem | "separator">
+    readonly size?: "sm" | "md" | undefined
     readonly key?: string | undefined
   }
 ): Child<Msg> => {
@@ -42,7 +43,11 @@ export const Menu = <Msg>(
     },
     view: (menu) =>
       h.span.children(
-        Button(h, { element: menu.trigger({ element: h.button }), children: [options.trigger, " ▾"] }),
+        Button(h, {
+          element: menu.trigger({ element: h.button }),
+          size: options.size,
+          children: [options.trigger, " ▾"]
+        }),
         menu.positioner(h.div.class(classes.positioner)).children(
           menu.popup(h.div.class(classes.popup)).children(
             ...options.items.map((entry, index) =>

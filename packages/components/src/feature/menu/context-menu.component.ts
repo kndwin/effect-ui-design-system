@@ -1,4 +1,4 @@
-import { getStyleClasses } from "@acme/design-system/StyleClasses"
+import { getStyleClasses } from "@weft/design-system/StyleClasses"
 import { ContextMenu as KitContextMenu } from "@effect/ui-kit/ContextMenu"
 import { Html as H } from "@effect/ui/html"
 import type { Html } from "@effect/ui/html"

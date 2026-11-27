@@ -4,7 +4,7 @@ A `*.make.ts` file is a module's **interface**: it exports a `make` constructor,
 and companion constructors that go with it. Callers import it as a namespace:
 
 ```ts
-import * as TokenColor from "@acme/design-system/TokenColor"
+import * as TokenColor from "@weft/design-system/TokenColor"
 TokenColor.make("color", ["accent"])
 ```
 

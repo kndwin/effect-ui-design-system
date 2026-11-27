@@ -1,5 +1,5 @@
-import { Tabs } from "@acme/components/tabs"
-import { Text } from "@acme/components/text"
+import { Tabs } from "@weft/components/tabs"
+import { Text } from "@weft/components/text"
 import { UiSchema } from "@effect/ui"
 import { Html } from "@effect/ui/html"
 import { Schema } from "effect"

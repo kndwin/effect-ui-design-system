@@ -1,5 +1,5 @@
 import { assert, describe, it } from "@effect/vitest"
-import { astryx } from "@acme/theme-astryx"
+import { astryx } from "@weft/theme-astryx"
 import { getTheme, getThemeVars } from "./theme.pure.ts"
 
 describe("theme", () => {

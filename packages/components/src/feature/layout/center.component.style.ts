@@ -1,5 +1,5 @@
-import * as Style from "@acme/design-system/Style"
-import * as Variant from "@acme/design-system/Variant"
+import * as Style from "@weft/design-system/Style"
+import * as Variant from "@weft/design-system/Variant"
 import { CenterParts } from "./layout.parts.constant.ts"
 
 export const CenterStyle = Style.make(CenterParts)({

@@ -1,11 +1,29 @@
-# acme/ui: a design system for @effect/ui-kit (PoC)
+<p align="center">
+  <img src="assets/logo.svg" alt="" width="96" height="96" />
+</p>
 
-Typed tokens → Schema-backed variants → per-part styles for
-[`@effect/ui-kit`](https://github.com/Effect-TS/ui), compiled to static CSS at build time by our own
-Effect-based engine. Components are written against a **token contract** (names and kinds only);
-**themes** fill the contract in. Swap the theme, keep the components.
+<h1 align="center">Weft</h1>
 
-![The docs, composed only from @acme/components, with the theme builder open](apps/docs/screenshots/theme-builder.png)
+<p align="center">
+  A themeable design system for <a href="https://github.com/Effect-TS/ui"><code>@effect/ui-kit</code></a>, styled at build time by its own Effect CSS engine.
+  <br />
+  <a href="https://weft-docs.kndwin.workers.dev"><strong>Docs</strong></a>
+</p>
+
+The weft is the thread woven across a loom's fixed warp. ui-kit is the warp: headless components that own
+behaviour and accessibility. Weft is the thread through it: typed tokens → Schema-backed variants →
+per-part styles, compiled to static CSS. Components are written against a **token contract** (names and
+kinds only); **themes** fill the contract in. Swap the theme, keep the components.
+
+- **44 components**, every ui-kit component with something to style: forms (Field, Number Field, OTP Field,
+  Checkbox Group, Select, Combobox, Autocomplete, Date Picker, Calendar, File Drop, Slider, …), overlays
+  (Dialog, Drawer, Popover, Tooltip, Preview Card, Menu, Context Menu, Menubar, Toast), structure (Tabs,
+  Accordion, Collapsible, Scroll Area, Sortable List, Virtual List, Toolbar, Navigation Menu) and display.
+- **Two themes**, shadcn and astryx, each in light and dark, plus a theme builder in the docs.
+- **Page templates** built only from the components: Checkout, Dashboard, File explorer, Form wizard, Inbox, Kanban board, Login, Product gallery, Settings and Settings dialog.
+- **Checked conventions**: every rule is a `+rule/` folder with a doc whose examples run as tests.
+
+![The Dashboard template in the docs, with a custom theme picked in the theme panel](apps/docs/screenshots/theme-builder.png)
 
 ## Setup
 
@@ -56,25 +74,27 @@ imports another feature.
 
 ```
 packages/
-  design-system/   @acme/design-system: the generic library. No ui-kit, no CSS engine.
+  design-system/   @weft/design-system: the generic library. No ui-kit, no CSS engine.
     src/platform/token/      token.pure.ts, token-color.make.ts, … (one make per kind)
     src/platform/kit/        Kit.make / Kit.makeSingle: the parts-and-states descriptor type
     src/platform/variant/    Variant.make(Schema, …), Variant.makeFlag(…)
     src/platform/manifest/   tokens + components, as data
-    src/platform/compile/    the adapter for @acme/css-engine
+    src/platform/compile/    the adapter for @weft/css-engine
     src/feature/style/       Style.make(Parts)({ … }), getStyleClasses, Element.make(Style)
     src/feature/theme/       Theme.make(Tokens, { name, values, modes })
-  components/      @acme/components
+  components/      @weft/components
     src/platform/token/      🔒 contract.token.ts: the token contract
     src/platform/scale/      🔒 scales.schema.ts: variant value lists
     src/platform/manifest/   every style and the contract, as data
-    src/feature/<name>/      button avatar code-block layout text swatch:
+    src/platform/button/     Button and ButtonLink, shared by features
+    src/feature/<name>/      one folder per component family (field, select, date, menu, …):
                              parts.constant, component.style, component (+ define/update/view/command)
-  themes/          @acme/theme-shadcn, @acme/theme-astryx   (<name>.theme.ts)
-  css-engine/      @acme/css-engine: generic, Effect-based, no design-system knowledge
+  themes/          @weft/theme-shadcn, @weft/theme-astryx   (<name>.theme.ts)
+  css-engine/      @weft/css-engine: generic, Effect-based, no design-system knowledge
     src/platform/            rules (the adapter contract), css, hash, message, engine, vite
     src/feature/             recipe (+ the browser runtime), codegen
-apps/docs/         composed only from @acme/components; routed with Route + BrowserRouter
+apps/docs/         composed only from @weft/components; routed with Route + BrowserRouter;
+                   each example is a Component.lazy chunk; deployed by alchemy.run.ts
   src/main.ts                mount App with BrowserRouter.layer
   src/platform/app/          app.route (Route.union), schema, define, update, subscription, view, component
   src/platform/{theme,content,example,ui}/   shared by the pages
@@ -84,11 +104,12 @@ tools/lint/        finds every +rule/<rule>/<rule>.{lint.ts,yml}, runs them, tes
   src/platform/{kind,rule-module,discover}/   file kinds, the rule-module helper, finding +rule folders
   src/feature/oxlint/        the oxlint plugin (loads every <rule>.lint.ts)
   src/feature/ast-grep/      runs every <rule>.yml
+  src/feature/commit/        the pre-push check for Conventional Commits
   test/rules.test.ts         runs every ✅/❌ example
 ```
 
 No barrels: each package lists its modules in `package.json` `exports`
-(`@acme/design-system/TokenColor`, `@acme/components/button`, …).
+(`@weft/design-system/TokenColor`, `@weft/components/button`, …).
 
 ## Rules: `+rule/<rule>/<rule>.{md,yml,lint.ts}`
 
@@ -121,15 +142,15 @@ fails with the id its heading names (`→ component-style-files/tokens-only`).
 | `test-files`            | root                  | tests import `@effect/vitest`, and every test is `// Arrange`, `// Act`, `// Assert`             |
 | `component-files`       | `packages/components` | a library component: `Html.component`, a view function or `Element.make(Style)`                  |
 | `component-files`       | `apps/docs`           | an app component: an `Html.component`; examples also export `title` and `order`                  |
-| `component-style-files` | `packages/components` | only `Style.make(…)` exports, tokens only, `@acme/*` imports only                                |
+| `component-style-files` | `packages/components` | only `Style.make(…)` exports, tokens only, `@weft/*` imports only                                |
 | `token-files`           | `packages/components` | the contract: only `Token*.make(…)` groups                                                       |
 | `theme-files`           | `packages/themes`     | only `Theme.make(Tokens, …)`                                                                     |
 | `build-files`           | `packages/css-engine` | build-time Node code (doc only)                                                                  |
 
-## The CSS engine: `@acme/css-engine`
+## The CSS engine: `@weft/css-engine`
 
 ```ts
-makePlugin({ include: /\.(component\.style|theme)\.ts$/, adapter: "@acme/design-system/Compile" })
+makePlugin({ include: /\.(component\.style|theme)\.ts$/, adapter: "@weft/design-system/Compile" })
 ```
 
 - **Evaluate:** each file matching `include` is loaded in Node through an internal Vite module runner.
@@ -148,24 +169,24 @@ makePlugin({ include: /\.(component\.style|theme)\.ts$/, adapter: "@acme/design-
 ## Authoring in one screen
 
 ```ts
-// components/src/contract.token.ts: names and kinds
+// components/src/platform/token/contract.token.ts: names and kinds
 export const Colors = TokenColor.make("color", ["surface", "fg", "accent", "accentFg", "danger"])
 export const Tokens = { Colors /* … */ }
 
 // themes/astryx/src/astryx.theme.ts: values, checked against the contract
 export const astryx = Theme.make(Tokens, { name: "astryx", values: { Colors: { accent: "#1b1b1b" /* … */ } /* … */ } })
 
-// components/src/layout/center.component.ts: a styled element is one line
+// components/src/feature/layout/center.component.ts: a styled element is one line
 export const Center = Element.make(CenterStyle)
 
-// components/src/button/button.component.style.ts: how it looks
+// components/src/platform/button/button.component.style.ts: how it looks
 export const ButtonStyle = Style.make(ButtonParts)({
   base: { root: { borderRadius: Radius.control, states: { disabled: { opacity: 0.5 } } } },
   variants: { tone: Variant.make(Tone, { primary: { root: { background: Colors.accent } } /* … */ }) }
 })
 
 // an app
-import "@acme/theme-astryx"
+import "@weft/theme-astryx"
 Layout(h.div)
   .attr("data-theme", "astryx")
   .attr("data-mode", "dark")

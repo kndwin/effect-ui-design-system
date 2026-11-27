@@ -1,4 +1,4 @@
-import { RadioGroup } from "@acme/components/radio-group"
+import { RadioGroup } from "@weft/components/radio-group"
 import { UiSchema } from "@effect/ui"
 import { Html } from "@effect/ui/html"
 import { Schema } from "effect"

@@ -1,4 +1,4 @@
-import { CheckboxGroup } from "@acme/components/checkbox-group"
+import { CheckboxGroup } from "@weft/components/checkbox-group"
 import { UiSchema } from "@effect/ui"
 import { Html } from "@effect/ui/html"
 import { Schema } from "effect"

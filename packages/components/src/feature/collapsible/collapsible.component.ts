@@ -1,13 +1,16 @@
-import { getStyleClasses } from "@acme/design-system/StyleClasses"
+import type * as Style from "@weft/design-system/Style"
+import { getStyleClasses } from "@weft/design-system/StyleClasses"
 import { Collapsible as KitCollapsible } from "@effect/ui-kit/Collapsible"
 import type { Html } from "@effect/ui/html"
 import type { Child, Input } from "@effect/ui/View"
 import { Match } from "effect"
 import { CollapsibleStyle } from "./collapsible.component.style.ts"
 
+export type CollapsibleProps = Style.Props<typeof CollapsibleStyle>
+
 export const Collapsible = <Msg>(
   h: Html.H<Msg>,
-  options: {
+  options: CollapsibleProps & {
     readonly open: boolean
     readonly onOpenChange: (event: { readonly open: boolean }) => NoInfer<Msg> | undefined
     readonly trigger: string
@@ -16,7 +19,7 @@ export const Collapsible = <Msg>(
     readonly key?: string | undefined
   }
 ): Child<Msg> => {
-  const classes = getStyleClasses({ style: CollapsibleStyle, props: {} })
+  const classes = getStyleClasses({ style: CollapsibleStyle, props: options })
   return KitCollapsible(h, {
     ...Match.value(options.key).pipe(
       Match.when(undefined, () => ({})),

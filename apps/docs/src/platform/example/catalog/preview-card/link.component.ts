@@ -1,5 +1,5 @@
-import { Text } from "@acme/components/text"
-import { PreviewCard } from "@acme/components/preview-card"
+import { Text } from "@weft/components/text"
+import { PreviewCard } from "@weft/components/preview-card"
 import { UiSchema } from "@effect/ui"
 import { Html } from "@effect/ui/html"
 import { Schema } from "effect"

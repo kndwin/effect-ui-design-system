@@ -1,5 +1,5 @@
-import * as Style from "@acme/design-system/Style"
-import * as Variant from "@acme/design-system/Variant"
+import * as Style from "@weft/design-system/Style"
+import * as Variant from "@weft/design-system/Variant"
 import { AvatarParts } from "./avatar.parts.constant.ts"
 import { AvatarSizeSchema, HueSchema, ShapeSchema } from "../../platform/scale/scales.schema.ts"
 import { Colors, Font, Hues, Radius, Size, Stroke, Text, Weight } from "../../platform/token/contract.token.ts"

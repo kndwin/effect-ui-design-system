@@ -1,4 +1,4 @@
-import { getStyleClasses } from "@acme/design-system/StyleClasses"
+import { getStyleClasses } from "@weft/design-system/StyleClasses"
 import { Checkbox as KitCheckbox } from "@effect/ui-kit/Checkbox"
 import { CheckboxGroup as KitCheckboxGroup } from "@effect/ui-kit/CheckboxGroup"
 import type { Html } from "@effect/ui/html"

@@ -13,7 +13,7 @@ export class RunnerError extends Data.TaggedError("RunnerError")<{ readonly caus
   }
 }
 
-const CSS = ".acme.css"
+const CSS = ".weft.css"
 const runtimeImport = fileURLToPath(new URL("../../feature/recipe/runtime.pure.ts", import.meta.url))
 
 const runnerOf = (root: string) =>
@@ -71,7 +71,7 @@ const dependenciesOf = (env: RunnableDevEnvironment, file: string): ReadonlyArra
 }
 
 export class SsrEnvironment extends Context.Service<SsrEnvironment, RunnableDevEnvironment>()(
-  "@acme/css-engine/SsrEnvironment"
+  "@weft/css-engine/SsrEnvironment"
 ) {}
 
 export const makeLayer = (root: string) => {

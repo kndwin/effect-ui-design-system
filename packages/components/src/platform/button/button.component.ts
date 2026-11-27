@@ -1,9 +1,9 @@
-import type * as Style from "@acme/design-system/Style"
-import { getStyleClasses } from "@acme/design-system/StyleClasses"
+import type * as Style from "@weft/design-system/Style"
+import { getStyleClasses } from "@weft/design-system/StyleClasses"
 import { Button as KitButton, type ButtonElement } from "@effect/ui-kit/Button"
 import { Html } from "@effect/ui/html"
 import type * as View from "@effect/ui/View"
-import * as Element from "@acme/design-system/Element"
+import * as Element from "@weft/design-system/Element"
 import { ButtonStyle } from "./button.component.style.ts"
 import { Match } from "effect"
 

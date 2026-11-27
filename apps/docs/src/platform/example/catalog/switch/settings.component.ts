@@ -1,5 +1,5 @@
-import { VStack } from "@acme/components/layout/stack"
-import { Switch } from "@acme/components/switch"
+import { VStack } from "@weft/components/layout/stack"
+import { Switch } from "@weft/components/switch"
 import { UiSchema } from "@effect/ui"
 import { Html } from "@effect/ui/html"
 import { Schema } from "effect"

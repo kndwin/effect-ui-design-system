@@ -1,5 +1,5 @@
-import { Field } from "@acme/components/field"
-import { VStack } from "@acme/components/layout/stack"
+import { Field } from "@weft/components/field"
+import { VStack } from "@weft/components/layout/stack"
 import { UiSchema } from "@effect/ui"
 import { Html } from "@effect/ui/html"
 import { Schema } from "effect"

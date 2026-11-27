@@ -18,10 +18,10 @@ rule:
 id: token-files/imports
 language: TypeScript
 severity: error
-message: Token files import only @acme/* modules. See +rule/token-files/token-files.md.
+message: Token files import only @weft/* modules. See +rule/token-files/token-files.md.
 rule:
   kind: import_statement
   has:
     field: source
     not:
-      regex: ^["'](@acme/|\.)
+      regex: ^["'](@weft/|\.)

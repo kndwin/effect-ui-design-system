@@ -3,7 +3,7 @@ import { Schema } from "effect"
 const VarsSchema = Schema.Record(Schema.String, Schema.String)
 
 export const ThemeDataSchema = Schema.Struct({
-  "~acme": Schema.Literal("Theme"),
+  "~weft": Schema.Literal("Theme"),
   name: Schema.String,
   rules: Schema.Array(Schema.Struct({ selector: Schema.String, vars: VarsSchema })),
   modes: Schema.Array(Schema.String),

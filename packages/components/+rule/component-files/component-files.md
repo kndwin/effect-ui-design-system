@@ -27,7 +27,7 @@ export const Badge = (h: { span: unknown }) => h.span
 ## ✅ styled element
 
 ```ts good
-import * as Element from "@acme/design-system/Element"
+import * as Element from "@weft/design-system/Element"
 import { CenterStyle } from "./center.component.style.ts"
 
 export const Center = Element.make(CenterStyle)

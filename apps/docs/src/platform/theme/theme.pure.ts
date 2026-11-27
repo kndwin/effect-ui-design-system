@@ -1,4 +1,4 @@
-import type { Theme } from "@acme/design-system/Theme"
+import type { Theme } from "@weft/design-system/Theme"
 import { Match } from "effect"
 import { themes } from "./themes.constant.ts"
 import type { GetThemeInput, GetThemeVarsInput, Vars } from "./theme.schema.ts"

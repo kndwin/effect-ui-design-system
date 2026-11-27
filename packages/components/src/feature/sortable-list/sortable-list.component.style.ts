@@ -1,5 +1,6 @@
-import * as Style from "@acme/design-system/Style"
-import * as TokenColor from "@acme/design-system/TokenColor"
+import * as Style from "@weft/design-system/Style"
+import * as TokenColor from "@weft/design-system/TokenColor"
+import * as Variant from "@weft/design-system/Variant"
 import { Colors, Font, Motion, Radius, Size, Spacing, Stroke, Text } from "../../platform/token/contract.token.ts"
 import { SortableListParts } from "./sortable-list.parts.constant.ts"
 
@@ -39,6 +40,7 @@ export const SortableListStyle = Style.make(SortableListParts)({
         dropAfter: { borderBottomColor: Colors.accent, borderBottomWidth: Stroke.focus }
       }
     },
+    label: { flexGrow: 1, minWidth: 0 },
     handle: {
       display: "inline-flex",
       alignItems: "center",
@@ -60,5 +62,11 @@ export const SortableListStyle = Style.make(SortableListParts)({
       }
     },
     status: { position: "absolute", overflow: "hidden", clipPath: "inset(50%)", whiteSpace: "nowrap" }
+  },
+  variants: {
+    stacked: Variant.makeFlag({
+      item: { flexWrap: "wrap", justifyContent: "space-between", rowGap: Spacing[2] },
+      label: { order: -1, flexBasis: "100%" }
+    })
   }
 })

@@ -1,5 +1,5 @@
-import type * as Style from "@acme/design-system/Style"
-import { getStyleClasses } from "@acme/design-system/StyleClasses"
+import type * as Style from "@weft/design-system/Style"
+import { getStyleClasses } from "@weft/design-system/StyleClasses"
 import { Avatar as KitAvatar } from "@effect/ui-kit/Avatar"
 import type { Html } from "@effect/ui/html"
 import type { Child } from "@effect/ui/View"

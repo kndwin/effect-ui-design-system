@@ -1,4 +1,4 @@
-import * as Kit from "@acme/design-system/Kit"
+import * as Kit from "@weft/design-system/Kit"
 
 export const StackParts = Kit.makeSingle("Stack")
 export const StackItemParts = Kit.makeSingle("StackItem")

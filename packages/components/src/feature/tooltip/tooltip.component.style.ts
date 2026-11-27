@@ -1,5 +1,5 @@
-import * as Style from "@acme/design-system/Style"
-import * as TokenColor from "@acme/design-system/TokenColor"
+import * as Style from "@weft/design-system/Style"
+import * as TokenColor from "@weft/design-system/TokenColor"
 import { Colors, Font, Radius, Size, Spacing, Text } from "../../platform/token/contract.token.ts"
 import { TooltipParts } from "./tooltip.parts.constant.ts"
 

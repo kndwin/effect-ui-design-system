@@ -1,5 +1,5 @@
 import { Button } from "../../platform/button/button.component.ts"
-import { getStyleClasses } from "@acme/design-system/StyleClasses"
+import { getStyleClasses } from "@weft/design-system/StyleClasses"
 import { Popover as KitPopover } from "@effect/ui-kit/Popover"
 import type { Html } from "@effect/ui/html"
 import type { Child, Input } from "@effect/ui/View"

@@ -38,4 +38,4 @@ const entries = Array.flatMap(modules, ({ module }) => {
 
 export const ruleIds = Array.map(entries, ([id]) => id)
 
-export default Plugin.define({ name: "acme", rules: Record.fromEntries(entries) as never })
+export default Plugin.define({ name: "weft", rules: Record.fromEntries(entries) as never })

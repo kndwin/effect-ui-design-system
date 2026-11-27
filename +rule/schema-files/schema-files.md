@@ -12,7 +12,7 @@ export type Tone = typeof ToneSchema.Type
 - Exports are Schemas and types only. A function goes in a `*.pure.ts`; a plain value in a
   `*.constant.ts`.
 - Imports come from `effect`, `@effect/ui`, another `*.schema.ts`, or a package export of one,
-  named `…Schema` (`@acme/design-system/ThemeSchema`). A schema never pulls in UI or build code.
+  named `…Schema` (`@weft/design-system/ThemeSchema`). A schema never pulls in UI or build code.
 - Exported functions in a `*.pure.ts` take their input as one of these Schema types
   (`+rule/pure-files/pure-files.md`).
 - It is a data module, so `+rule/pure-files/pure-files.md` applies. It has no logic of its own, so it needs no

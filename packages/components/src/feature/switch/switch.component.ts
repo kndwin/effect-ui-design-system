@@ -1,4 +1,4 @@
-import { getStyleClasses } from "@acme/design-system/StyleClasses"
+import { getStyleClasses } from "@weft/design-system/StyleClasses"
 import { Switch as KitSwitch } from "@effect/ui-kit/Switch"
 import type { Html } from "@effect/ui/html"
 import { SwitchStyle } from "./switch.component.style.ts"

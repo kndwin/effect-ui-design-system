@@ -1,4 +1,4 @@
-import * as Style from "@acme/design-system/Style"
+import * as Style from "@weft/design-system/Style"
 import { Colors, Radius, Spacing, Stroke } from "../../platform/token/contract.token.ts"
 import { ToggleGroupParts } from "./toggle-group.parts.constant.ts"
 

@@ -1,4 +1,4 @@
-import { ThemeDataSchema } from "@acme/design-system/ThemeSchema"
+import { ThemeDataSchema } from "@weft/design-system/ThemeSchema"
 import { Effect, Schema } from "effect"
 
 export const ModeSchema = Schema.Literals(["light", "dark"])

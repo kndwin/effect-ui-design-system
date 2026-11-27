@@ -1,8 +1,8 @@
 # rule: app component files
 
 In an app, a `*.component.ts` file exports an **`Html.component`**: the app's own stateful UI,
-built from `@acme/components`. Apps don't define styled primitives or view helpers for others to
-reuse; those belong in `@acme/components` (see its `+rule/component-files/component-files.md`).
+built from `@weft/components`. Apps don't define styled primitives or view helpers for others to
+reuse; those belong in `@weft/components` (see its `+rule/component-files/component-files.md`).
 
 Docs examples, `src/examples/<page>/<name>.component.ts`, are found by `registry.constant.ts`,
 so each one also exports:

@@ -1,4 +1,4 @@
-import * as CssEngine from "@acme/css-engine/vite"
+import * as CssEngine from "@weft/css-engine/vite"
 import { BunRuntime, BunServices } from "@effect/platform-bun"
 import { Effect, Layer } from "effect"
 import { Command, Flag } from "effect/cli"
@@ -11,7 +11,7 @@ const portFlag = Flag.Int("port").pipe(Flag.withDefault(5173))
 const config = Effect.gen(function* () {
   const css = yield* CssEngine.loadPlugin({
     include: /\.(component\.style|theme)\.ts$/,
-    adapter: "@acme/design-system/Compile"
+    adapter: "@weft/design-system/Compile"
   })
   return { root, configFile: false, plugins: [css] } satisfies InlineConfig
 })

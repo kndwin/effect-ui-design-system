@@ -1,5 +1,5 @@
-import * as Style from "@acme/design-system/Style"
-import * as Variant from "@acme/design-system/Variant"
+import * as Style from "@weft/design-system/Style"
+import * as Variant from "@weft/design-system/Variant"
 import { ControlSizeSchema } from "../../platform/scale/scales.schema.ts"
 import {
   Colors,
@@ -69,6 +69,7 @@ export const DialogStyle = Style.make(DialogParts)({
       ControlSizeSchema,
       { sm: { popup: { maxWidth: Size.field } }, md: { popup: { maxWidth: Size.dialog } } },
       { default: "md" }
-    )
+    ),
+    wide: Variant.makeFlag({ popup: { maxWidth: Size.content } })
   }
 })

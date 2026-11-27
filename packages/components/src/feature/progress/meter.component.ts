@@ -1,4 +1,4 @@
-import { getStyleClasses } from "@acme/design-system/StyleClasses"
+import { getStyleClasses } from "@weft/design-system/StyleClasses"
 import { Meter as KitMeter } from "@effect/ui-kit/Meter"
 import type { Html } from "@effect/ui/html"
 import type { Child } from "@effect/ui/View"

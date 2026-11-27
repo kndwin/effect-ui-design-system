@@ -1,5 +1,5 @@
-import * as Style from "@acme/design-system/Style"
-import * as Variant from "@acme/design-system/Variant"
+import * as Style from "@weft/design-system/Style"
+import * as Variant from "@weft/design-system/Variant"
 import { OrientationSchema } from "../../platform/scale/scales.schema.ts"
 import { Colors, Stroke } from "../../platform/token/contract.token.ts"
 import { SeparatorParts } from "./separator.parts.constant.ts"

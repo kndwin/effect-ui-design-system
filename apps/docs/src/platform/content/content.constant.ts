@@ -1,6 +1,7 @@
 import contract from "../../../../../packages/components/src/platform/token/contract.token.ts?raw"
 import astryxTheme from "../../../../../packages/themes/astryx/src/astryx.theme.ts?raw"
 import shadcnTheme from "../../../../../packages/themes/shadcn/src/shadcn.theme.ts?raw"
+import { Array, Order } from "effect"
 import { type ComponentId, ComponentIdSchema } from "./component.schema.ts"
 import type { Page } from "./content.schema.ts"
 
@@ -164,6 +165,36 @@ const componentPages: {
     kit: "VirtualList",
     lead: "Only the rows in view are in the DOM. A thousand rows scroll like ten."
   },
+  center: {
+    title: "Center",
+    kit: "Center",
+    source: "feature/layout/center",
+    lead: "Centres its children on both axes, with an optional max width. One line: Element.make(CenterStyle)."
+  },
+  grid: {
+    title: "Grid",
+    kit: "Grid",
+    source: "feature/layout/grid",
+    lead: "A CSS grid with a fixed column count and token gaps. GridSpan lets a child span columns, and stack collapses to one column on narrow screens."
+  },
+  layout: {
+    title: "Layout",
+    kit: "Layout",
+    source: "feature/layout/layout",
+    lead: "The app shell: a header, start and end panels, content and a footer. These docs are built with it."
+  },
+  section: {
+    title: "Section",
+    kit: "Section",
+    source: "feature/layout/section",
+    lead: "A surface with padding, gap and an optional divider: base, card or muted. Cards, frames and panels in these docs are Sections."
+  },
+  stack: {
+    title: "Stack",
+    kit: "Stack",
+    source: "feature/layout/stack",
+    lead: "A flex row or column with token gaps, alignment and wrapping. HStack and VStack are the two directions; StackItem grows or shrinks a child."
+  },
   toggle: {
     title: "Toggle",
     kit: "Toggle",
@@ -276,25 +307,88 @@ export const pages: ReadonlyArray<Page> = [
     title: "Theming",
     lead: "A theme is a package that fills in every token of the contract, with optional modes layered on top. It is checked by the compiler, and bad values fail the build."
   },
-  ...ComponentIdSchema.literals.map(getComponentPage),
+  ...Array.sort(
+    ComponentIdSchema.literals.map(getComponentPage),
+    Order.mapInput(Order.String, (page: Page) => page.title)
+  ),
+  {
+    id: "checkout",
+    section: "Templates",
+    title: "Checkout",
+    lead: "A sectioned checkout form beside a live order summary: Fieldsets, Field, Select, Radio Group and Number Field. Change a quantity or the shipping method and the total follows."
+  },
+  {
+    id: "dashboard",
+    section: "Templates",
+    title: "Dashboard",
+    lead: "Stat tiles, goal meters, a tabbed activity feed and a range picker: the shape of most analytics overviews."
+  },
+  {
+    id: "file-explorer",
+    section: "Templates",
+    title: "File explorer",
+    lead: "Drill through folders column by column, climb back with the breadcrumbs, and see a file's details beside the columns."
+  },
+  {
+    id: "wizard",
+    section: "Templates",
+    title: "Form wizard",
+    lead: "A linear stepper with a progress track: each step validates before Next, Back keeps what you typed, and a review step confirms it all."
+  },
+  {
+    id: "inbox",
+    section: "Templates",
+    title: "Inbox",
+    lead: "A searchable message list with an unread filter beside a reading pane: open a message to mark it read, archive it, or reply."
+  },
+  {
+    id: "kanban",
+    section: "Templates",
+    title: "Kanban board",
+    lead: "Lanes of Sortable Lists. Drag a card's handle or use the keyboard to reorder it, and its Move menu to send it to another lane."
+  },
+  {
+    id: "login",
+    section: "Templates",
+    title: "Login",
+    lead: "A centred sign-in card with validation on submit, a remember-me checkbox and provider buttons."
+  },
+  {
+    id: "product-gallery",
+    section: "Templates",
+    title: "Product gallery",
+    lead: "A grid of product cards with search, category filters and sorting, an add-to-cart count, and an empty state when nothing matches."
+  },
+  {
+    id: "settings",
+    section: "Templates",
+    title: "Settings",
+    lead: "Account settings split into tabs: a profile form, notification switches and appearance choices, with a save toast."
+  },
+  {
+    id: "settings-dialog",
+    section: "Templates",
+    title: "Settings dialog",
+    lead: "Preferences in a wide modal: a searchable section list beside the chosen section's switches and fields, saved or cancelled from the footer."
+  },
   {
     id: "tokens",
     section: "Foundations",
     title: "Tokens",
-    lead: "Every token in the contract, and the value each theme gives it."
+    lead: "Every token in the contract. Components only use the names; the theme you pick applies the values."
   }
 ]
 
 export const sources = { contract, themes: { shadcn: shadcnTheme, astryx: astryxTheme } }
 
-export const installCommand = "pnpm add @acme/components @acme/theme-shadcn"
+export const installCommand = "pnpm add @weft/components @weft/theme-shadcn"
 
 export const install = `// main.ts
-import "@acme/theme-shadcn"
+import "@weft/theme-shadcn"
 
 // anywhere in a view
-import { Avatar } from "@acme/components/avatar"
-import { Button } from "@acme/components/button"
+import { Avatar } from "@weft/components/avatar"
+import { Button } from "@weft/components/button"
 
 h.div.attr("data-theme", "shadcn").attr("data-mode", "dark").children(
   Avatar(h, { name: "Ada Lovelace", src: user.photo }),

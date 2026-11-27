@@ -1,5 +1,5 @@
-import { Tokens } from "@acme/components/tokens"
-import * as Theme from "@acme/design-system/Theme"
+import { Tokens } from "@weft/components/tokens"
+import * as Theme from "@weft/design-system/Theme"
 
 export const astryx = Theme.make(Tokens, {
   name: "astryx",

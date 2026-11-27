@@ -1,4 +1,4 @@
-import { Autocomplete } from "@acme/components/autocomplete"
+import { Autocomplete } from "@weft/components/autocomplete"
 import { UiSchema } from "@effect/ui"
 import { Html } from "@effect/ui/html"
 import { Schema } from "effect"

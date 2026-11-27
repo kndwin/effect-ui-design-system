@@ -1,4 +1,4 @@
-import { Combobox } from "@acme/components/combobox"
+import { Combobox } from "@weft/components/combobox"
 import { UiSchema } from "@effect/ui"
 import { Html } from "@effect/ui/html"
 import { Schema } from "effect"

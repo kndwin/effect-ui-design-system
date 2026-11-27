@@ -1,11 +1,11 @@
 import { UiSchema } from "@effect/ui"
-import { ThemeDataSchema } from "@acme/design-system/ThemeSchema"
+import { ThemeDataSchema } from "@weft/design-system/ThemeSchema"
 import { Schema } from "effect"
 import { ModeSchema, VarsSchema } from "../../platform/theme/theme.schema.ts"
 
 export const ChoicesSchema = Schema.Struct({
+  custom: Schema.Boolean,
   accent: Schema.NullOr(Schema.String),
-  neutrals: Schema.NullOr(Schema.String),
   radius: Schema.NullOr(Schema.String),
   sizing: Schema.NullOr(Schema.String),
   font: Schema.NullOr(Schema.String),
@@ -41,7 +41,7 @@ export type ThemeBuilderMessage = typeof ThemeBuilderMessageSchema.Type
 
 export const ThemeBuilderModelSchema = Schema.Struct({})
 
-export const GetControlsInputSchema = Schema.Struct({ themes: Schema.Array(ThemeDataSchema) })
+export const GetControlsInputSchema = Schema.Struct({ themes: Schema.Array(ThemeDataSchema), theme: ThemeDataSchema })
 export type GetControlsInput = typeof GetControlsInputSchema.Type
 
 export const IsCustomizedInputSchema = Schema.Struct({ choices: ChoicesSchema })

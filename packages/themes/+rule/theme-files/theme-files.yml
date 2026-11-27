@@ -16,10 +16,10 @@ rule:
 id: theme-files/imports
 language: TypeScript
 severity: error
-message: Theme files import only @acme/* modules. See +rule/theme-files/theme-files.md.
+message: Theme files import only @weft/* modules. See +rule/theme-files/theme-files.md.
 rule:
   kind: import_statement
   has:
     field: source
     not:
-      regex: ^["'](@acme/|\.)
+      regex: ^["'](@weft/|\.)

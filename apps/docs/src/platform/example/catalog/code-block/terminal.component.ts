@@ -1,5 +1,5 @@
-import { CodeBlock } from "@acme/components/code-block"
-import { StackItem } from "@acme/components/layout/stack"
+import { CodeBlock } from "@weft/components/code-block"
+import { StackItem } from "@weft/components/layout/stack"
 import { Html } from "@effect/ui/html"
 import { Schema } from "effect"
 
@@ -12,7 +12,7 @@ export default Html.component({ name: "CodeBlockTerminal", model: Schema.Null, m
   view: (h) =>
     StackItem(h.div, { fill: true }).children(
       CodeBlock(h, {
-        code: "pnpm add @acme/components @acme/theme-shadcn # then import the theme once",
+        code: "pnpm add @weft/components @weft/theme-shadcn # then import the theme once",
         language: "shell",
         size: "sm",
         key: "shell"

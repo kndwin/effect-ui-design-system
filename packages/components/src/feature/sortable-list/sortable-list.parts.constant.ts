@@ -1,4 +1,4 @@
-import * as Kit from "@acme/design-system/Kit"
+import * as Kit from "@weft/design-system/Kit"
 
 const SortableListDescriptor = Kit.make({
   name: "SortableList",
@@ -11,6 +11,7 @@ const SortableListDescriptor = Kit.make({
         dropAfter: "[data-drop-position=after]"
       }
     },
+    label: { states: {} },
     handle: { states: { moving: "[data-moving]", disabled: "[data-disabled]" } },
     status: { states: {} }
   },

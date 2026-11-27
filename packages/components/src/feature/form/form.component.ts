@@ -1,4 +1,4 @@
-import { getStyleClasses } from "@acme/design-system/StyleClasses"
+import { getStyleClasses } from "@weft/design-system/StyleClasses"
 import { Form as KitForm } from "@effect/ui-kit/Form"
 import type { Html } from "@effect/ui/html"
 import type { Child, Input } from "@effect/ui/View"

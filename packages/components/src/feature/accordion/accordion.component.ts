@@ -1,4 +1,4 @@
-import { getStyleClasses } from "@acme/design-system/StyleClasses"
+import { getStyleClasses } from "@weft/design-system/StyleClasses"
 import { Accordion as KitAccordion, AccordionItem } from "@effect/ui-kit/Accordion"
 import type { Html } from "@effect/ui/html"
 import type { Child, Input } from "@effect/ui/View"

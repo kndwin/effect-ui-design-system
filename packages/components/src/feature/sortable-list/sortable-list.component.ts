@@ -1,22 +1,26 @@
-import { getStyleClasses } from "@acme/design-system/StyleClasses"
+import type * as Style from "@weft/design-system/Style"
+import { getStyleClasses } from "@weft/design-system/StyleClasses"
 import { SortableList as KitSortableList } from "@effect/ui-kit/SortableList"
 import type { Html } from "@effect/ui/html"
-import type { Child } from "@effect/ui/View"
+import type { Child, Input } from "@effect/ui/View"
 import { Array, Match, Option } from "effect"
 import { SortableListStyle } from "./sortable-list.component.style.ts"
 
+export type SortableListProps = Style.Props<typeof SortableListStyle>
+
 export const SortableList = <Msg>(
   h: Html.H<Msg>,
-  options: {
+  options: SortableListProps & {
     readonly label: string
     readonly items: ReadonlyArray<{ readonly id: string; readonly label: string }>
     readonly onReorder: (event: { readonly from: number; readonly to: number }) => NoInfer<Msg> | undefined
+    readonly onTrailing?: ((item: { readonly id: string; readonly label: string }) => Input<Msg, unknown>) | undefined
     readonly orientation?: "horizontal" | "vertical" | undefined
     readonly disabled?: boolean | undefined
     readonly key?: string | undefined
   }
 ): Child<Msg> => {
-  const classes = getStyleClasses({ style: SortableListStyle, props: {} })
+  const classes = getStyleClasses({ style: SortableListStyle, props: options })
   const getLabel = (id: string) =>
     Array.findFirst(options.items, (item) => item.id === id).pipe(
       Option.map((item) => item.label),
@@ -42,7 +46,8 @@ export const SortableList = <Msg>(
                 .handle({ element: h.button.class(classes.handle), id: item.id })
                 .attr("aria-label", `Reorder ${item.label}`)
                 .children("⠿"),
-              item.label
+              h.span.class(classes.label).children(item.label),
+              options.onTrailing?.(item)
             )
           )
         ),

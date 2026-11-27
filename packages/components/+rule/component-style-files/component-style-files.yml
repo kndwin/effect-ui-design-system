@@ -16,10 +16,10 @@ rule:
 id: component-style-files/imports
 language: TypeScript
 severity: error
-message: Style files import only @acme/* modules and local files, so they stay data. See +rule/component-style-files/component-style-files.md.
+message: Style files import only @weft/* modules and local files, so they stay data. See +rule/component-style-files/component-style-files.md.
 rule:
   kind: import_statement
   has:
     field: source
     not:
-      regex: ^["'](@acme/|\.)
+      regex: ^["'](@weft/|\.)

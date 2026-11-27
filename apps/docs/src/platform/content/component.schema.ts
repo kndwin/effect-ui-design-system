@@ -44,6 +44,11 @@ export const ComponentIdSchema = Schema.Literals([
   "toolbar",
   "navigation-menu",
   "avatar",
-  "code-block"
+  "code-block",
+  "center",
+  "grid",
+  "layout",
+  "section",
+  "stack"
 ])
 export type ComponentId = typeof ComponentIdSchema.Type

@@ -1,6 +1,6 @@
-import { Button } from "@acme/components/button"
+import { Button } from "@weft/components/button"
 import { UiSchema } from "@effect/ui"
-import { HStack } from "@acme/components/layout/stack"
+import { HStack } from "@weft/components/layout/stack"
 import { Html } from "@effect/ui/html"
 import { Match, Schema } from "effect"
 

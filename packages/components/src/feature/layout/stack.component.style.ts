@@ -1,5 +1,5 @@
-import * as Style from "@acme/design-system/Style"
-import * as Variant from "@acme/design-system/Variant"
+import * as Style from "@weft/design-system/Style"
+import * as Variant from "@weft/design-system/Variant"
 import { StackParts, StackItemParts } from "./layout.parts.constant.ts"
 import { AlignSchema, DirectionSchema, JustifySchema, SpaceSchema } from "../../platform/scale/scales.schema.ts"
 import { composeSpaceVariants } from "./space.pure.ts"
