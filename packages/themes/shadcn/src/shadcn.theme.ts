@@ -15,7 +15,8 @@ export const shadcn = Theme.make(Tokens, {
       accentFg: "oklch(0.985 0 0)",
       danger: "oklch(0.577 0.245 27.325)",
       dangerFg: "oklch(1 0 0)",
-      ring: "oklch(0.708 0 0)"
+      ring: "oklch(0.708 0 0)",
+      overlay: "rgb(0 0 0 / 0.45)"
     },
 
     Code: {
@@ -61,7 +62,10 @@ export const shadcn = Theme.make(Tokens, {
       sliderTrack: 4,
       sliderThumb: 16,
       field: 320,
-      popup: 300
+      popup: 300,
+      dialog: 480,
+      drawer: 380,
+      tooltip: 240
     },
     Radius: { check: 4, control: 8, avatarSquare: 8, container: 14, full: 9999 },
     Stroke: { border: 1, focus: 3, focusOffset: 0 },
@@ -79,7 +83,7 @@ export const shadcn = Theme.make(Tokens, {
       mono: ["Geist Mono", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"]
     },
     Weight: { regular: 400, medium: 500, semibold: 600 },
-    Shadow: { control: "0 1px 2px 0 rgb(0 0 0 / 0.05)" },
+    Shadow: { overlay: "0 10px 30px -8px rgb(0 0 0 / 0.25)", control: "0 1px 2px 0 rgb(0 0 0 / 0.05)" },
     Motion: { fast: "150 millis" }
   },
   modes: {

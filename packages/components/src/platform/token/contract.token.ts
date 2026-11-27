@@ -15,7 +15,8 @@ export const Colors = TokenColor.make("color", [
   "accentFg",
   "danger",
   "dangerFg",
-  "ring"
+  "ring",
+  "overlay"
 ])
 
 export const Code = TokenColor.make("code", [
@@ -50,14 +51,17 @@ export const Size = TokenLength.make("size", [
   "sliderTrack",
   "sliderThumb",
   "field",
-  "popup"
+  "popup",
+  "dialog",
+  "drawer",
+  "tooltip"
 ])
 export const Radius = TokenLength.make("radius", ["control", "check", "avatarSquare", "container", "full"])
 export const Stroke = TokenLength.make("stroke", ["border", "focus", "focusOffset"])
 export const Text = TokenLength.make("text", ["xs", "sm", "md", "lg", "xl", "2xl", "code"])
 export const Font = TokenFont.make("font", ["body", "mono"])
 export const Weight = TokenWeight.make("weight", ["regular", "medium", "semibold"])
-export const Shadow = TokenShadow.make("shadow", ["control"])
+export const Shadow = TokenShadow.make("shadow", ["control", "overlay"])
 export const Motion = TokenDuration.make("motion", ["fast"])
 
 export const Tokens = {
