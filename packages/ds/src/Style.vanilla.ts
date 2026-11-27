@@ -1,8 +1,8 @@
 import type { StyleRule } from "@vanilla-extract/css"
 import { recipe, type RuntimeFn } from "@vanilla-extract/recipes"
-import { type Descriptor, type PartName, pseudoSelectors, type StateName } from "./Kit.ts"
-import type { Decl, SlotRule } from "./Rule.ts"
-import type { Variant } from "./Variant.ts"
+import { type Descriptor, type PartName, pseudoSelectors, type StateName } from "./Kit.pure.ts"
+import type { Decl, SlotRule } from "./Rule.pure.ts"
+import type { Variant } from "./Variant.pure.ts"
 
 /** Per-slot rules for a kit, with states narrowed to that part's states. */
 export type SlotStyles<K, Extra extends string = never> = {

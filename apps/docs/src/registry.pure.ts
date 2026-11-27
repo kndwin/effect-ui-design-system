@@ -12,26 +12,33 @@ interface ExampleModule {
   readonly order?: number
 }
 
-const modules = import.meta.glob<ExampleModule>("./examples/*/*.ts", { eager: true })
-const sources = import.meta.glob<string>("./examples/*/*.ts", { eager: true, query: "?raw", import: "default" })
+const modules = import.meta.glob<ExampleModule>("./examples/*/*.component.ts", { eager: true })
+const sources = import.meta.glob<string>("./examples/*/*.component.ts", {
+  eager: true,
+  query: "?raw",
+  import: "default"
+})
 
 export interface Example {
   readonly id: string
   readonly page: string
   readonly title: string
   readonly order: number
+  /** e.g. examples/button/Tones.ts */
+  readonly file: string
   readonly component: ExampleModule["default"]
   readonly source: string
 }
 
 export const examples: ReadonlyArray<Example> = Object.entries(modules)
   .map(([path, mod]) => {
-    const [, page, file] = path.match(/\.\/examples\/([^/]+)\/([^/]+)\.ts$/)!
+    const [, page, file] = path.match(/\.\/examples\/([^/]+)\/([^/]+)\.component\.ts$/)!
     return {
       id: `${page}-${file}`,
       page: page!,
       title: mod.title ?? file!,
       order: mod.order ?? 99,
+      file: path.slice(2),
       component: mod.default,
       source: sources[path]!
     }

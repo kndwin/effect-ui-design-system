@@ -1,5 +1,5 @@
 import { Schema, SchemaTransformation } from "effect"
-import * as Token from "./Token.ts"
+import * as Token from "./Token.pure.ts"
 
 /** A font weight, 100–900 */
 export const Value = Schema.Number.check(Schema.isBetween({ minimum: 100, maximum: 900 })).pipe(

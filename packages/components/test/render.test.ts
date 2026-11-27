@@ -2,7 +2,7 @@ import { UiSchema } from "@effect/ui"
 import { Html, HtmlServer } from "@effect/ui/html"
 import { assert, describe, it } from "@effect/vitest"
 import { Effect, Schema } from "effect"
-import { Avatar, Button, DS } from "../src/index.ts"
+import { Avatar, Button, CodeBlock, DS } from "../src/index.ts"
 
 const Msg = UiSchema.TaggedEnum({ Pressed: {} })
 const Demo = Html.component({ name: "Demo", model: Schema.Struct({}), message: Msg }).make({
@@ -12,7 +12,13 @@ const Demo = Html.component({ name: "Demo", model: Schema.Struct({}), message: M
     h.div.children(
       Button(h, { tone: "primary", onPress: Msg.Pressed(), children: "Save" }),
       Button(h, { tone: "danger", size: "sm", loading: true, children: "Deleting" }),
-      Avatar(h, { name: "Ada Lovelace", src: "/ada.png", size: "lg", shape: "square" })
+      Avatar(h, { name: "Ada Lovelace", src: "/ada.png", size: "lg", shape: "square" }),
+      CodeBlock(h, {
+        code: 'const a = "x" // hi\nconst b = 2',
+        title: "a.ts",
+        lineNumbers: true,
+        marks: { 2: "added" }
+      })
     )
 })
 
@@ -41,12 +47,25 @@ describe("components", () => {
     })
   )
 
+  it.effect("CodeBlock: title, copy button, line numbers, marks and token kinds", () =>
+    Effect.gen(function* () {
+      const { html } = yield* HtmlServer.renderToHtml(Demo, {})
+      assert.match(html, /<span class="code-block__\w+[^"]*">a\.ts<\/span>/)
+      assert.match(html, /<button class="code-block__\w+[^"]*"[^>]*aria-label="Copy"/)
+      assert.match(html, /data-token="keyword">const<\/span>/)
+      assert.match(html, /data-token="string">"x"<\/span>/)
+      assert.match(html, /data-token="comment">\/\/ hi<\/span>/)
+      assert.match(html, /data-mark="added"[^>]*>.*?aria-hidden="true">2<\/span>/)
+    })
+  )
+
   it("manifest lists components, slots, variants and the token contract", () => {
     assert.deepStrictEqual(
       DS.manifest.components.map((c) => [c.kit, c.slots, Object.keys(c.variants)]),
       [
         ["Button", ["root"], ["tone", "size"]],
-        ["Avatar", ["root", "image", "fallback"], ["size", "shape", "hue"]]
+        ["Avatar", ["root", "image", "fallback"], ["size", "shape", "hue"]],
+        ["CodeBlock", ["root", "header", "title", "copy", "content", "line", "lineNumber", "token"], ["size", "tone"]]
       ]
     )
     assert.deepStrictEqual(DS.manifest.tokens.Colors?.kind, "Color")

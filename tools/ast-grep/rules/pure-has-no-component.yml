@@ -1,0 +1,9 @@
+id: pure-has-no-component
+language: TypeScript
+severity: error
+message: Html.component isn't pure. Move it to a *.component.ts file.
+files:
+  - "packages/**/src/**/*.pure.ts"
+  - "apps/**/src/**/*.pure.ts"
+rule:
+  pattern: $HTML.component({ $$$ })

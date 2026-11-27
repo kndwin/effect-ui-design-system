@@ -1,6 +1,6 @@
 import { globalStyle } from "@vanilla-extract/css"
 import { Exit, Schema, SchemaIssue } from "effect"
-import { type AnyGroup, cssVarName, GroupTypeId, type Input } from "./Token.ts"
+import { type AnyGroup, cssVarName, GroupTypeId, type Input } from "./Token.pure.ts"
 
 /** The token contract a component library publishes: `{ Colors, Spacing, … }` */
 export type Contract = Readonly<Record<string, AnyGroup>>

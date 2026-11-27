@@ -1,5 +1,5 @@
 import { Duration, Option, Schema, SchemaTransformation } from "effect"
-import * as Token from "./Token.ts"
+import * as Token from "./Token.pure.ts"
 
 /** An Effect DurationInput ("150 millis", "0.2 seconds") → "150ms" */
 export const Value = Schema.String.pipe(

@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@acme/components": "workspace:*",
+    "@acme/ds": "workspace:*",
     "@acme/theme-astryx": "workspace:*",
     "@acme/theme-shadcn": "workspace:*",
     "@effect/ui": "link:../../vendor/effect-ui/packages/ui",

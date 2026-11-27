@@ -5,7 +5,10 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./*": "./src/*.ts"
+    "./kit/button": "./src/kit/button.pure.ts",
+    "./kit/avatar": "./src/kit/avatar.pure.ts",
+    "./kit/code-block": "./src/kit/code-block.component.ts",
+    "./Theme": "./src/Theme.vanilla.ts"
   },
   "dependencies": {
     "@vanilla-extract/css": "^1.21.3",

@@ -5,7 +5,7 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./*": "./src/*.ts"
+    "./tokens": "./src/tokens.pure.ts"
   },
   "scripts": {
     "test": "vitest run"

@@ -1,8 +1,9 @@
 // Page metadata and the real source files the docs show. Everything shown as code
 // is imported with ?raw, so the docs can't drift from what's in the repo.
 import avatarStyle from "../../../packages/components/src/avatar.css.ts?source"
+import codeBlockStyle from "../../../packages/components/src/code-block.css.ts?source"
 import buttonStyle from "../../../packages/components/src/button.css.ts?source"
-import contract from "../../../packages/components/src/tokens.ts?source"
+import contract from "../../../packages/components/src/tokens.pure.ts?source"
 import astryxTheme from "../../../packages/themes/astryx/src/theme.css.ts?source"
 import shadcnTheme from "../../../packages/themes/shadcn/src/theme.css.ts?source"
 
@@ -14,6 +15,7 @@ export interface Page {
   /** for component pages: the manifest entry and the component's style file */
   readonly kit?: string
   readonly style?: string
+  readonly styleFile?: string
 }
 
 export const pages: ReadonlyArray<Page> = [
@@ -35,7 +37,8 @@ export const pages: ReadonlyArray<Page> = [
     title: "Button",
     lead: "A native button with tones and sizes. Loading keeps it focusable and marks it busy.",
     kit: "Button",
-    style: buttonStyle
+    style: buttonStyle,
+    styleFile: "packages/components/src/button.css.ts"
   },
   {
     id: "avatar",
@@ -43,7 +46,17 @@ export const pages: ReadonlyArray<Page> = [
     title: "Avatar",
     lead: "A picture with initials until it loads. The initials and their colour come from the name; the root carries data-status so styles can follow the load.",
     kit: "Avatar",
-    style: avatarStyle
+    style: avatarStyle,
+    styleFile: "packages/components/src/avatar.css.ts"
+  },
+  {
+    id: "code-block",
+    section: "Components",
+    title: "Code Block",
+    lead: "Code with a title, copy button, line numbers and line marks, after shadcn's code-block. It has no ui-kit counterpart, so the design system owns its DOM; token colours come from the Syntax tokens.",
+    kit: "CodeBlock",
+    style: codeBlockStyle,
+    styleFile: "packages/components/src/code-block.css.ts"
   },
   {
     id: "tokens",
@@ -55,9 +68,9 @@ export const pages: ReadonlyArray<Page> = [
 
 export const sources = { contract, themes: { shadcn: shadcnTheme, astryx: astryxTheme } }
 
-export const install = `pnpm add @acme/components @acme/theme-shadcn
+export const installCommand = "pnpm add @acme/components @acme/theme-shadcn"
 
-// main.ts
+export const install = `// main.ts
 import "@acme/theme-shadcn"
 
 // anywhere in a view

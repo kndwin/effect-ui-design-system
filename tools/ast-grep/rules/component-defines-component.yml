@@ -1,0 +1,13 @@
+id: component-defines-component
+language: TypeScript
+severity: error
+message: A *.component.ts file must define an Html.component. Pure helpers go in *.pure.ts.
+files:
+  - "packages/**/src/**/*.component.ts"
+  - "apps/**/src/**/*.component.ts"
+rule:
+  kind: program
+  not:
+    has:
+      pattern: $HTML.component({ $$$ })
+      stopBy: end

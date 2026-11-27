@@ -1,5 +1,5 @@
 import type { CSSProperties } from "@vanilla-extract/css"
-import type { Ref } from "./Token.ts"
+import type { Ref } from "./Token.pure.ts"
 
 // Properties whose values must come from tokens. Everything else (display,
 // cursor, opacity…) is a keyword/number and is left to lint.
@@ -30,6 +30,11 @@ type LengthProp =
   | "maxHeight"
   | "fontSize"
   | "textUnderlineOffset"
+  | "top"
+  | "right"
+  | "bottom"
+  | "left"
+  | "inset"
 type DurationProp = "transitionDuration" | "animationDuration"
 type ShadowProp = "boxShadow"
 /** unitless multiplier or a Length token */

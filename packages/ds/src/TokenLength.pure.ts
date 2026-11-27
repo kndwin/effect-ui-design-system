@@ -1,5 +1,5 @@
 import { Schema, SchemaTransformation } from "effect"
-import * as Token from "./Token.ts"
+import * as Token from "./Token.pure.ts"
 
 /** number (→ px) | "<n>px" | "<n>rem" */
 export const Value = Schema.Union([

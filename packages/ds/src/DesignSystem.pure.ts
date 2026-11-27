@@ -1,11 +1,12 @@
 import type { ButtonElement } from "@effect/ui-kit/Button"
 import type { Html } from "@effect/ui/html"
 import type { Child } from "@effect/ui/View"
-import { type AvatarOptions, renderAvatar } from "./kit/avatar.ts"
-import { type ButtonOptions, renderButton } from "./kit/button.ts"
-import { type Props, type Style, classes } from "./Style.ts"
-import type { Contract } from "./Theme.ts"
-import { GroupTypeId } from "./Token.ts"
+import { type AvatarOptions, renderAvatar } from "./kit/avatar.pure.ts"
+import { type ButtonOptions, renderButton } from "./kit/button.pure.ts"
+import { type CodeBlockOptions, renderCodeBlock } from "./kit/code-block.component.ts"
+import { type Props, type Style, classes } from "./Style.vanilla.ts"
+import type { Contract } from "./Theme.vanilla.ts"
+import { GroupTypeId } from "./Token.pure.ts"
 
 // Per-kit wrapper signatures. Written out (not computed) so `Msg` stays generic.
 interface Components<P> {
@@ -14,10 +15,12 @@ interface Components<P> {
     options: ButtonOptions<Msg, R> & P
   ) => ButtonElement<Msg, R>
   Avatar: <Msg>(h: Html.H<Msg>, options: AvatarOptions & P) => Child<Msg>
+  CodeBlock: <Msg>(h: Html.H<Msg>, options: CodeBlockOptions & P) => Child<Msg>
 }
 const renderers: { readonly [K in keyof Components<any>]: (h: any, o: any, c: any) => any } = {
   Button: renderButton,
-  Avatar: renderAvatar
+  Avatar: renderAvatar,
+  CodeBlock: renderCodeBlock
 }
 
 /**
