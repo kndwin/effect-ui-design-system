@@ -13,7 +13,7 @@ export type ModeValues<T extends Contract> = { readonly [G in keyof T]?: Partial
 export interface Theme<Name extends string = string, Mode extends string = string> {
   readonly "~acme": "Theme"
   readonly name: Name
-  /** selector → CSS variables; tools/vite/engine.ts turns each into a global rule */
+  /** selector → CSS variables; @acme/css-engine writes each as a global rule */
   readonly rules: ReadonlyArray<{ readonly selector: string; readonly vars: Readonly<Record<string, string>> }>
   readonly modes: ReadonlyArray<Mode>
   /** CSS variable → decoded value, for the base and for each mode */
