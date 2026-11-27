@@ -2,13 +2,15 @@
   "name": "acme-ds",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@11.20.0",
   "scripts": {
-    "check": "pnpm -r --workspace-concurrency=1 exec tsc -p . --noEmit",
+    "check": "tsc -p tsconfig.json",
+    "lint": "oxlint --disable-nested-config",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
     "test": "pnpm --filter @acme/components test",
-    "dev": "pnpm --filter playground dev",
-    "build": "pnpm --filter playground --filter docs build",
-    "docs": "pnpm --filter docs dev"
+    "docs": "pnpm --filter docs dev",
+    "build": "pnpm --filter docs build",
+    "ci": "pnpm fmt:check && pnpm lint && pnpm check && pnpm test && pnpm build"
   },
   "dependencies": {
     "@effect/ui": "link:vendor/effect-ui/packages/ui",
@@ -16,6 +18,10 @@
     "effect": "4.1.6"
   },
   "devDependencies": {
+    "@types/node": "^22.20.7",
+    "oxfmt": "^0.80.0",
+    "oxlint": "^1.95.0",
     "typescript": "7.0.2"
-  }
+  },
+  "packageManager": "pnpm@11.20.0"
 }

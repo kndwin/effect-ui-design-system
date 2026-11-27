@@ -9,7 +9,9 @@ import * as Kit from "../Kit.ts"
 const AvatarDescriptor = Kit.describe({
   name: "Avatar",
   parts: {
-    root: { states: { loading: "[data-status=loading]", loaded: "[data-status=loaded]", error: "[data-status=error]" } },
+    root: {
+      states: { loading: "[data-status=loading]", loaded: "[data-status=loaded]", error: "[data-status=error]" }
+    },
     image: { states: {} },
     fallback: { states: {} }
   },
@@ -32,7 +34,10 @@ export interface AvatarOptions {
 export const initials = (name: string): string => {
   const words = name.trim().split(/\s+/).filter(Boolean)
   const letters = words.length > 1 ? [words[0]!, words[words.length - 1]!] : words
-  return letters.map((w) => w[0]!.toUpperCase()).join("").slice(0, 2)
+  return letters
+    .map((w) => w[0]!.toUpperCase())
+    .join("")
+    .slice(0, 2)
 }
 
 /** Stable pick from a list of values by name, e.g. the fallback's hue. */
@@ -51,12 +56,12 @@ export const renderAvatar = <Msg>(
     ...(options.key === undefined ? {} : { key: options.key }),
     props: { src: options.src, fallbackDelay: options.fallbackDelay },
     view: (avatar) =>
-      avatar.root(
-        h.span
-          .class(classes.root, options.class)
-          .attr("data-status", avatar.imageLoadingStatus)
-      ).children(
-        avatar.image(h.img.class(classes.image).attr("alt", options.name)),
-        avatar.fallback(h.span.class(classes.fallback).attr("aria-label", options.name))?.children(initials(options.name))
-      )
+      avatar
+        .root(h.span.class(classes.root, options.class).attr("data-status", avatar.imageLoadingStatus))
+        .children(
+          avatar.image(h.img.class(classes.image).attr("alt", options.name)),
+          avatar
+            .fallback(h.span.class(classes.fallback).attr("aria-label", options.name))
+            ?.children(initials(options.name))
+        )
   })

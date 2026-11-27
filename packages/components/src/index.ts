@@ -1,5 +1,5 @@
 // @acme/components: Button and Avatar, styled against the token contract in tokens.ts.
-// No colours, sizes or fonts live here: import a theme (@acme/theme-acme, @acme/theme-astryx)
+// No colours, sizes or fonts live here: import a theme (@acme/theme-shadcn, @acme/theme-astryx)
 // and set data-theme / data-mode on a root element.
 import { DesignSystem } from "@acme/ds"
 import { pickByName } from "@acme/ds/kit/avatar"

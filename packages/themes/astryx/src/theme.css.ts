@@ -7,8 +7,16 @@ export const astryx = Theme.make(Tokens, {
   name: "astryx",
   values: {
     Colors: {
-      surface: "#ffffff", surfaceMuted: "#f1f1f1", fg: "#000000", fgMuted: "#474747", border: "#00000014",
-      accent: "#1b1b1b", accentFg: "#ffffff", danger: "#c9303a", dangerFg: "#ffffff", ring: "#1b1b1b"
+      surface: "#ffffff",
+      surfaceMuted: "#f1f1f1",
+      fg: "#000000",
+      fgMuted: "#474747",
+      border: "#00000014",
+      accent: "#1b1b1b",
+      accentFg: "#ffffff",
+      danger: "#c9303a",
+      dangerFg: "#ffffff",
+      ring: "#1b1b1b"
     },
     // data-viz categorical: blue, green, orange, red
     Hues: { blue: "#0171E3", green: "#0B991F", amber: "#EB6E00", rose: "#F5394F", onHue: "#ffffff" },
@@ -25,8 +33,16 @@ export const astryx = Theme.make(Tokens, {
   modes: {
     dark: {
       Colors: {
-        surface: "#262626", surfaceMuted: "#1b1b1b", fg: "#ffffff", fgMuted: "#9e9e9e", border: "#ffffff1A",
-        accent: "#f1f1f1", accentFg: "#111111", danger: "#ff705d", dangerFg: "#1b1b1b", ring: "#f1f1f1"
+        surface: "#262626",
+        surfaceMuted: "#1b1b1b",
+        fg: "#ffffff",
+        fgMuted: "#9e9e9e",
+        border: "#ffffff1A",
+        accent: "#f1f1f1",
+        accentFg: "#111111",
+        danger: "#ff705d",
+        dangerFg: "#1b1b1b",
+        ring: "#f1f1f1"
       },
       Hues: { blue: "#6d9cfe", green: "#64af4c" }
     }

@@ -3,6 +3,7 @@ import { Html } from "@effect/ui/html"
 import { Schema } from "effect"
 
 export const title = "Initials and hue from the name"
+export const order = 1
 
 const people = ["Ada Lovelace", "Grace Hopper", "Alan Turing", "Katherine Johnson", "Linus", "Margaret Hamilton"]
 

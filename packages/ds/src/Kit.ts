@@ -29,13 +29,16 @@ export interface Descriptor<
 export type Type<T> = T
 
 export const describe = <
-    const Name extends string,
-    const Parts extends Readonly<Record<string, PartSpec>>,
-    const Vars extends Readonly<Record<string, string>>,
-    const P extends Pseudo
-  >(d: Descriptor<Name, Parts, Vars, P>): Descriptor<Name, Parts, Vars, P> => d
+  const Name extends string,
+  const Parts extends Readonly<Record<string, PartSpec>>,
+  const Vars extends Readonly<Record<string, string>>,
+  const P extends Pseudo
+>(
+  d: Descriptor<Name, Parts, Vars, P>
+): Descriptor<Name, Parts, Vars, P> => d
 
 export type PartName<K> = K extends Descriptor<any, infer Parts, any, any> ? keyof Parts & string : never
-export type StateName<K, Part extends string> = K extends Descriptor<any, infer Parts, any, infer P>
-  ? (Part extends keyof Parts ? keyof Parts[Part]["states"] & string : never) | P
-  : never
+export type StateName<K, Part extends string> =
+  K extends Descriptor<any, infer Parts, any, infer P>
+    ? (Part extends keyof Parts ? keyof Parts[Part]["states"] & string : never) | P
+    : never

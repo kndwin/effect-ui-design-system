@@ -37,7 +37,7 @@ Style.make(ButtonKit)({
 })
 // ❌ no such token
 // @ts-expect-error
-Colors.primary
+void Colors.primary
 // ❌ raw values / wrong token kind
 // @ts-expect-error
 Style.make(ButtonKit)({ base: { root: { background: "#ff0000" } } })

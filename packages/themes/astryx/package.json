@@ -1,9 +1,11 @@
 {
   "name": "@acme/theme-astryx",
+  "version": "0.0.0",
   "private": true,
   "type": "module",
-  "version": "0.0.0",
-  "exports": { ".": "./src/theme.css.ts" },
+  "exports": {
+    ".": "./src/theme.css.ts"
+  },
   "dependencies": {
     "@acme/components": "workspace:*",
     "@acme/ds": "workspace:*",

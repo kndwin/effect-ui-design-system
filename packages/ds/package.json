@@ -1,16 +1,11 @@
 {
   "name": "@acme/ds",
+  "version": "0.0.0",
   "private": true,
   "type": "module",
-  "version": "0.0.0",
   "exports": {
     ".": "./src/index.ts",
     "./*": "./src/*.ts"
-  },
-  "peerDependencies": {
-    "@effect/ui": "*",
-    "@effect/ui-kit": "*",
-    "effect": "^4.1.6"
   },
   "dependencies": {
     "@vanilla-extract/css": "^1.21.3",
@@ -20,5 +15,10 @@
     "@effect/ui": "link:../../vendor/effect-ui/packages/ui",
     "@effect/ui-kit": "link:../../vendor/effect-ui/packages/ui-kit",
     "effect": "4.1.6"
+  },
+  "peerDependencies": {
+    "@effect/ui": "*",
+    "@effect/ui-kit": "*",
+    "effect": "^4.1.6"
   }
 }
