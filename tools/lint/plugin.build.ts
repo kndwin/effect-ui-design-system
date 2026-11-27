@@ -1,6 +1,6 @@
 import { fileURLToPath } from "node:url"
 import { NodeServices } from "@effect/platform-node"
-import { Array, Effect, Record } from "effect"
+import { Array, Effect, Match, Record } from "effect"
 import { Plugin } from "effect-oxlint"
 import type { RuleModule } from "./define.pure.ts"
 import { findRuleFiles } from "./discover.build.ts"
@@ -10,7 +10,11 @@ type AnyRule = { readonly create: (context: { readonly filename: string }) => ob
 
 const scoped = (rule: AnyRule, ruleFile: string): AnyRule => ({
   ...rule,
-  create: (context) => (inScope(ruleFile, context.filename) ? rule.create(context) : {})
+  create: (context) =>
+    Match.value(inScope(ruleFile, context.filename)).pipe(
+      Match.when(true, () => rule.create(context)),
+      Match.orElse(() => ({}))
+    )
 })
 
 const load = Effect.gen(function* () {

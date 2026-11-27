@@ -5,6 +5,7 @@ import type { Child } from "@effect/ui/View"
 import { Hue } from "../scales.schema.ts"
 import { AvatarStyle } from "./avatar.component.style.ts"
 import { initials, pickByName } from "./avatar.pure.ts"
+import { Match } from "effect"
 
 export type AvatarProps = Style.Props<typeof AvatarStyle>
 
@@ -20,7 +21,10 @@ export interface AvatarOptions {
 export const Avatar = <Msg>(h: Html.H<Msg>, options: AvatarOptions & AvatarProps): Child<Msg> => {
   const classes = Style.classes(AvatarStyle, { ...options, hue: options.hue ?? pickByName(options.name, Hue.literals) })
   return KitAvatar(h, {
-    ...(options.key === undefined ? {} : { key: options.key }),
+    ...Match.value(options.key === undefined).pipe(
+      Match.when(true, () => ({})),
+      Match.orElse(() => ({ key: options.key }))
+    ),
     props: { src: options.src, fallbackDelay: options.fallbackDelay },
     view: (avatar) =>
       avatar

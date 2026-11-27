@@ -1,9 +1,10 @@
 import { existsSync } from "node:fs"
 import { join, relative } from "node:path"
 import { fileURLToPath } from "node:url"
-import { Cause, Context, Data, Effect, Exit, Layer, ManagedRuntime, MutableHashMap, Option } from "effect"
+import { Cause, Context, Data, Effect, Exit, Layer, ManagedRuntime, Match, MutableHashMap, Option } from "effect"
 import { createServer, isRunnableDevEnvironment, type Plugin, type RunnableDevEnvironment } from "vite"
 import { compileFile, EvaluationError, ModuleLoader } from "./engine.build.ts"
+import { messageOf } from "./message.pure.ts"
 
 export interface Options {
   readonly include: RegExp
@@ -12,7 +13,7 @@ export interface Options {
 
 export class RunnerError extends Data.TaggedError("RunnerError")<{ readonly cause: unknown }> {
   override get message() {
-    return `css-engine: the ssr environment can't run modules: ${this.cause instanceof Error ? this.cause.message : String(this.cause)}`
+    return `css-engine: the ssr environment can't run modules: ${messageOf(this.cause)}`
   }
 }
 
@@ -37,9 +38,8 @@ const runnerOf = (root: string) =>
   ).pipe(
     Effect.flatMap((server) => {
       const env = server.environments.ssr
-      return env && isRunnableDevEnvironment(env)
-        ? Effect.succeed(env)
-        : Effect.fail(new RunnerError({ cause: "no runnable ssr environment" }))
+      if (env && isRunnableDevEnvironment(env)) return Effect.succeed(env)
+      return Effect.fail(new RunnerError({ cause: "no runnable ssr environment" }))
     })
   )
 
@@ -48,7 +48,11 @@ const loaderOf = (env: RunnableDevEnvironment) =>
     load: (id, importer) =>
       Effect.tryPromise({
         try: async () => {
-          const resolved = importer ? ((await env.pluginContainer.resolveId(id, importer))?.id ?? id) : id
+          const found = await Match.value(importer).pipe(
+            Match.when(undefined, () => Promise.resolve(null)),
+            Match.orElse((from) => env.pluginContainer.resolveId(id, from))
+          )
+          const resolved = found?.id ?? id
           return (await env.runner.import(resolved)) as Record<string, unknown>
         },
         catch: (cause) => new EvaluationError({ file: id, cause })
@@ -58,7 +62,10 @@ const loaderOf = (env: RunnableDevEnvironment) =>
 const dependenciesOf = (env: RunnableDevEnvironment, file: string): ReadonlyArray<string> => {
   const seen = new Set<string>()
   const visit = (id: string | null | undefined) => {
-    const node = id ? env.moduleGraph.getModuleById(id) : undefined
+    const node = Match.value(id).pipe(
+      Match.when(Match.nonEmptyString, (known) => env.moduleGraph.getModuleById(known)),
+      Match.orElse(() => undefined)
+    )
     if (!node?.file || seen.has(node.file) || node.file.includes("node_modules")) return
     seen.add(node.file)
     for (const child of node.importedModules) visit(child.id)
@@ -84,13 +91,13 @@ const layerOf = (root: string) => {
 
 const cssPath = (root: string, id: string) => {
   const absolute = id.slice(0, -CSS.length)
-  return existsSync(absolute) ? absolute : join(root, absolute)
+  return Match.value(existsSync(absolute)).pipe(
+    Match.when(true, () => absolute),
+    Match.orElse(() => join(root, absolute))
+  )
 }
 
-const failure = (cause: Cause.Cause<unknown>) => {
-  const error = Cause.squash(cause)
-  return error instanceof Error ? error.message : String(error)
-}
+const failure = (cause: Cause.Cause<unknown>) => messageOf(Cause.squash(cause))
 
 export const cssEngine = (options: Options): Plugin => {
   let root = process.cwd()
@@ -132,7 +139,11 @@ export const cssEngine = (options: Options): Plugin => {
       root = config.root
       isBuild = config.command === "build"
     },
-    resolveId: (source) => (source.endsWith(CSS) ? source : null),
+    resolveId: (source) =>
+      Match.value(source.endsWith(CSS)).pipe(
+        Match.when(true, () => source),
+        Match.orElse(() => null)
+      ),
     async load(id) {
       if (!id.endsWith(CSS)) return null
       const file = cssPath(root, id)
@@ -145,7 +156,10 @@ export const cssEngine = (options: Options): Plugin => {
     async transform(_code, id) {
       if (id.includes("?") || !options.include.test(id)) return null
       const exit = await run(compile(id))
-      return Exit.isSuccess(exit) ? { code: exit.value.code, map: null } : this.error(failure(exit.cause))
+      return Exit.match(exit, {
+        onSuccess: (compiled) => ({ code: compiled.code, map: null }),
+        onFailure: (cause) => this.error(failure(cause))
+      })
     },
     async handleHotUpdate({ file, server, modules }) {
       const styles = MutableHashMap.get(dependents, file)

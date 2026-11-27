@@ -1,6 +1,6 @@
 import { NodeServices } from "@effect/platform-node"
 import { assert, layer } from "@effect/vitest"
-import { Array, Context, Effect, FileSystem, Layer, MutableHashMap, Option, Path, Schema } from "effect"
+import { Array, Context, Effect, FileSystem, Layer, Match, MutableHashMap, Option, Path, Schema } from "effect"
 import { ChildProcess, ChildProcessSpawner } from "effect/process"
 import { scan } from "./ast-grep.build.ts"
 import { findRuleFiles, repoRoot } from "./discover.build.ts"
@@ -24,7 +24,10 @@ const examplesOf = Effect.fn("lint/rules/examplesOf")(function* (mdFile: string)
   const path = yield* Path.Path
   const kind = ruleKindOf(mdFile)
   const first = kinds[kind]?.[0] ?? ".ts"
-  const suffix = first === ".ts" ? ".pure.ts" : first
+  const suffix = Match.value(first === ".ts").pipe(
+    Match.when(true, () => ".pure.ts"),
+    Match.orElse(() => first)
+  )
   const text = yield* fs.readFileString(mdFile)
   let heading = ""
   return Array.flatMap([...text.matchAll(block)], (m, i): ReadonlyArray<Example> => {
@@ -39,7 +42,10 @@ const examplesOf = Effect.fn("lint/rules/examplesOf")(function* (mdFile: string)
         title: `${heading} (${path.relative(repoRoot, mdFile)} #${i})`,
         good: m[2] === "good",
         expected: heading.match(/→\s*(\S+)/)?.[1],
-        path: at ? path.join(repoRoot, at) : path.join(scopeOf(mdFile), "__rule_tests__", `${kind}-${i}${suffix}`),
+        path: Match.value(at).pipe(
+          Match.when(undefined, () => path.join(scopeOf(mdFile), "__rule_tests__", `${kind}-${i}${suffix}`)),
+          Match.orElse((given) => path.join(repoRoot, given))
+        ),
         code: m[4] ?? "",
         untested: /\buntested\b/.test(m[3] ?? "")
       }
@@ -97,7 +103,10 @@ const oxlint = Effect.gen(function* () {
   const { diagnostics } = yield* Schema.decodeUnknownEffect(OxlintReport)(output)
   return Array.flatMap(diagnostics ?? [], (d) => {
     const ruleId = d.code.match(/^acme\((.+)\)$/)?.[1]
-    return ruleId ? [{ file: path.join(repoRoot, d.filename), ruleId }] : []
+    return Match.value(ruleId).pipe(
+      Match.when(undefined, () => []),
+      Match.orElse((id) => [{ file: path.join(repoRoot, d.filename), ruleId: id }])
+    )
   })
 })
 
@@ -129,20 +138,25 @@ layer(Findings.layer, { timeout: "120 seconds" })("every +rule md example", (it)
   })
 
   for (const e of examples) {
-    it.effect(`${e.good ? "✅" : "❌"} ${e.kind}: ${e.title}`, () =>
-      Effect.gen(function* () {
-        // Arrange
-        const found = yield* Findings
-        // Act
-        const ids = Option.getOrElse(MutableHashMap.get(found, e.path), () => [])
-        // Assert
-        if (e.good)
-          assert.deepStrictEqual(
-            ids.filter((id) => id.startsWith(`${e.kind}/`)),
-            []
-          )
-        else assert.include(ids, e.expected)
-      })
+    it.effect(
+      `${Match.value(e.good).pipe(
+        Match.when(true, () => "✅"),
+        Match.orElse(() => "❌")
+      )} ${e.kind}: ${e.title}`,
+      () =>
+        Effect.gen(function* () {
+          // Arrange
+          const found = yield* Findings
+          // Act
+          const ids = Option.getOrElse(MutableHashMap.get(found, e.path), () => [])
+          // Assert
+          if (e.good)
+            assert.deepStrictEqual(
+              ids.filter((id) => id.startsWith(`${e.kind}/`)),
+              []
+            )
+          else assert.include(ids, e.expected)
+        })
     )
   }
 })

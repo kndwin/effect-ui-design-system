@@ -1,4 +1,4 @@
-import { Schema, SchemaTransformation } from "effect"
+import { Match, Schema, SchemaTransformation } from "effect"
 import * as Token from "./token.pure.ts"
 
 export const Value = Schema.Union([
@@ -8,7 +8,11 @@ export const Value = Schema.Union([
   Schema.decodeTo(
     Schema.String,
     SchemaTransformation.transform<string, number | string>({
-      decode: (v) => (typeof v === "number" ? `${v}px` : v),
+      decode: (v) =>
+        Match.value(v).pipe(
+          Match.when(Match.number, (n) => `${n}px`),
+          Match.orElse((s) => s)
+        ),
       encode: (v) => v
     }) as any
   )

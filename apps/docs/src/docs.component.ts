@@ -12,7 +12,7 @@ import type { Theme } from "@acme/design-system/Theme"
 import { astryx } from "@acme/theme-astryx"
 import { shadcn } from "@acme/theme-shadcn"
 import { Html } from "@effect/ui/html"
-import { Match } from "effect"
+import { Array, Match } from "effect"
 import { install, installCommand, type Page, pages, sources } from "./content.constant.ts"
 import { initialChoices, scales } from "./customize.constant.ts"
 import { type Choices, Mode, Model, Msg, type Tab } from "./docs.schema.ts"
@@ -40,7 +40,14 @@ export const Docs = Html.component({ name: "Docs", model: Model, message: Msg })
     Navigated: ($, { page }) => $.evolve({ page }),
     PickedTheme: ($, { theme }) => $.evolve({ theme }),
     PickedMode: ($, { mode }) => $.evolve({ mode }),
-    ToggledMode: ($) => $.evolve({ mode: (m) => (m === "light" ? "dark" : "light") }),
+    ToggledMode: ($) =>
+      $.evolve({
+        mode: (m) =>
+          Match.value(m).pipe(
+            Match.when("light", () => "dark" as const),
+            Match.orElse(() => "light" as const)
+          )
+      }),
     PickedTab: ($, { id, tab }) => $.evolve({ tabs: (tabs) => ({ ...tabs, [id]: tab }) }),
     ToggledPanel: ($) => $.evolve({ panel: (p) => !p }),
     Chose: ($, { choices }) => $.evolve({ choices }),
@@ -67,9 +74,12 @@ export const Docs = Html.component({ name: "Docs", model: Model, message: Msg })
             pager(h, page)
           )
         ),
-        model.panel
-          ? LayoutPanel(h.aside, { side: "end" }).attr("aria-label", "Theme builder").children(builder(h, model))
-          : undefined
+        Match.value(model.panel).pipe(
+          Match.when(true, () =>
+            LayoutPanel(h.aside, { side: "end" }).attr("aria-label", "Theme builder").children(builder(h, model))
+          ),
+          Match.orElse(() => undefined)
+        )
       )
   }
 })
@@ -121,14 +131,26 @@ const header = (h: H, model: Model) =>
       Button(h, {
         size: "sm",
         onPress: Msg.ToggledMode(),
-        label: model.mode === "light" ? "Dark mode" : "Light mode",
-        children: model.mode === "light" ? "☾" : "☀"
+        label: Match.value(model.mode === "light").pipe(
+          Match.when(true, () => "Dark mode"),
+          Match.orElse(() => "Light mode")
+        ),
+        children: Match.value(model.mode === "light").pipe(
+          Match.when(true, () => "☾"),
+          Match.orElse(() => "☀")
+        )
       }),
       Button(h, {
         size: "sm",
-        tone: model.panel ? "primary" : "neutral",
+        tone: Match.value(model.panel).pipe(
+          Match.when(true, () => "primary" as const),
+          Match.orElse(() => "neutral" as const)
+        ),
         onPress: Msg.ToggledPanel(),
-        children: Customize.isCustomized(model.choices) ? "Theme builder •" : "Theme builder"
+        children: Match.value(Customize.isCustomized(model.choices)).pipe(
+          Match.when(true, () => "Theme builder •"),
+          Match.orElse(() => "Theme builder")
+        )
       }),
       Text(h.a, { size: "sm", tone: "muted" })
         .attr("href", "https://github.com/kndwin/effect-ui-design-system")
@@ -160,11 +182,17 @@ const sidebar = (h: H, current: Page) =>
 
 const pager = (h: H, page: Page) => {
   const i = pages.indexOf(page)
-  const prev = pages[i - 1]
-  const next = pages[i + 1]
+  const link = (at: number, label: (p: Page) => string) =>
+    Match.value(Array.get(pages, at)).pipe(
+      Match.tag("None", () => h.span),
+      Match.tag("Some", ({ value }) =>
+        Button(h, { onPress: Msg.Navigated({ page: value.id }), children: label(value) })
+      ),
+      Match.exhaustive
+    )
   return HStack(h.nav, { justify: "between", gap: "3" }).children(
-    prev ? Button(h, { onPress: Msg.Navigated({ page: prev.id }), children: `← ${prev.title}` }) : h.span,
-    next ? Button(h, { onPress: Msg.Navigated({ page: next.id }), children: `${next.title} →` }) : h.span
+    link(i - 1, (p) => `← ${p.title}`),
+    link(i + 1, (p) => `${p.title} →`)
   )
 }
 
@@ -203,7 +231,16 @@ const builder = (h: H, model: Model) => {
           h,
           "Mode",
           Mode.literals.map(
-            (m) => [m, m === "light" ? "☀ Light" : "☾ Dark", model.mode === m, Msg.PickedMode({ mode: m })] as const
+            (m) =>
+              [
+                m,
+                Match.value(m === "light").pipe(
+                  Match.when(true, () => "☀ Light"),
+                  Match.orElse(() => "☾ Dark")
+                ),
+                model.mode === m,
+                Msg.PickedMode({ mode: m })
+              ] as const
           )
         )
       )
@@ -226,12 +263,19 @@ const builder = (h: H, model: Model) => {
               onPress: choose({ [control.id]: o.id }),
               label: o.source,
               children: [
-                ...(o.swatch ? [Swatch(h.span, { color: o.swatch(model.mode), size: "sm", round: true })] : []),
-                control.id === "font" || control.id === "mono"
-                  ? h.span.attr("style", `font-family:${o.sample}`).children(o.label)
-                  : control.id === "radius" && o.sample
-                    ? `${o.label} · ${o.sample}`
-                    : o.label
+                ...Match.value(o.swatch).pipe(
+                  Match.when(undefined, () => []),
+                  Match.orElse((swatch) => [Swatch(h.span, { color: swatch(model.mode), size: "sm", round: true })])
+                ),
+                Match.value(control.id === "font" || control.id === "mono").pipe(
+                  Match.when(true, () => h.span.attr("style", `font-family:${o.sample}`).children(o.label)),
+                  Match.orElse(() =>
+                    Match.value(control.id === "radius" && o.sample !== undefined).pipe(
+                      Match.when(true, () => `${o.label} · ${o.sample}`),
+                      Match.orElse(() => o.label)
+                    )
+                  )
+                )
               ]
             })
           )
@@ -324,8 +368,10 @@ const component = (h: H, model: Model, page: Page) => {
       heading(h, "Examples"),
       ...examples.filter((e) => e.page === page.id).map((e) => exampleBlock(h, e, model, "preview"))
     ),
-    info
-      ? VStack(h.section, { gap: "3" }).children(
+    Match.value(info).pipe(
+      Match.when(undefined, () => h.span),
+      Match.orElse((info) =>
+        VStack(h.section, { gap: "3" }).children(
           heading(h, "API"),
           Section(h.div, { surface: "card", pad: "4" }).children(
             Grid(h.div, { columns: "3", gap: "3" }).children(
@@ -335,22 +381,27 @@ const component = (h: H, model: Model, page: Page) => {
               ...Object.entries(info.variants).flatMap(([name, v]) => [
                 Text(h.code, { mono: true, size: "sm", weight: "medium" }).children(name),
                 HStack(h.div, { gap: "1", wrap: true }).children(...v.values.map((value) => pill(h, value))),
-                v.default === undefined
-                  ? Text(h.em, { size: "sm", tone: "muted" }).children("derived")
-                  : code(h, String(v.default))
+                Match.value(v.default === undefined).pipe(
+                  Match.when(true, () => Text(h.em, { size: "sm", tone: "muted" }).children("derived")),
+                  Match.orElse(() => code(h, String(v.default)))
+                )
               ])
             )
           ),
           Text(h.p, { size: "sm", tone: "muted" }).children(`Slots: ${info.slots.join(", ")}`)
         )
-      : h.span,
-    page.style
-      ? VStack(h.section, { gap: "3" }).children(
+      )
+    ),
+    Match.value(page.style).pipe(
+      Match.when(undefined, () => h.span),
+      Match.orElse((style) =>
+        VStack(h.section, { gap: "3" }).children(
           heading(h, "Styles"),
           Text(h.p).children("The whole component's look is this file. It only references the token contract."),
-          CodeBlock(h, { code: page.style, title: page.styleFile, lineNumbers: true, key: `style-${page.id}` })
+          CodeBlock(h, { code: style, title: page.styleFile, lineNumbers: true, key: `style-${page.id}` })
         )
-      : h.span
+      )
+    )
   ]
 }
 
@@ -374,7 +425,10 @@ const tokens = (h: H) =>
                 Mode.literals.map((m) => {
                   const value = Customize.varsOf(th, m)[name] ?? ""
                   return HStack(h.div, { gap: "2" }).children(
-                    t.kind === "Color" ? Swatch(h.span, { color: value, size: "sm" }) : h.span,
+                    Match.value(t.kind === "Color").pipe(
+                      Match.when(true, () => Swatch(h.span, { color: value, size: "sm" })),
+                      Match.orElse(() => h.span)
+                    ),
                     Text(h.code, { mono: true, size: "xs", tone: "muted", truncate: true })
                       .attr("title", value)
                       .children(value)
@@ -397,7 +451,10 @@ const exampleBlock = (h: H, example: Example, model: Model, initial: Tab) => {
       .attr("data-mode", mode)
       .attr("style", style)
       .children(
-        labelled ? Text(h.span, { size: "xs", tone: "muted" }).children(`${theme} · ${mode}`) : h.span,
+        Match.value(labelled).pipe(
+          Match.when(true, () => Text(h.span, { size: "xs", tone: "muted" }).children(`${theme} · ${mode}`)),
+          Match.orElse(() => h.span)
+        ),
         Center(h.div).children(example.component(h, { key: `${example.id}:${theme}:${mode}` }))
       )
   return Section(h.section, { surface: "card" }).children(
@@ -419,14 +476,22 @@ const exampleBlock = (h: H, example: Example, model: Model, initial: Tab) => {
           )
       )
     ),
-    tab === "code"
-      ? Section(h.div, { pad: "3" }).children(
+    Match.value(tab === "code").pipe(
+      Match.when(true, () =>
+        Section(h.div, { pad: "3" }).children(
           CodeBlock(h, { code: example.source.trim(), title: example.file, key: `code-${example.id}` })
         )
-      : tab === "themes"
-        ? Grid(h.div, { columns: "2", stack: true }).children(
-            ...themes.flatMap((t) => Mode.literals.map((m) => frame(t.name, m, true)))
-          )
-        : frame(model.theme, model.mode, false, customStyle(model))
+      ),
+      Match.orElse(() =>
+        Match.value(tab === "themes").pipe(
+          Match.when(true, () =>
+            Grid(h.div, { columns: "2", stack: true }).children(
+              ...themes.flatMap((t) => Mode.literals.map((m) => frame(t.name, m, true)))
+            )
+          ),
+          Match.orElse(() => frame(model.theme, model.mode, false, customStyle(model)))
+        )
+      )
+    )
   )
 }

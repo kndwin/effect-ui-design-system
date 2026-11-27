@@ -1,5 +1,5 @@
 import { NodeRuntime, NodeServices } from "@effect/platform-node"
-import { Array, Console, Effect, Path, Schema } from "effect"
+import { Array, Console, Effect, Match, Path, Schema } from "effect"
 import { ChildProcess, ChildProcessSpawner } from "effect/process"
 import { findRuleFiles, repoRoot } from "./discover.build.ts"
 import { kinds } from "./kinds.constant.ts"
@@ -27,12 +27,15 @@ const scanRule = Effect.fn("lint/ast-grep/scanRule")(function* (ruleFile: string
   const path = yield* Path.Path
   const spawner = yield* ChildProcessSpawner.ChildProcessSpawner
   const dir = scopeOf(ruleFile)
-  const targets = only
-    ? Array.map(
-        Array.filter(only, (f) => inScope(ruleFile, f)),
+  const targets = Match.value(only).pipe(
+    Match.when(undefined, () => ["."]),
+    Match.orElse((files) =>
+      Array.map(
+        Array.filter(files, (f) => inScope(ruleFile, f)),
         (f) => path.relative(dir, f)
       )
-    : ["."]
+    )
+  )
   if (targets.length === 0) return []
   const globs = Array.flatMap(kinds[ruleKindOf(ruleFile)] ?? [], (s) => ["--globs", `**/*${s}`])
   const output = yield* spawner.string(

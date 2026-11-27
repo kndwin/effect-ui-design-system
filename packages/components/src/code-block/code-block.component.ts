@@ -4,7 +4,7 @@ import { Command, UiSchema } from "@effect/ui"
 import type { Html } from "@effect/ui/html"
 import { Html as H } from "@effect/ui/html"
 import type { Child } from "@effect/ui/View"
-import { Effect, Schema } from "effect"
+import { Effect, Match, Schema } from "effect"
 import { highlight, type Language } from "./highlight.pure.ts"
 
 import { CodeBlockStyle } from "./code-block.component.style.ts"
@@ -81,21 +81,61 @@ const Impl = H.component({
     const first = p.startLine ?? 1
     const lines = p.code.replace(/\n$/, "").split("\n")
     const floating = p.title === undefined
-    const copy =
-      p.copy === false
-        ? undefined
-        : KitButton(h, { onPress: Msg.PressedCopy() })
-            .class(c.copy)
-            .attr("data-copied", model.copied ? "" : undefined)
-            .attr("data-floating", floating ? "" : undefined)
-            .attr("aria-label", model.copied ? "Copied" : "Copy")
-            .attr("title", model.copied ? "Copied" : "Copy")
-            .children(model.copied ? checkIcon(h) : copyIcon(h))
+    const copy = Match.value(p.copy === false).pipe(
+      Match.when(true, () => undefined),
+      Match.orElse(() =>
+        KitButton(h, { onPress: Msg.PressedCopy() })
+          .class(c.copy)
+          .attr(
+            "data-copied",
+            Match.value(model.copied).pipe(
+              Match.when(true, () => ""),
+              Match.orElse(() => undefined)
+            )
+          )
+          .attr(
+            "data-floating",
+            Match.value(floating).pipe(
+              Match.when(true, () => ""),
+              Match.orElse(() => undefined)
+            )
+          )
+          .attr(
+            "aria-label",
+            Match.value(model.copied).pipe(
+              Match.when(true, () => "Copied"),
+              Match.orElse(() => "Copy")
+            )
+          )
+          .attr(
+            "title",
+            Match.value(model.copied).pipe(
+              Match.when(true, () => "Copied"),
+              Match.orElse(() => "Copy")
+            )
+          )
+          .children(
+            Match.value(model.copied).pipe(
+              Match.when(true, () => checkIcon(h)),
+              Match.orElse(() => copyIcon(h))
+            )
+          )
+      )
+    )
     return h.div.class(c.root, p.extraClass).children(
-      floating ? copy : h.div.class(c.header).children(h.span.class(c.title).children(p.title ?? ""), copy),
+      Match.value(floating).pipe(
+        Match.when(true, () => copy),
+        Match.orElse(() => h.div.class(c.header).children(h.span.class(c.title).children(p.title ?? ""), copy))
+      ),
       h.pre
         .class(c.content)
-        .attr("data-wrap", p.wrap ? "" : undefined)
+        .attr(
+          "data-wrap",
+          Match.value(p.wrap).pipe(
+            Match.when(true, () => ""),
+            Match.orElse(() => undefined)
+          )
+        )
         .attr("dir", "ltr")
         .attr("tabindex", "0")
         .children(
@@ -106,14 +146,21 @@ const Impl = H.component({
                 .class(c.line)
                 .attr("data-mark", p.marks?.[String(n)])
                 .children(
-                  p.lineNumbers
-                    ? h.span.class(c.lineNumber).attr("aria-hidden", "true").children(String(n))
-                    : undefined,
-                  ...(line === ""
-                    ? [" "]
-                    : highlight(line, p.language ?? "ts").map(([kind, text]) =>
-                        kind === "plain" ? text : h.span.class(c.token).attr("data-token", kind).children(text)
-                      ))
+                  Match.value(p.lineNumbers).pipe(
+                    Match.when(true, () => h.span.class(c.lineNumber).attr("aria-hidden", "true").children(String(n))),
+                    Match.orElse(() => undefined)
+                  ),
+                  ...Match.value(line === "").pipe(
+                    Match.when(true, () => [" "]),
+                    Match.orElse(() =>
+                      highlight(line, p.language ?? "ts").map(([kind, text]) =>
+                        Match.value(kind === "plain").pipe(
+                          Match.when(true, () => text),
+                          Match.orElse(() => h.span.class(c.token).attr("data-token", kind).children(text))
+                        )
+                      )
+                    )
+                  )
                 )
             })
           )
@@ -122,7 +169,12 @@ const Impl = H.component({
       h.span
         .attr("aria-live", "polite")
         .attr("style", "position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)")
-        .children(model.copied ? "Copied" : "")
+        .children(
+          Match.value(model.copied).pipe(
+            Match.when(true, () => "Copied"),
+            Match.orElse(() => "")
+          )
+        )
     )
   }
 })
@@ -149,7 +201,10 @@ const checkIcon = <Msg>(h: Html.H<Msg>) => icon(h, "M20 6 9 17l-5-5")
 export const CodeBlock = <Msg>(h: Html.H<Msg>, options: CodeBlockOptions & CodeBlockProps): Child<Msg> => {
   const classes = Style.classes(CodeBlockStyle, options)
   return Impl(h, {
-    ...(options.key === undefined ? {} : { key: options.key }),
+    ...Match.value(options.key === undefined).pipe(
+      Match.when(true, () => ({})),
+      Match.orElse(() => ({ key: options.key }))
+    ),
     props: {
       code: options.code,
       title: options.title,

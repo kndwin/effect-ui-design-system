@@ -1,8 +1,11 @@
-import { Array, Hash, String } from "effect"
+import { Array, Hash, Match, String } from "effect"
 
 export const initials = (name: string): string => {
   const words = Array.filter(String.split(String.trim(name), /\s+/), String.isNonEmpty)
-  const letters = words.length > 1 ? [words[0]!, words[words.length - 1]!] : words
+  const letters = Match.value(words.length > 1).pipe(
+    Match.when(true, () => [words[0]!, words[words.length - 1]!]),
+    Match.orElse(() => words)
+  )
   return letters
     .map((w) => w[0]!.toUpperCase())
     .join("")

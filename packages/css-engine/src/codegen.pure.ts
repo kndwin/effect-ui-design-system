@@ -1,4 +1,4 @@
-import { Record } from "effect"
+import { Match, Record } from "effect"
 import type { RecipeRuntime } from "./runtime.pure.ts"
 
 export type CompiledExport =
@@ -15,9 +15,10 @@ const json = (value: unknown): string => JSON.stringify(value) ?? "undefined"
 const expression = (e: CompiledExport): string => {
   if ("value" in e) return json(e.value)
   const classes = `{${Record.collect(e.recipes, (key, r) => `${json(key)}: __recipe(${json(r)})`).join(", ")}}`
-  return e.recipesAt === undefined
-    ? `{ ...${json(e.runtime)}, ...${classes} }`
-    : `{ ...${json(e.runtime)}, ${json(e.recipesAt)}: ${classes} }`
+  return Match.value(e.recipesAt === undefined).pipe(
+    Match.when(true, () => `{ ...${json(e.runtime)}, ...${classes} }`),
+    Match.orElse(() => `{ ...${json(e.runtime)}, ${json(e.recipesAt)}: ${classes} }`)
+  )
 }
 
 export const moduleSource = (

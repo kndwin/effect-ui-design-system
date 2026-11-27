@@ -1,5 +1,6 @@
 import { assert, describe, it } from "@effect/vitest"
 import { docPath, inScope, isGoverned, kebabProblem, kindOf, ruleKindOf, scopeOf } from "./kinds.pure.ts"
+import { Match } from "effect"
 
 describe("kinds", () => {
   it("matches the most specific suffix first", () => {
@@ -8,7 +9,11 @@ describe("kinds", () => {
     // Act
     const kinds = files.map((f) => {
       const k = kindOf(f)
-      return k === undefined ? undefined : "name" in k ? k.name : k.suffix
+      return Match.value(k).pipe(
+        Match.when(undefined, () => undefined),
+        Match.when({ name: Match.string }, (named) => named.name),
+        Match.orElse((suffixed) => suffixed.suffix)
+      )
     })
     // Assert
     assert.deepStrictEqual(kinds, [
@@ -32,19 +37,22 @@ describe("kinds", () => {
 
   it("reads a rule's kind and scope from its +rule folder", () => {
     // Arrange
-    const ruleFile = "/repo/packages/components/+rule/component.style/component.style.lint.ts"
+    const ruleFile = "/repo/packages/components/+rule/component-style-files/component-style-files.lint.ts"
     // Act
     const kind = ruleKindOf(ruleFile)
     const scope = scopeOf(ruleFile)
     // Assert
-    assert.strictEqual(kind, "component.style")
+    assert.strictEqual(kind, "component-style-files")
     assert.strictEqual(scope, "/repo/packages/components")
-    assert.strictEqual(docPath(scope, kind), "/repo/packages/components/+rule/component.style/component.style.md")
+    assert.strictEqual(
+      docPath(scope, kind),
+      "/repo/packages/components/+rule/component-style-files/component-style-files.md"
+    )
   })
 
   it("covers files of the rule's kind under its folder only", () => {
     // Arrange
-    const ruleFile = "/repo/packages/components/+rule/component.style/component.style.yml"
+    const ruleFile = "/repo/packages/components/+rule/component-style-files/component-style-files.yml"
     // Act
     const results = [
       "/repo/packages/components/src/button/button.component.style.ts",

@@ -1,4 +1,4 @@
-import { Array, Cause, Data, Exit, Record, Schema, SchemaIssue } from "effect"
+import { Array, Cause, Data, Exit, Match, Record, Schema, SchemaIssue } from "effect"
 import { GroupTypeId } from "../tokens/token.constant.ts"
 import { type AnyGroup, cssVarName, type Input } from "../tokens/token.pure.ts"
 
@@ -27,13 +27,20 @@ export class InvalidTokensError extends Data.TaggedError("InvalidTokensError")<{
   readonly issue: SchemaIssue.Issue
 }> {
   override get message() {
-    const label = `Theme "${this.theme}"${this.mode ? ` (${this.mode})` : ""}`
+    const label = `Theme "${this.theme}"${Match.value(this.mode).pipe(
+      Match.when(undefined, () => ""),
+      Match.orElse((mode) => ` (${mode})`)
+    )}`
     return `${label} has invalid token values:\n${SchemaIssue.makeFormatterDefault()(this.issue)}`
   }
 }
 
 const schemaOf = (tokens: Contract, partial: boolean): Schema.Codec<unknown> => {
-  const optional = (s: Schema.Top) => (partial ? Schema.optionalKey(s) : s)
+  const optional = (s: Schema.Top) =>
+    Match.value(partial).pipe(
+      Match.when(true, () => Schema.optionalKey(s)),
+      Match.orElse(() => s)
+    )
   const groups = Record.map(tokens, (g) =>
     optional(
       Schema.Struct(
@@ -74,8 +81,21 @@ export const make = <const T extends Contract, const Name extends string, const 
 ): Theme<Name, Mode> => {
   const { name } = options
   const scope = (mode?: string) => {
-    const self = `[data-theme="${name}"]${mode ? `[data-mode="${mode}"]` : ""}`
-    return options.default ? `${mode ? `:root[data-mode="${mode}"]` : ":root"}, ${self}` : self
+    const self = `[data-theme="${name}"]${Match.value(mode).pipe(
+      Match.when(undefined, () => ""),
+      Match.orElse((m) => `[data-mode="${m}"]`)
+    )}`
+    return Match.value(options.default).pipe(
+      Match.when(
+        true,
+        () =>
+          `${Match.value(mode).pipe(
+            Match.when(undefined, () => ":root"),
+            Match.orElse((m) => `:root[data-mode="${m}"]`)
+          )}, ${self}`
+      ),
+      Match.orElse(() => self)
+    )
   }
   const base = decode(tokens, options.values, name)
   const modes = Record.map((options.modes ?? {}) as Record<string, ModeValues<T>>, (values, mode) =>

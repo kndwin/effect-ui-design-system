@@ -60,22 +60,24 @@ A rule applies to files of its kind in the folder holding `+rule/`, and below.
 | `<rule>.lint.ts` | **meaning**: file system, scopes, values, comments                  | oxlint via effect-oxlint (`oxlint.config.ts`) |
 
 The ✅/❌ blocks in each `<rule>.md` are the rule tests. Each ✅ passes both tools, and each ❌
-fails with the id its heading names (`→ component.style/tokens-only`).
+fails with the id its heading names (`→ component-style-files/tokens-only`).
 
-| rule              | where                 | covers                                                                                       |
-| :---------------- | :-------------------- | :------------------------------------------------------------------------------------------- |
-| `file-kind`       | root                  | allowed kinds, kebab-case names, a rule doc above every file, colocated tests, no barrels    |
-| `comments`        | root                  | no comments in any `.ts`, except `@ts-expect-error` and `// Arrange / Act / Assert` in tests |
-| `pure`            | root                  | data kinds have no effects; `*.pure.ts` exports only functions and has a `*.pure.test.ts`    |
-| `schema`          | root                  | a `*.schema.ts` exports only Schemas, and imports only `effect`, `@effect/ui` and schemas    |
-| `constant`        | root                  | a `*.constant.ts` exports values, no functions                                               |
-| `make`            | root                  | a `*.make.ts` exports `make`                                                                 |
-| `test`            | root                  | tests import `@effect/vitest`, and every test is `// Arrange`, `// Act`, `// Assert`         |
-| `component`       | root                  | `*.component.ts` exports UI: `Html.component`, a view function or `Element.styled(Style)`    |
-| `component.style` | `packages/components` | only `Style.make(…)` exports, tokens only, `@acme/*` imports only                            |
-| `token`           | `packages/components` | the contract: only `Token*.make(…)` groups                                                   |
-| `theme`           | `packages/themes`     | only `Theme.make(Tokens, …)`                                                                 |
-| `build`           | `packages/css-engine` | build-time Node code (doc only)                                                              |
+| rule                    | where                 | covers                                                                                       |
+| :---------------------- | :-------------------- | :------------------------------------------------------------------------------------------- |
+| `allowed-file-kinds`    | root                  | allowed kinds, kebab-case names, a rule doc above every file, colocated tests, no barrels    |
+| `no-comments`           | root                  | no comments in any `.ts`, except `@ts-expect-error` and `// Arrange / Act / Assert` in tests |
+| `no-ternary`            | root                  | no `a ? b : c`: branch with `Match` from `effect`                                            |
+| `pure-files`            | root                  | data kinds have no effects; `*.pure.ts` exports only functions and has a `*.pure.test.ts`    |
+| `schema-files`          | root                  | a `*.schema.ts` exports only Schemas, and imports only `effect`, `@effect/ui` and schemas    |
+| `constant-files`        | root                  | a `*.constant.ts` exports values, no functions                                               |
+| `make-files`            | root                  | a `*.make.ts` exports `make`                                                                 |
+| `test-files`            | root                  | tests import `@effect/vitest`, and every test is `// Arrange`, `// Act`, `// Assert`         |
+| `component-files`       | `packages/components` | a library component: `Html.component`, a view function or `Element.styled(Style)`            |
+| `component-files`       | `apps/docs`           | an app component: an `Html.component`; examples also export `title` and `order`              |
+| `component-style-files` | `packages/components` | only `Style.make(…)` exports, tokens only, `@acme/*` imports only                            |
+| `token-files`           | `packages/components` | the contract: only `Token*.make(…)` groups                                                   |
+| `theme-files`           | `packages/themes`     | only `Theme.make(Tokens, …)`                                                                 |
+| `build-files`           | `packages/css-engine` | build-time Node code (doc only)                                                              |
 
 ## The CSS engine: `@acme/css-engine`
 

@@ -1,4 +1,4 @@
-import { Array, HashSet, Predicate, Record } from "effect"
+import { Array, HashSet, Match, Predicate, Record } from "effect"
 import type { GlobalRule, StyleRule } from "./rules.pure.ts"
 
 const unitless = HashSet.make(
@@ -26,14 +26,20 @@ const unitless = HashSet.make(
 const nested = HashSet.make("vars", "selectors", "@media")
 
 export const property = (name: string): string =>
-  name.startsWith("--")
-    ? name
-    : name
+  Match.value(name.startsWith("--")).pipe(
+    Match.when(true, () => name),
+    Match.orElse(() =>
+      name
         .replace(/^(Webkit|Moz|ms)(?=[A-Z])/, (prefix) => `-${prefix.toLowerCase()}`)
         .replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)
+    )
+  )
 
 export const value = (name: string, input: unknown): string =>
-  typeof input === "number" && input !== 0 && !HashSet.has(unitless, name) ? `${input}px` : String(input)
+  Match.value(typeof input === "number" && input !== 0 && !HashSet.has(unitless, name)).pipe(
+    Match.when(true, () => `${input}px`),
+    Match.orElse(() => String(input))
+  )
 
 export const declarations = (style: StyleRule): string =>
   [
@@ -46,7 +52,10 @@ export const declarations = (style: StyleRule): string =>
 export const rules = (selector: string, style: StyleRule): ReadonlyArray<string> => {
   const own = declarations(style)
   return [
-    ...(own ? [`${selector}{${own}}`] : []),
+    ...Match.value(own).pipe(
+      Match.when("", () => []),
+      Match.orElse((body) => [`${selector}{${body}}`])
+    ),
     ...Array.flatten(
       Record.collect(style.selectors ?? {}, (nestedSelector, s) => rules(nestedSelector.replaceAll("&", selector), s))
     ),
@@ -55,4 +64,10 @@ export const rules = (selector: string, style: StyleRule): ReadonlyArray<string>
 }
 
 export const globalRules = (rule: GlobalRule): ReadonlyArray<string> =>
-  rules(rule.selector, { ...rule.style, ...(rule.vars ? { vars: rule.vars } : {}) })
+  rules(rule.selector, {
+    ...rule.style,
+    ...Match.value(rule.vars).pipe(
+      Match.when(undefined, () => ({})),
+      Match.orElse((vars) => ({ vars }))
+    )
+  })
