@@ -1,7 +1,16 @@
 {
   "name": "@weft/theme-astryx",
   "version": "0.0.0",
-  "private": true,
+  "description": "An astryx-style Weft theme, light and dark. weft theme astryx copies it into your app.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kndwin/effect-ui-design-system.git",
+    "directory": "packages/themes/astryx"
+  },
+  "files": [
+    "src",
+    "!src/**/*.test.ts"
+  ],
   "type": "module",
   "exports": {
     ".": "./src/astryx.theme.ts"

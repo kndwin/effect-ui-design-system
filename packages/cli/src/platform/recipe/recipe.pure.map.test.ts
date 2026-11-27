@@ -1,5 +1,5 @@
 import { assert, describe, it } from "@effect/vitest"
-import { mapPathToRecipeFile, mapSourceToImports, mapSourceToRecipeSource } from "./add.pure.map.ts"
+import { mapPathToRecipeFile, mapSourceToImports, mapSourceToRecipeSource } from "./recipe.pure.map.ts"
 
 describe("mapPathToRecipeFile", () => {
   it("drops .component and names the contract and scales", () => {

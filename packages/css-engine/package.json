@@ -1,26 +1,43 @@
 {
   "name": "@weft/css-engine",
   "version": "0.0.0",
-  "private": true,
+  "description": "The Effect CSS engine behind Weft: compiles typed style files to static CSS at build time.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kndwin/effect-ui-design-system.git",
+    "directory": "packages/css-engine"
+  },
+  "files": [
+    "dist",
+    "src",
+    "!src/**/*.test.ts"
+  ],
   "type": "module",
   "exports": {
     "./rules": "./src/platform/rules/rules.schema.ts",
     "./runtime": "./src/feature/recipe/runtime.pure.ts",
     "./vite": "./src/platform/vite/vite.build.ts"
   },
-  "scripts": {
-    "test": "bun --bun x vitest run"
+  "publishConfig": {
+    "exports": {
+      "./rules": "./dist/platform/rules/rules.schema.js",
+      "./runtime": "./dist/feature/recipe/runtime.pure.js",
+      "./vite": "./dist/platform/vite/vite.build.js"
+    }
   },
-  "dependencies": {
-    "effect": "4.1.6"
+  "scripts": {
+    "test": "bun --bun x vitest run",
+    "build": "tsc -p tsconfig.build.json"
   },
   "devDependencies": {
     "@effect/vitest": "4.1.6",
     "@types/node": "22",
+    "effect": "4.1.6",
     "vite": "8.3.8",
     "vitest": "5.1.1"
   },
   "peerDependencies": {
-    "vite": "*"
+    "effect": "^4.1.6",
+    "vite": "^8.0.0"
   }
 }

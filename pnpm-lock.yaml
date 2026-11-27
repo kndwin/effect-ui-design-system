@@ -42,6 +42,9 @@ importers:
       oxlint:
         specifier: ^1.95.0
         version: 1.95.0
+      pkg-pr-new:
+        specifier: 0.0.94
+        version: 0.0.94
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -103,12 +106,18 @@ importers:
 
   packages/cli:
     dependencies:
-      '@effect/platform-bun':
+      '@effect/platform-node':
         specifier: 4.1.6
-        version: 4.1.6(effect@4.1.6)
+        version: 4.1.6(effect@4.1.6)(redis@6.4.0)
       '@weft/components':
         specifier: workspace:*
         version: link:../components
+      '@weft/theme-astryx':
+        specifier: workspace:*
+        version: link:../themes/astryx
+      '@weft/theme-shadcn':
+        specifier: workspace:*
+        version: link:../themes/shadcn
       effect:
         specifier: 4.1.6
         version: 4.1.6
@@ -149,10 +158,6 @@ importers:
         version: 5.1.1(@types/node@22.20.7)(vite@8.3.8(@types/node@22.20.7)(esbuild@0.28.2)(yaml@2.9.1))
 
   packages/css-engine:
-    dependencies:
-      effect:
-        specifier: 4.1.6
-        version: 4.1.6
     devDependencies:
       '@effect/vitest':
         specifier: 4.1.6
@@ -160,6 +165,9 @@ importers:
       '@types/node':
         specifier: '22'
         version: 22.20.7
+      effect:
+        specifier: 4.1.6
+        version: 4.1.6
       vite:
         specifier: 8.3.8
         version: 8.3.8(@types/node@22.20.7)(esbuild@0.28.2)(yaml@2.9.1)
@@ -1795,6 +1803,10 @@ packages:
     resolution: {integrity: sha512-qcJu88Q2IWqJsDD529JKMdwGm/dvInW4HvQnRwiH9JtihJvzGOscDtHE3x1pBKeUOTysQ8kVmLnJ2kJu7yhcGA==}
     engines: {node: '>=12'}
 
+  pkg-pr-new@0.0.94:
+    resolution: {integrity: sha512-+s3ZZl1Vt3wHfsIRH+chHG6/3wsu1N+Z5jitNYAPc0GGCYR8xmju34UShzTAMosi4WAYFCXvp80LZZc/fXSdpQ==}
+    hasBin: true
+
   postcss@8.5.33:
     resolution: {integrity: sha512-RVHEU9/Pp1Fnjr/MpAJsZoADukCKhfIi15OunEYiGktIkYLkPVvC1sioWolGDS7XByMTx9m/IGbro0Js13zhnQ==}
     engines: {node: ^10 || ^12 || >=14}
@@ -3073,6 +3085,8 @@ snapshots:
   picocolors@1.1.1: {}
 
   picomatch@4.0.7: {}
+
+  pkg-pr-new@0.0.94: {}
 
   postcss@8.5.33:
     dependencies:

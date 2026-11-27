@@ -1,7 +1,7 @@
 import { mkdtempSync, readdirSync, readFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
-import { BunServices } from "@effect/platform-bun"
+import { NodeServices } from "@effect/platform-node"
 import { assert, describe, it } from "@effect/vitest"
 import { Effect } from "effect"
 import { runAdd } from "../src/feature/add/add.build.ts"
@@ -17,7 +17,7 @@ describe("runAdd", () => {
       const files = readdirSync(dir)
       assert.includeMembers(files, ["dialog.ts", "button.ts", "tokens.ts", "scales.ts", "dialog.component.style.ts"])
       assert.notMatch(readFileSync(join(dir, "dialog.ts"), "utf8"), /from "\.\.\//)
-    }).pipe(Effect.provide(BunServices.layer))
+    }).pipe(Effect.provide(NodeServices.layer))
   )
 
   it.effect("keeps files that are already there", () =>
@@ -29,6 +29,6 @@ describe("runAdd", () => {
       const written = yield* runAdd({ names: ["button"], dir, overwrite: false })
       // Assert
       assert.deepStrictEqual(written, [])
-    }).pipe(Effect.provide(BunServices.layer))
+    }).pipe(Effect.provide(NodeServices.layer))
   )
 })

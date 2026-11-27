@@ -1,7 +1,16 @@
 {
   "name": "@weft/components",
   "version": "0.0.0",
-  "private": true,
+  "description": "The Weft components as source: the recipes that weft add copies into your app.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kndwin/effect-ui-design-system.git",
+    "directory": "packages/components"
+  },
+  "files": [
+    "src",
+    "!src/**/*.test.ts"
+  ],
   "type": "module",
   "exports": {
     "./button": "./src/platform/button/button.component.ts",

@@ -305,7 +305,7 @@ export const pages: ReadonlyArray<Page> = [
     id: "get-started",
     section: "Getting started",
     title: "Get started",
-    lead: "From an empty folder to a Weft app you own: copy the token contract and the components you need into your app, write your own theme, and render."
+    lead: "From an empty folder to a Weft app you own: install from pkg.pr.new, copy in the components you need with weft add, start your theme with weft theme, and render."
   },
   {
     id: "theming",

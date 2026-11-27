@@ -1,20 +1,42 @@
 {
   "name": "@weft/cli",
   "version": "0.0.0",
-  "private": true,
+  "description": "weft add and weft theme: copy Weft components and a starter theme into your app.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kndwin/effect-ui-design-system.git",
+    "directory": "packages/cli"
+  },
   "bin": {
     "weft": "./bin/weft.js"
   },
+  "files": [
+    "bin/weft-node.js",
+    "dist",
+    "src",
+    "!src/**/*.test.ts"
+  ],
   "type": "module",
   "exports": {
     "./add": "./src/feature/add/add.build.ts"
   },
+  "publishConfig": {
+    "bin": {
+      "weft": "./bin/weft-node.js"
+    },
+    "exports": {
+      "./add": "./dist/feature/add/add.build.js"
+    }
+  },
   "scripts": {
-    "test": "bun --bun x vitest run"
+    "test": "bun --bun x vitest run",
+    "build": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@effect/platform-bun": "4.1.6",
+    "@effect/platform-node": "4.1.6",
     "@weft/components": "workspace:*",
+    "@weft/theme-astryx": "workspace:*",
+    "@weft/theme-shadcn": "workspace:*",
     "effect": "4.1.6"
   },
   "devDependencies": {
