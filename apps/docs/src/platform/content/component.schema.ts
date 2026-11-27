@@ -9,6 +9,13 @@ export const ComponentIdSchema = Schema.Literals([
   "select",
   "slider",
   "toggle",
+  "dialog",
+  "alert-dialog",
+  "drawer",
+  "popover",
+  "tooltip",
+  "menu",
+  "toast",
   "avatar",
   "code-block"
 ])

@@ -2,7 +2,7 @@ import * as Style from "@acme/design-system/Style"
 import * as TokenColor from "@acme/design-system/TokenColor"
 import * as Variant from "@acme/design-system/Variant"
 import { ButtonParts } from "./button.parts.constant.ts"
-import { ControlSizeSchema, ToneSchema } from "../../platform/scale/scales.schema.ts"
+import { ControlSizeSchema, ToneSchema } from "../scale/scales.schema.ts"
 import {
   Colors,
   Font,
@@ -14,7 +14,7 @@ import {
   Stroke,
   Text,
   Weight
-} from "../../platform/token/contract.token.ts"
+} from "../token/contract.token.ts"
 
 export const ButtonStyle = Style.make(ButtonParts)({
   base: {

@@ -5,6 +5,8 @@ export const ControlSizeSchema = Schema.Literals(["sm", "md"])
 export const AvatarSizeSchema = Schema.Literals(["sm", "md", "lg"])
 export const ShapeSchema = Schema.Literals(["circle", "square"])
 export const HueSchema = Schema.Literals(["blue", "green", "amber", "rose"])
+export const DrawerSideSchema = Schema.Literals(["right", "left", "bottom"])
+export const PopupSideSchema = Schema.Literals(["top", "bottom", "left", "right"])
 export const OrientationSchema = Schema.Literals(["horizontal", "vertical"])
 export const CodeToneSchema = Schema.Literals(["default", "destructive"])
 

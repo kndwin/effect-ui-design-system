@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./button": "./src/feature/button/button.component.ts",
+    "./button": "./src/platform/button/button.component.ts",
     "./avatar": "./src/feature/avatar/avatar.component.ts",
     "./code-block": "./src/feature/code-block/code-block.component.ts",
     "./tokens": "./src/platform/token/contract.token.ts",
@@ -24,7 +24,14 @@
     "./radio-group": "./src/feature/radio-group/radio-group.component.ts",
     "./select": "./src/feature/select/select.component.ts",
     "./slider": "./src/feature/slider/slider.component.ts",
-    "./toggle": "./src/feature/toggle/toggle.component.ts"
+    "./toggle": "./src/feature/toggle/toggle.component.ts",
+    "./dialog": "./src/feature/dialog/dialog.component.ts",
+    "./alert-dialog": "./src/feature/dialog/alert-dialog.component.ts",
+    "./drawer": "./src/feature/drawer/drawer.component.ts",
+    "./popover": "./src/feature/popover/popover.component.ts",
+    "./tooltip": "./src/feature/tooltip/tooltip.component.ts",
+    "./menu": "./src/feature/menu/menu.component.ts",
+    "./toast": "./src/feature/toast/toast.component.ts"
   },
   "scripts": {
     "test": "bun --bun x vitest run"

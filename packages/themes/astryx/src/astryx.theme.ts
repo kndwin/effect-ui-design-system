@@ -14,7 +14,8 @@ export const astryx = Theme.make(Tokens, {
       accentFg: "#ffffff",
       danger: "#c9303a",
       dangerFg: "#ffffff",
-      ring: "#1b1b1b"
+      ring: "#1b1b1b",
+      overlay: "rgb(0 0 0 / 0.45)"
     },
 
     Code: {
@@ -54,7 +55,10 @@ export const astryx = Theme.make(Tokens, {
       sliderTrack: 6,
       sliderThumb: 18,
       field: 320,
-      popup: 300
+      popup: 300,
+      dialog: 480,
+      drawer: 380,
+      tooltip: 240
     },
     Radius: { check: 6, control: 12, avatarSquare: 8, container: 16, full: 9999 },
     Stroke: { border: 1, focus: 2, focusOffset: 3 },
@@ -69,7 +73,7 @@ export const astryx = Theme.make(Tokens, {
     },
     Font: { body: ["Figtree", "system-ui", "sans-serif"], mono: ["SF Mono", "ui-monospace", "Menlo", "monospace"] },
     Weight: { regular: 400, medium: 500, semibold: 600 },
-    Shadow: { control: "none" },
+    Shadow: { overlay: "0 16px 40px -12px rgb(0 0 0 / 0.3)", control: "none" },
     Motion: { fast: "175 millis" }
   },
   modes: {

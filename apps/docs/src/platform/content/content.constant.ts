@@ -4,17 +4,23 @@ import shadcnTheme from "../../../../../packages/themes/shadcn/src/shadcn.theme.
 import { type ComponentId, ComponentIdSchema } from "./component.schema.ts"
 import type { Page } from "./content.schema.ts"
 
-const styles = import.meta.glob<string>("../../../../../packages/components/src/feature/*/*.component.style.ts", {
+const styles = import.meta.glob<string>("../../../../../packages/components/src/*/*/*.component.style.ts", {
   eager: true,
   query: "?raw",
   import: "default"
 })
 
 const componentPages: {
-  readonly [Id in ComponentId]: { readonly title: string; readonly kit: string; readonly lead: string }
+  readonly [Id in ComponentId]: {
+    readonly title: string
+    readonly kit: string
+    readonly lead: string
+    readonly source?: string
+  }
 } = {
   button: {
     title: "Button",
+    source: "platform/button/button",
     kit: "Button",
     lead: "A native button with tones and sizes. Loading keeps it focusable and marks it busy."
   },
@@ -53,6 +59,42 @@ const componentPages: {
     kit: "Toggle",
     lead: "A button that stays pressed, with aria-pressed and data-pressed, for toolbars and formatting controls."
   },
+  dialog: {
+    title: "Dialog",
+    kit: "Dialog",
+    lead: "A modal window in the browser's top layer. It traps focus, locks scroll without shifting the page, and returns focus to its trigger when it closes."
+  },
+  "alert-dialog": {
+    title: "Alert Dialog",
+    kit: "Dialog",
+    source: "feature/dialog/dialog",
+    lead: "A dialog that asks before something destructive. Clicking outside does nothing; Cancel has focus first. It shares the Dialog style."
+  },
+  drawer: {
+    title: "Drawer",
+    kit: "Drawer",
+    lead: "A panel that slides in from an edge and swipes away. The style follows ui-kit's swipe variables, so the drawer tracks your finger."
+  },
+  popover: {
+    title: "Popover",
+    kit: "Popover",
+    lead: "Rich content anchored to a trigger, flipped and shifted to stay on screen. Not modal: the page stays usable."
+  },
+  tooltip: {
+    title: "Tooltip",
+    kit: "Tooltip",
+    lead: "A short label on hover or keyboard focus, after a delay. Touch users never see it, so it never holds the only copy of anything."
+  },
+  menu: {
+    title: "Menu",
+    kit: "Menu",
+    lead: "A list of actions behind a button, with arrow-key navigation and typeahead. Press, drag and release to pick in one gesture."
+  },
+  toast: {
+    title: "Toast",
+    kit: "Toast",
+    lead: "Short notices in a corner stack. Mount one Toaster near the root, then send RequestedAdd to ui-kit's ToastProvider from any update inside it."
+  },
   avatar: {
     title: "Avatar",
     kit: "Avatar",
@@ -66,7 +108,7 @@ const componentPages: {
 }
 
 const getComponentPage = (id: ComponentId): Page => {
-  const styleFile = `packages/components/src/feature/${id}/${id}.component.style.ts`
+  const styleFile = `packages/components/src/${componentPages[id].source ?? `feature/${id}/${id}`}.component.style.ts`
   return {
     id,
     section: "Components",
