@@ -1,0 +1,2 @@
+#!/bin/sh
+exec bun tools/lint/src/feature/commit/commit.build.ts

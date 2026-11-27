@@ -25,6 +25,14 @@ pnpm docs    # live examples + their source, theme switcher, theme builder
 pnpm ci      # oxfmt → oxlint + ast-grep → tsc (TypeScript 7) → every package's tests → rule tests → docs build
 ```
 
+### Commits
+
+Commit subjects follow [Conventional Commits](https://www.conventionalcommits.org/):
+`type(scope): description`, with type one of `feat`, `fix`, `docs`, `style`, `refactor`, `perf`,
+`test`, `build`, `ci`, `chore` or `revert`. `pnpm install` points git at `.githooks/`, whose
+`pre-push` hook runs `tools/lint/src/feature/commit/commit.build.ts` and refuses a push with a
+commit that doesn't follow it. Merge commits are skipped.
+
 ### Deploying the docs
 
 `apps/docs/alchemy.run.ts` is an [Alchemy](https://alchemy.run/cloudflare/) stack: a Cloudflare

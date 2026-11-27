@@ -11,7 +11,8 @@
     "docs": "pnpm --filter docs dev",
     "build": "pnpm --filter docs build",
     "ci": "pnpm fmt:check && pnpm lint && pnpm check && pnpm test && pnpm test:rules && pnpm build",
-    "test:rules": "bun --bun x vitest run --config tools/lint/vitest.config.ts"
+    "test:rules": "bun --bun x vitest run --config tools/lint/vitest.config.ts",
+    "prepare": "git config core.hooksPath .githooks"
   },
   "dependencies": {
     "@effect/ui": "link:vendor/effect-ui/packages/ui",
