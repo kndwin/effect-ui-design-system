@@ -1,5 +1,5 @@
 import { Match, Schema } from "effect"
-import { ComponentIdSchema } from "../../feature/component-docs/component-docs.schema.ts"
+import { ComponentIdSchema } from "../content/component.schema.ts"
 import { pages } from "../content/content.constant.ts"
 import type { Page } from "../content/content.schema.ts"
 import { AppRoute } from "./app.route.ts"
