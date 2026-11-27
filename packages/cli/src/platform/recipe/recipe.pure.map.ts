@@ -37,3 +37,6 @@ export const mapSourceToRecipeSource = ({ path, source }: MapSourceToImportsInpu
     (_match, keyword: string, specifier: string) =>
       `${keyword}"./${mapPathToRecipeFile({ path: mapImportToPath(path, specifier) })}"`
   )
+
+export const mapPathToSourcePath = ({ path }: MapPathToRecipeFileInput): string =>
+  path.replace(/^dist\/(.*)\.js$/, "src/$1.ts")

@@ -313,6 +313,12 @@ export const pages: ReadonlyArray<Page> = [
     title: "Theming",
     lead: "A theme fills in every token of the contract with Effect layers: one Layer.succeed per token group, and modes as layers on top. The compiler checks that every group is provided, and bad values fail the build."
   },
+  {
+    id: "llms",
+    section: "Getting started",
+    title: "LLMs",
+    lead: "Every page as Markdown, plus llms.txt and llms-full.txt, so coding agents can read these docs and build with Weft."
+  },
   ...Array.sort(
     ComponentIdSchema.literals.map(getComponentPage),
     Order.mapInput(Order.String, (page: Page) => page.title)

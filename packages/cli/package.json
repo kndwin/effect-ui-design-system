@@ -4,7 +4,7 @@
   "description": "weft add and weft theme: copy Weft components and a starter theme into your app.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kndwin/effect-ui-design-system.git",
+    "url": "git+https://github.com/kndwin/weft.git",
     "directory": "packages/cli"
   },
   "bin": {
@@ -18,14 +18,16 @@
   ],
   "type": "module",
   "exports": {
-    "./add": "./src/feature/add/add.build.ts"
+    "./add": "./src/feature/add/add.build.ts",
+    "./templates": "./src/feature/install/install.constant.ts"
   },
   "publishConfig": {
     "bin": {
       "weft": "./bin/weft-node.js"
     },
     "exports": {
-      "./add": "./dist/feature/add/add.build.js"
+      "./add": "./dist/feature/add/add.build.js",
+      "./templates": "./dist/feature/install/install.constant.js"
     }
   },
   "scripts": {

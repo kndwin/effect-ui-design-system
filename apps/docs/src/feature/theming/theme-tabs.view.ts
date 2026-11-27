@@ -10,7 +10,7 @@ import { ThemeTabsDef } from "./theme-tabs.define.ts"
 import { ThemeTabsMessageSchema } from "./theme-tabs.schema.ts"
 
 export const view = ThemeTabsDef.view((h, model) => {
-  const { theme, customized, custom } = h.props
+  const { theme, customized, custom, command } = h.props
   const fallback = Match.value(customized).pipe(
     Match.when(true, () => "custom"),
     Match.orElse(() => theme)
@@ -54,6 +54,10 @@ export const view = ThemeTabsDef.view((h, model) => {
               ),
               Button(h, { size: "sm", onPress: ThemeTabsMessageSchema.PressedCustomize(), children: "Customize" })
             ),
+            Text(h.p, { size: "sm", tone: "muted" }).children(
+              "Install it with weft theme. It rebuilds this exact file from the same choices, wired to your copy of the contract. Run it again with --overwrite after changing your choices."
+            ),
+            CodeBlock(h, { code: command, language: "shell", key: "theme-command" }),
             CodeBlock(h, {
               code: custom,
               title: "src/custom.theme.ts",

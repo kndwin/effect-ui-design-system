@@ -1,5 +1,10 @@
 import { assert, describe, it } from "@effect/vitest"
-import { mapPathToRecipeFile, mapSourceToImports, mapSourceToRecipeSource } from "./recipe.pure.map.ts"
+import {
+  mapPathToRecipeFile,
+  mapPathToSourcePath,
+  mapSourceToImports,
+  mapSourceToRecipeSource
+} from "./recipe.pure.map.ts"
 
 describe("mapPathToRecipeFile", () => {
   it("drops .component and names the contract and scales", () => {
@@ -54,5 +59,16 @@ describe("mapSourceToRecipeSource", () => {
         'import { Colors } from "./tokens.ts"'
       ].join("\n")
     )
+  })
+})
+
+describe("mapPathToSourcePath", () => {
+  it("finds the source behind a published dist file", () => {
+    // Arrange
+    const paths = ["dist/platform/button/button.component.js", "src/shadcn.theme.ts"]
+    // Act
+    const sources = paths.map((path) => mapPathToSourcePath({ path }))
+    // Assert
+    assert.deepStrictEqual(sources, ["src/platform/button/button.component.ts", "src/shadcn.theme.ts"])
   })
 })

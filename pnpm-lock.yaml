@@ -63,6 +63,9 @@ importers:
       '@effect/ui-kit':
         specifier: link:../../vendor/effect-ui/packages/ui-kit
         version: link:../../vendor/effect-ui/packages/ui-kit
+      '@weft/cli':
+        specifier: workspace:*
+        version: link:../../packages/cli
       '@weft/components':
         specifier: workspace:*
         version: link:../../packages/components
@@ -202,6 +205,10 @@ importers:
       '@weft/design-system':
         specifier: workspace:*
         version: link:../../design-system
+    devDependencies:
+      effect:
+        specifier: 4.1.6
+        version: 4.1.6
 
   packages/themes/shadcn:
     dependencies:
@@ -211,6 +218,10 @@ importers:
       '@weft/design-system':
         specifier: workspace:*
         version: link:../../design-system
+    devDependencies:
+      effect:
+        specifier: 4.1.6
+        version: 4.1.6
 
 packages:
 

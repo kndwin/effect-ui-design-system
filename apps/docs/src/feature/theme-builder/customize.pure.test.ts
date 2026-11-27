@@ -1,61 +1,24 @@
-import { astryx } from "@weft/theme-astryx"
-import { shadcn } from "@weft/theme-shadcn"
 import { assert, describe, it } from "@effect/vitest"
-import { getThemeVars } from "../../platform/theme/theme.pure.ts"
-import { getControls, getCustomThemeSource, getOverrides } from "./customize.pure.ts"
-const themes = [shadcn, astryx]
+import { getCustomThemeCommand } from "./customize.pure.ts"
 
-const initialChoices = { custom: false, accent: null, radius: null, sizing: null, font: null, mono: null, scale: 100 }
+const choices = { custom: true, accent: null, radius: null, sizing: null, font: null, mono: null, scale: 100 }
 
-describe("theme builder", () => {
-  it("names options by what they are, not by the theme they come from", () => {
+describe("getCustomThemeCommand", () => {
+  it("passes the choices to weft theme", () => {
     // Arrange
-    const controls = getControls({ themes, theme: shadcn })
+    const input = { theme: "astryx", choices: { ...choices, accent: "rose", scale: 90 } }
     // Act
-    const labels = controls.flatMap((c) => c.options.map((o) => o.label))
+    const command = getCustomThemeCommand(input)
     // Assert
-    assert.notInclude(labels, "shadcn")
-    assert.notInclude(labels, "astryx")
-    assert.includeMembers(labels, ["blue", "Small", "Medium", "Compact", "Regular", "Geist", "Figtree"])
+    assert.strictEqual(command, 'pnpm weft theme astryx --name custom --choices "accent=rose,scale=90"')
   })
 
-  it("takes the accent hue from the base theme", () => {
+  it("leaves out --choices when nothing is chosen", () => {
     // Arrange
-    const choices = { ...initialChoices, custom: true, accent: "blue" }
+    const input = { theme: "shadcn", choices }
     // Act
-    const vars = getOverrides({ choices, themes, theme: astryx, mode: "light" })
+    const command = getCustomThemeCommand(input)
     // Assert
-    assert.strictEqual(vars["--color-accent"], getThemeVars({ theme: astryx, mode: "light" })["--hue-blue"])
-  })
-
-  it("scales length tokens", () => {
-    // Arrange
-    const choices = { ...initialChoices, custom: true, scale: 110 }
-    // Act
-    const vars = getOverrides({ choices, themes, theme: shadcn, mode: "light" })
-    // Assert
-    assert.strictEqual(vars["--spacing-4"], "17.6px")
-  })
-
-  it("overrides nothing until the custom theme is picked", () => {
-    // Arrange
-    const choices = { ...initialChoices, accent: "blue" }
-    // Act
-    const vars = getOverrides({ choices, themes, theme: shadcn, mode: "light" })
-    // Assert
-    assert.deepStrictEqual(vars, {})
-  })
-
-  it("writes the custom theme as layers, with the chosen accent", () => {
-    // Arrange
-    const choices = { ...initialChoices, custom: true, accent: "blue" }
-    // Act
-    const source = getCustomThemeSource({ choices, themes, theme: shadcn })
-    // Assert
-    const blue = getThemeVars({ theme: shadcn, mode: "light" })["--hue-blue"]
-    assert.include(source, 'export const custom = Theme.make(Tokens, {\n  name: "custom",\n  default: true,')
-    assert.include(source, `    Layer.succeed(Tokens.Colors, {`)
-    assert.include(source, `      accent: ${JSON.stringify(blue)},`)
-    assert.include(source, "  modes: {\n    dark: Layer.mergeAll(")
+    assert.strictEqual(command, "pnpm weft theme shadcn --name custom")
   })
 })

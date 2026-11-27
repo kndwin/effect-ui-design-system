@@ -4,7 +4,8 @@ import { Schema } from "effect"
 export const ThemeTabsPropsSchema = Schema.Struct({
   theme: Schema.String,
   customized: Schema.Boolean,
-  custom: Schema.String
+  custom: Schema.String,
+  command: Schema.String
 })
 export type ThemeTabsProps = typeof ThemeTabsPropsSchema.Type
 

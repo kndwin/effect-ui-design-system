@@ -4,10 +4,11 @@
   "description": "The Weft components as source: the recipes that weft add copies into your app.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kndwin/effect-ui-design-system.git",
+    "url": "git+https://github.com/kndwin/weft.git",
     "directory": "packages/components"
   },
   "files": [
+    "dist",
     "src",
     "!src/**/*.test.ts"
   ],
@@ -18,6 +19,9 @@
     "./code-block": "./src/feature/code-block/code-block.component.ts",
     "./tokens": "./src/platform/token/contract.token.ts",
     "./scales": "./src/platform/scale/scales.schema.ts",
+    "./customize": "./src/platform/customize/customize.pure.ts",
+    "./customize-map": "./src/platform/customize/customize.pure.map.ts",
+    "./CustomizeSchema": "./src/platform/customize/customize.schema.ts",
     "./manifest": "./src/platform/manifest/manifest.constant.ts",
     "./layout/stack": "./src/feature/layout/stack.component.ts",
     "./layout/grid": "./src/feature/layout/grid.component.ts",
@@ -69,8 +73,71 @@
     "./sortable-list": "./src/feature/sortable-list/sortable-list.component.ts",
     "./virtual-list": "./src/feature/virtual-list/virtual-list.component.ts"
   },
+  "publishConfig": {
+    "exports": {
+      "./button": "./dist/platform/button/button.component.js",
+      "./avatar": "./dist/feature/avatar/avatar.component.js",
+      "./code-block": "./dist/feature/code-block/code-block.component.js",
+      "./tokens": "./dist/platform/token/contract.token.js",
+      "./scales": "./dist/platform/scale/scales.schema.js",
+      "./customize": "./dist/platform/customize/customize.pure.js",
+      "./customize-map": "./dist/platform/customize/customize.pure.map.js",
+      "./CustomizeSchema": "./dist/platform/customize/customize.schema.js",
+      "./manifest": "./dist/platform/manifest/manifest.constant.js",
+      "./layout/stack": "./dist/feature/layout/stack.component.js",
+      "./layout/grid": "./dist/feature/layout/grid.component.js",
+      "./layout/center": "./dist/feature/layout/center.component.js",
+      "./layout/section": "./dist/feature/layout/section.component.js",
+      "./layout/layout": "./dist/feature/layout/layout.component.js",
+      "./text": "./dist/feature/text/text.component.js",
+      "./swatch": "./dist/feature/swatch/swatch.component.js",
+      "./input": "./dist/feature/field/input.component.js",
+      "./field": "./dist/feature/field/field.component.js",
+      "./checkbox": "./dist/feature/checkbox/checkbox.component.js",
+      "./switch": "./dist/feature/switch/switch.component.js",
+      "./radio-group": "./dist/feature/radio-group/radio-group.component.js",
+      "./select": "./dist/feature/select/select.component.js",
+      "./slider": "./dist/feature/slider/slider.component.js",
+      "./toggle": "./dist/feature/toggle/toggle.component.js",
+      "./dialog": "./dist/feature/dialog/dialog.component.js",
+      "./alert-dialog": "./dist/feature/dialog/alert-dialog.component.js",
+      "./drawer": "./dist/feature/drawer/drawer.component.js",
+      "./popover": "./dist/feature/popover/popover.component.js",
+      "./tooltip": "./dist/feature/tooltip/tooltip.component.js",
+      "./menu": "./dist/feature/menu/menu.component.js",
+      "./toast": "./dist/feature/toast/toast.component.js",
+      "./tabs": "./dist/feature/tabs/tabs.component.js",
+      "./accordion": "./dist/feature/accordion/accordion.component.js",
+      "./collapsible": "./dist/feature/collapsible/collapsible.component.js",
+      "./separator": "./dist/feature/separator/separator.component.js",
+      "./scroll-area": "./dist/feature/scroll-area/scroll-area.component.js",
+      "./toolbar": "./dist/feature/toolbar/toolbar.component.js",
+      "./navigation-menu": "./dist/feature/navigation-menu/navigation-menu.component.js",
+      "./progress": "./dist/feature/progress/progress.component.js",
+      "./meter": "./dist/feature/progress/meter.component.js",
+      "./checkbox-group": "./dist/feature/checkbox/checkbox-group.component.js",
+      "./toggle-group": "./dist/feature/toggle/toggle-group.component.js",
+      "./fieldset": "./dist/feature/fieldset/fieldset.component.js",
+      "./form": "./dist/feature/form/form.component.js",
+      "./number-field": "./dist/feature/number-field/number-field.component.js",
+      "./otp-field": "./dist/feature/otp-field/otp-field.component.js",
+      "./preview-card": "./dist/feature/preview-card/preview-card.component.js",
+      "./calendar": "./dist/feature/date/calendar.component.js",
+      "./range-calendar": "./dist/feature/date/range-calendar.component.js",
+      "./date-field": "./dist/feature/date/date-field.component.js",
+      "./date-picker": "./dist/feature/date/date-picker.component.js",
+      "./combobox": "./dist/feature/combobox/combobox.component.js",
+      "./autocomplete": "./dist/feature/combobox/autocomplete.component.js",
+      "./context-menu": "./dist/feature/menu/context-menu.component.js",
+      "./menubar": "./dist/feature/menu/menubar.component.js",
+      "./file-drop": "./dist/feature/file-drop/file-drop.component.js",
+      "./sortable-list": "./dist/feature/sortable-list/sortable-list.component.js",
+      "./virtual-list": "./dist/feature/virtual-list/virtual-list.component.js"
+    }
+  },
   "scripts": {
-    "test": "bun --bun x vitest run"
+    "test": "bun --bun x vitest run",
+    "build": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
     "@weft/design-system": "workspace:*"
@@ -84,8 +151,6 @@
     "vitest": "5.1.1"
   },
   "peerDependencies": {
-    "@effect/ui": "*",
-    "@effect/ui-kit": "*",
     "effect": "^4.1.6"
   }
 }

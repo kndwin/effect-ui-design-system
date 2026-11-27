@@ -12,4 +12,7 @@ export const mapSourceToExampleMeta = ({ source, file }: MapSourceToExampleMetaI
 })
 
 export const mapSourceToRecipe = ({ source }: MapSourceToRecipeInput): string =>
-  source.replaceAll(/"@weft\/components\/(?:layout\/)?([a-z-]+)"/g, '"@/components/ui/$1"')
+  source
+    .replaceAll(/"@weft\/components\/(?:layout\/)?([a-z-]+)"/g, '"@/components/ui/$1"')
+    .replaceAll(/"(?:\.\.\/)+(?:platform\/)?token\/contract\.token\.ts"/g, '"./tokens.ts"')
+    .replaceAll(/"(?:\.\.\/)+(?:platform\/)?scale\/scales\.schema\.ts"/g, '"./scales.ts"')

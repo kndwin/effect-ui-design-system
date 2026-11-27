@@ -16,6 +16,7 @@ export const ThemeOptionsSchema = Schema.Struct({
   name: Schema.String,
   dir: Schema.String,
   ui: Schema.String,
-  overwrite: Schema.Boolean
+  overwrite: Schema.Boolean,
+  choices: Schema.Option(Schema.String)
 })
 export type ThemeOptions = typeof ThemeOptionsSchema.Type

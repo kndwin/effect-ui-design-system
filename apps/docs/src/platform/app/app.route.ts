@@ -4,6 +4,7 @@ import { ComponentDocsRoute } from "../../feature/component-docs/component-docs.
 import { IntroductionRoute } from "../../feature/introduction/introduction.route.ts"
 import { ThemingRoute } from "../../feature/theming/theming.route.ts"
 import { TemplatesRoute } from "../../feature/templates/templates.route.ts"
+import { LlmsRoute } from "../../feature/llms/llms.route.ts"
 import { TokensRoute } from "../../feature/tokens/tokens.route.ts"
 import { ThemeSearchSchema } from "../theme/theme.schema.ts"
 
@@ -11,6 +12,7 @@ export const AppRoute = Route.union({
   Introduction: IntroductionRoute,
   GetStarted: GetStartedRoute,
   Theming: ThemingRoute,
+  Llms: LlmsRoute,
   Component: ComponentDocsRoute,
   Template: TemplatesRoute,
   Tokens: TokensRoute,
