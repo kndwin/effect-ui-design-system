@@ -305,7 +305,7 @@ export const pages: ReadonlyArray<Page> = [
     id: "get-started",
     section: "Getting started",
     title: "Get started",
-    lead: "From an empty folder to a themed Weft app: get the workspace, add an app, compile styles with Vite, pick a theme and render your first components."
+    lead: "From an empty folder to a Weft app you own: copy the token contract and the components you need into your app, write your own theme, and render."
   },
   {
     id: "theming",

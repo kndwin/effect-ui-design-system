@@ -1,5 +1,5 @@
 import { assert, describe, it } from "@effect/vitest"
-import { mapSourceToExampleMeta } from "./example.pure.map.ts"
+import { mapSourceToExampleMeta, mapSourceToRecipe } from "./example.pure.map.ts"
 
 describe("mapSourceToExampleMeta", () => {
   it("reads the title and order an example exports", () => {
@@ -18,5 +18,27 @@ describe("mapSourceToExampleMeta", () => {
     const meta = mapSourceToExampleMeta({ source, file: "date-range" })
     // Assert
     assert.deepStrictEqual(meta, { title: "Date range", order: 99 })
+  })
+})
+
+describe("mapSourceToRecipe", () => {
+  it("imports components from the app's own copies", () => {
+    // Arrange
+    const source = [
+      'import { Button } from "@weft/components/button"',
+      'import { VStack } from "@weft/components/layout/stack"',
+      'import * as Theme from "@weft/design-system/Theme"'
+    ].join("\n")
+    // Act
+    const recipe = mapSourceToRecipe({ source })
+    // Assert
+    assert.strictEqual(
+      recipe,
+      [
+        'import { Button } from "@/components/ui/button"',
+        'import { VStack } from "@/components/ui/stack"',
+        'import * as Theme from "@weft/design-system/Theme"'
+      ].join("\n")
+    )
   })
 })

@@ -3,6 +3,7 @@ import { Center } from "@weft/components/layout/center"
 import { Section } from "@weft/components/layout/section"
 import { Text } from "@weft/components/text"
 import { ExampleDef } from "./example.define.ts"
+import { mapSourceToRecipe } from "./example.pure.map.ts"
 import { examples } from "./registry.constant.ts"
 
 export const view = ExampleDef.view((h) => {
@@ -16,7 +17,7 @@ export const view = ExampleDef.view((h) => {
       .children(Center(h.div).children(example.component(h, { key: example.id }))),
     Section(h.div, { pad: "3" }).children(
       CodeBlock(h, {
-        code: example.source.trim(),
+        code: mapSourceToRecipe({ source: example.source.trim() }),
         title: example.file,
         lineNumbers: true,
         collapsible: true,

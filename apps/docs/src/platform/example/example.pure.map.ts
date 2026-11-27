@@ -1,5 +1,5 @@
 import { Number, Option, String } from "effect"
-import type { ExampleMeta, MapSourceToExampleMetaInput } from "./example.schema.ts"
+import type { ExampleMeta, MapSourceToExampleMetaInput, MapSourceToRecipeInput } from "./example.schema.ts"
 
 export const mapSourceToExampleMeta = ({ source, file }: MapSourceToExampleMetaInput): ExampleMeta => ({
   title: Option.fromNullishOr(/export const title = "([^"]+)"/.exec(source)?.[1]).pipe(
@@ -10,3 +10,6 @@ export const mapSourceToExampleMeta = ({ source, file }: MapSourceToExampleMetaI
     Option.getOrElse(() => 99)
   )
 })
+
+export const mapSourceToRecipe = ({ source }: MapSourceToRecipeInput): string =>
+  source.replaceAll(/"@weft\/components\/(?:layout\/)?([a-z-]+)"/g, '"@/components/ui/$1"')
