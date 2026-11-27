@@ -1,5 +1,6 @@
-import { Button } from "@acme/components"
+import { Button } from "@acme/components/button"
 import { UiSchema } from "@effect/ui"
+import { HStack } from "@acme/components/layout/stack"
 import { Html } from "@effect/ui/html"
 import { Schema } from "effect"
 
@@ -13,7 +14,7 @@ export default Html.component({ name: "ButtonLoading", model: Schema.Boolean, me
   init: () => false,
   update: { PressedSave: () => true, PressedReset: () => false },
   view: (h, saving) =>
-    h.div.class("example-row").children(
+    HStack(h.div, { gap: "3", wrap: true, justify: "center" }).children(
       Button(h, {
         tone: "primary",
         loading: saving,

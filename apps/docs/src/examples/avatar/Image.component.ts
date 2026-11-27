@@ -1,4 +1,5 @@
-import { Avatar } from "@acme/components"
+import { Avatar } from "@acme/components/avatar"
+import { HStack } from "@acme/components/layout/stack"
 import { Html } from "@effect/ui/html"
 import { Schema } from "effect"
 
@@ -16,7 +17,7 @@ export default Html.component({ name: "AvatarImage", model: Schema.Null, message
   init: () => null,
   update: ($) => $.model,
   view: (h) =>
-    h.div.class("example-row").children(
+    HStack(h.div, { gap: "3", wrap: true, justify: "center" }).children(
       Avatar(h, { name: "Ada Lovelace", src: photo, size: "lg", key: "loaded" }),
       // A broken source falls back to initials; the root says data-status="error".
       Avatar(h, { name: "Grace Hopper", src: "/missing.png", size: "lg", key: "broken" })

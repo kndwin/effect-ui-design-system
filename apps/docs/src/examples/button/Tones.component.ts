@@ -1,5 +1,7 @@
-import { Button } from "@acme/components"
+import { Button } from "@acme/components/button"
 import { UiSchema } from "@effect/ui"
+import { Text } from "@acme/components/text"
+import { HStack } from "@acme/components/layout/stack"
 import { Html } from "@effect/ui/html"
 import { Schema } from "effect"
 
@@ -12,12 +14,10 @@ export default Html.component({ name: "ButtonTones", model: Schema.Number, messa
   init: () => 0,
   update: { Pressed: ($) => $.model + 1 },
   view: (h, presses) =>
-    h.div
-      .class("example-row")
-      .children(
-        Button(h, { tone: "primary", onPress: Msg.Pressed(), children: "Primary" }),
-        Button(h, { tone: "neutral", onPress: Msg.Pressed(), children: "Neutral" }),
-        Button(h, { tone: "danger", onPress: Msg.Pressed(), children: "Danger" }),
-        h.span.class("example-note").children(`${presses} presses`)
-      )
+    HStack(h.div, { gap: "3", wrap: true, justify: "center" }).children(
+      Button(h, { tone: "primary", onPress: Msg.Pressed(), children: "Primary" }),
+      Button(h, { tone: "neutral", onPress: Msg.Pressed(), children: "Neutral" }),
+      Button(h, { tone: "danger", onPress: Msg.Pressed(), children: "Danger" }),
+      Text(h.span, { size: "sm", tone: "muted" }).children(`${presses} presses`)
+    )
 })

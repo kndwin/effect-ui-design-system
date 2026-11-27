@@ -24,6 +24,18 @@ importers:
       '@types/node':
         specifier: ^22.20.7
         version: 22.20.7
+      '@vanilla-extract/compiler':
+        specifier: ^0.7.2
+        version: 0.7.2(@types/node@22.20.7)(esbuild@0.28.2)
+      '@vanilla-extract/css':
+        specifier: ^1.21.3
+        version: 1.21.3
+      '@vanilla-extract/integration':
+        specifier: ^8.0.11
+        version: 8.0.11
+      '@vanilla-extract/recipes':
+        specifier: ^0.5.7
+        version: 0.5.7(@vanilla-extract/css@1.21.3)
       effect-oxlint:
         specifier: 0.5.1
         version: 0.5.1(effect@4.1.6)
@@ -36,6 +48,9 @@ importers:
       typescript:
         specifier: 7.0.2
         version: 7.0.2
+      vite:
+        specifier: 8.3.8
+        version: 8.3.8(@types/node@22.20.7)(esbuild@0.28.2)
 
   apps/docs:
     dependencies:
@@ -64,9 +79,6 @@ importers:
       '@types/node':
         specifier: ^22.20.7
         version: 22.20.7
-      '@vanilla-extract/vite-plugin':
-        specifier: ^5.2.6
-        version: 5.2.6(@types/node@22.20.7)(esbuild@0.28.2)(vite@8.3.8(@types/node@22.20.7)(esbuild@0.28.2))
       vite:
         specifier: 8.3.8
         version: 8.3.8(@types/node@22.20.7)(esbuild@0.28.2)
@@ -76,9 +88,6 @@ importers:
       '@acme/ds':
         specifier: workspace:*
         version: link:../ds
-      '@vanilla-extract/css':
-        specifier: ^1.21.3
-        version: 1.21.3
       '@vanilla-extract/recipes':
         specifier: ^0.5.7
         version: 0.5.7(@vanilla-extract/css@1.21.3)
@@ -92,9 +101,6 @@ importers:
       '@effect/vitest':
         specifier: 4.1.6
         version: 4.1.6(effect@4.1.6)(vitest@5.1.1(@types/node@22.20.7)(vite@8.3.8(@types/node@22.20.7)(esbuild@0.28.2)))
-      '@vanilla-extract/vite-plugin':
-        specifier: ^5.2.6
-        version: 5.2.6(@types/node@22.20.7)(esbuild@0.28.2)(vite@8.3.8(@types/node@22.20.7)(esbuild@0.28.2))
       effect:
         specifier: 4.1.6
         version: 4.1.6
@@ -104,12 +110,9 @@ importers:
 
   packages/ds:
     dependencies:
-      '@vanilla-extract/css':
-        specifier: ^1.21.3
-        version: 1.21.3
-      '@vanilla-extract/recipes':
-        specifier: ^0.5.7
-        version: 0.5.7(@vanilla-extract/css@1.21.3)
+      csstype:
+        specifier: ^3.1.3
+        version: 3.2.4
     devDependencies:
       '@effect/ui':
         specifier: link:../../vendor/effect-ui/packages/ui
@@ -129,9 +132,6 @@ importers:
       '@acme/ds':
         specifier: workspace:*
         version: link:../../ds
-      '@vanilla-extract/css':
-        specifier: ^1.21.3
-        version: 1.21.3
 
   packages/themes/shadcn:
     dependencies:
@@ -141,9 +141,6 @@ importers:
       '@acme/ds':
         specifier: workspace:*
         version: link:../../ds
-      '@vanilla-extract/css':
-        specifier: ^1.21.3
-        version: 1.21.3
 
 packages:
 
@@ -997,11 +994,6 @@ packages:
     resolution: {integrity: sha512-Fvr+htdyb6LVUu+PhH61UFPhwkjgDEk8L4Zq9oIdte42sntpKrgFy90MyTRtGwjVALmrJ0pwRUVr8UoByYeW8A==}
     peerDependencies:
       '@vanilla-extract/css': ^1.0.0
-
-  '@vanilla-extract/vite-plugin@5.2.6':
-    resolution: {integrity: sha512-mGk0YEan+NyeoxEO51LfxOdtw2JBI+Yb840FGg+zvG6tVU3YfDgKGPiGuk5oT8jqzfsm7H89DyjOVCpl6Bnn0w==}
-    peerDependencies:
-      vite: ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
 
   '@vitest/mocker@5.1.1':
     resolution: {integrity: sha512-b2OgTB4+3ImWIVafXKazJXwLKwQxUNnix6b3xUvUTMh7RyXlrtzoxfZr8aEz9zkHOMAS4K5lu3TvFWoiVeVTQg==}
@@ -2084,27 +2076,6 @@ snapshots:
   '@vanilla-extract/recipes@0.5.7(@vanilla-extract/css@1.21.3)':
     dependencies:
       '@vanilla-extract/css': 1.21.3
-
-  '@vanilla-extract/vite-plugin@5.2.6(@types/node@22.20.7)(esbuild@0.28.2)(vite@8.3.8(@types/node@22.20.7)(esbuild@0.28.2))':
-    dependencies:
-      '@vanilla-extract/compiler': 0.7.2(@types/node@22.20.7)(esbuild@0.28.2)
-      '@vanilla-extract/integration': 8.0.11
-      vite: 8.3.8(@types/node@22.20.7)(esbuild@0.28.2)
-    transitivePeerDependencies:
-      - '@types/node'
-      - '@vitejs/devtools'
-      - babel-plugin-macros
-      - esbuild
-      - jiti
-      - less
-      - sass
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-      - tsx
-      - yaml
 
   '@vitest/mocker@5.1.1(vite@8.3.8(@types/node@22.20.7)(esbuild@0.28.2))':
     dependencies:

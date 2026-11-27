@@ -1,11 +1,17 @@
 // Must-not-compile cases. Each @ts-expect-error fails tsc if the line DOES compile.
-import { Style, Theme, TokenColor, Variant } from "@acme/ds"
+import * as Style from "@acme/ds/Style"
+import * as Theme from "@acme/ds/Theme"
+import * as TokenColor from "@acme/ds/TokenColor"
+import * as Variant from "@acme/ds/Variant"
 import { Avatar as AvatarKit } from "@acme/ds/kit/avatar"
 import { Button as ButtonKit } from "@acme/ds/kit/button"
 import { UiSchema } from "@effect/ui"
 import type { Html } from "@effect/ui/html"
-import type { ButtonStyle } from "../src/button.css.ts"
-import { Avatar, Button, Colors, Spacing, Tokens, Tone } from "../src/index.ts"
+import { Avatar } from "../src/avatar/avatar.component.ts"
+import { Button } from "../src/button/button.component.ts"
+import type { ButtonStyle } from "../src/button/button.component.style.ts"
+import { Colors, Spacing, Tokens } from "../src/contract.token.ts"
+import { Tone } from "../src/scales.pure.ts"
 
 const M = UiSchema.TaggedEnum({ A: {} })
 declare const h: Html.H<typeof M.Type>

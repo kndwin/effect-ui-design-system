@@ -16,3 +16,13 @@ export const Value = Schema.Union([
 ) as unknown as Schema.Codec<string, number | `${number}px` | `${number}rem`>
 
 export const make = Token.kind("Length", Value)
+
+/**
+ * calc() over Length tokens, still typed as a Length:
+ *   TokenLength.calc`100vh - ${Size.header}`
+ */
+export const calc = (
+  strings: TemplateStringsArray,
+  ...tokens: ReadonlyArray<Token.Ref<"Length">>
+): Token.Ref<"Length"> =>
+  `calc(${strings.reduce((out, part, i) => out + part + (tokens[i] ?? ""), "")})` as Token.Ref<"Length">

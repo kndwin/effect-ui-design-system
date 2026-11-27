@@ -1,4 +1,5 @@
-import { CodeBlock } from "@acme/components"
+import { CodeBlock } from "@acme/components/code-block"
+import { StackItem } from "@acme/components/layout/stack"
 import { Html } from "@effect/ui/html"
 import { Schema } from "effect"
 
@@ -9,7 +10,7 @@ export default Html.component({ name: "CodeBlockTerminal", model: Schema.Null, m
   init: () => null,
   update: ($) => $.model,
   view: (h) =>
-    h.div.class("example-wide").children(
+    StackItem(h.div, { fill: true }).children(
       CodeBlock(h, {
         code: "pnpm add @acme/components @acme/theme-shadcn # then import the theme once",
         language: "shell",

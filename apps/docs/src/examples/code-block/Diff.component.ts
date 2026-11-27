@@ -1,4 +1,5 @@
-import { CodeBlock } from "@acme/components"
+import { CodeBlock } from "@acme/components/code-block"
+import { StackItem } from "@acme/components/layout/stack"
 import { Html } from "@effect/ui/html"
 import { Schema } from "effect"
 
@@ -17,9 +18,7 @@ export default Html.component({ name: "CodeBlockDiff", model: Schema.Null, messa
   init: () => null,
   update: ($) => $.model,
   view: (h) =>
-    h.div
-      .class("example-wide")
-      .children(
-        CodeBlock(h, { code, title: "tokens.ts", marks: { 4: "removed", 5: "added", 6: "added" }, key: "diff" })
-      )
+    StackItem(h.div, { fill: true }).children(
+      CodeBlock(h, { code, title: "tokens.ts", marks: { 4: "removed", 5: "added", 6: "added" }, key: "diff" })
+    )
 })

@@ -1,4 +1,5 @@
-import { Avatar } from "@acme/components"
+import { Avatar } from "@acme/components/avatar"
+import { HStack } from "@acme/components/layout/stack"
 import { Html } from "@effect/ui/html"
 import { Schema } from "effect"
 
@@ -10,5 +11,8 @@ const people = ["Ada Lovelace", "Grace Hopper", "Alan Turing", "Katherine Johnso
 export default Html.component({ name: "AvatarInitials", model: Schema.Null, message: Schema.Never }).make({
   init: () => null,
   update: ($) => $.model,
-  view: (h) => h.div.class("example-row").children(...people.map((name) => Avatar(h, { name, key: name })))
+  view: (h) =>
+    HStack(h.div, { gap: "3", wrap: true, justify: "center" }).children(
+      ...people.map((name) => Avatar(h, { name, key: name }))
+    )
 })
