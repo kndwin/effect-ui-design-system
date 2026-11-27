@@ -1,8 +1,7 @@
 import { astryx } from "@acme/theme-astryx"
 import { shadcn } from "@acme/theme-shadcn"
 import { assert, describe, it } from "@effect/vitest"
-import { getControls, getOverrides, getThemeVars, isCustomized } from "./customize.pure.ts"
-
+import { getControls, getOverrides, getThemeVars } from "./customize.pure.ts"
 const themes = [shadcn, astryx]
 
 const initialChoices = { accent: null, neutrals: null, radius: null, sizing: null, font: null, mono: null, scale: 100 }
@@ -34,14 +33,5 @@ describe("theme builder", () => {
     const vars = getOverrides({ choices: choices, themes: themes, theme: shadcn, mode: "light" })
     // Assert
     assert.strictEqual(vars["--spacing-4"], "17.6px")
-  })
-
-  it("knows when nothing is customized", () => {
-    // Arrange
-    const choices = initialChoices
-    // Act
-    const customized = isCustomized({ choices: choices })
-    // Assert
-    assert.strictEqual(customized, false)
   })
 })

@@ -20,7 +20,7 @@ export default RuleModule.make(import.meta.url, {
           Effect.forEach(
             ctx.sourceCode.getAllComments().filter((c: { value: string }) => !ok(c)),
             () =>
-              RuleModule.report(
+              RuleModule.makeReport(
                 node,
                 "No comments: name things clearly, or write it in a rule .md. See +rule/no-comments/no-comments.md."
               ),

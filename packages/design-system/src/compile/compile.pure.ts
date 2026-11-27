@@ -1,13 +1,15 @@
 import type { Output, Recipe, StyleRule } from "@acme/css-engine/rules"
 import { Array, Match, Predicate, Record, Result } from "effect"
-import { type Definition, isDefinition, selectorsOf } from "../style/style.make.ts"
+import type { Definition } from "../style/style.make.ts"
+import { mapSlotRuleToSelectors } from "../style/style.pure.map.ts"
+import { isStyleDefinition } from "../style/style.pure.predicate.ts"
 import type { Theme } from "../theme/theme.make.ts"
 import type { ComposeOutputInput } from "./compile.schema.ts"
 
 const isTheme = (u: unknown): u is Theme => Predicate.isObject(u) && (u as { "~acme"?: unknown })["~acme"] === "Theme"
 
 const toRule = (rule: unknown, partStates: Readonly<Record<string, string>>): StyleRule => {
-  const { decl, selectors, media } = selectorsOf(rule as never, partStates)
+  const { decl, selectors, media } = mapSlotRuleToSelectors({ rule: rule as never, partStates })
   return {
     ...decl,
     ...Match.value(Record.isEmptyRecord(selectors)).pipe(
@@ -57,7 +59,7 @@ const styleOutput = (exportName: string, def: Definition): Output => ({
 })
 
 export const composeOutput = ({ value, exportName }: ComposeOutputInput): Output | undefined => {
-  if (isDefinition(value)) return styleOutput(exportName, value)
+  if (isStyleDefinition({ value })) return styleOutput(exportName, value as Definition)
   if (isTheme(value)) {
     return {
       runtime: value as unknown as Record<string, unknown>,

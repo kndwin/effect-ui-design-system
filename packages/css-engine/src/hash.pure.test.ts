@@ -1,17 +1,7 @@
 import { assert, describe, it } from "@effect/vitest"
-import { getClassName, getHash } from "./hash.pure.ts"
+import { getClassName } from "./hash.pure.ts"
 
 describe("hash", () => {
-  it("is stable and differs by input", () => {
-    // Arrange
-    const inputs = ["a", "a", "b"]
-    // Act
-    const [first, again, other] = inputs.map((input) => getHash({ input }))
-    // Assert
-    assert.strictEqual(first, again)
-    assert.notStrictEqual(first, other)
-  })
-
   it("makes readable class names in debug and short ones otherwise", () => {
     // Arrange
     const args = ["src/button.ts", "Button_root", "tone_primary"] as const

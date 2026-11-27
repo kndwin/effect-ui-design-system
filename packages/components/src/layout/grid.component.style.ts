@@ -1,7 +1,7 @@
 import * as Style from "@acme/design-system/Style"
 import * as Variant from "@acme/design-system/Variant"
 import { GridParts, GridSpanParts } from "./layout.parts.constant.ts"
-import { Columns, Space, Span } from "../scales.schema.ts"
+import { ColumnsSchema, SpaceSchema, SpanSchema } from "../scales.schema.ts"
 import { Size } from "../contract.token.ts"
 import { composeSpaceVariants } from "./space.pure.ts"
 
@@ -11,7 +11,7 @@ export const GridStyle = Style.make(GridParts)({
   base: { root: { display: "grid", minWidth: 0 } },
   variants: {
     columns: Variant.make(
-      Columns,
+      ColumnsSchema,
       {
         "1": cols(1),
         "2": cols(2),
@@ -23,16 +23,16 @@ export const GridStyle = Style.make(GridParts)({
       },
       { default: "1" }
     ),
-    gap: Variant.make(Space, composeSpaceVariants({ property: "gap" }), { default: "0" }),
+    gap: Variant.make(SpaceSchema, composeSpaceVariants({ property: "gap" }), { default: "0" }),
 
-    stack: Variant.flag({ root: { media: { narrow: { gridTemplateColumns: "minmax(0, 1fr)" } } } })
+    stack: Variant.makeFlag({ root: { media: { narrow: { gridTemplateColumns: "minmax(0, 1fr)" } } } })
   }
 })
 
 export const GridSpanStyle = Style.make(GridSpanParts)({
   base: { root: { minWidth: 0 } },
   variants: {
-    span: Variant.make(Span, {
+    span: Variant.make(SpanSchema, {
       "1": { root: { gridColumn: "span 1" } },
       "2": { root: { gridColumn: "span 2" } },
       "3": { root: { gridColumn: "span 3" } },

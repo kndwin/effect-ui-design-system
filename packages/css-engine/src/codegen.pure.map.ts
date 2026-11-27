@@ -1,5 +1,5 @@
 import { Match, Record } from "effect"
-import type { CompiledExport, GetModuleSourceInput } from "./codegen.schema.ts"
+import type { CompiledExport, MapExportsToModuleSourceInput } from "./codegen.schema.ts"
 
 const getJson = (value: unknown): string => JSON.stringify(value) ?? "undefined"
 
@@ -12,7 +12,7 @@ const getExportExpression = (e: CompiledExport): string => {
   )
 }
 
-export const getModuleSource = ({ exports, imports }: GetModuleSourceInput): string =>
+export const mapExportsToModuleSource = ({ exports, imports }: MapExportsToModuleSourceInput): string =>
   [
     `import ${getJson(imports.css)}`,
     `import { composeRecipe as __recipe } from ${getJson(imports.runtime)}`,

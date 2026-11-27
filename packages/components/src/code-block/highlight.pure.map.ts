@@ -1,5 +1,5 @@
 import { Match } from "effect"
-import type { GetHighlightTokensInput, HighlightToken, TokenKind } from "./code-block.schema.ts"
+import type { MapCodeToHighlightTokensInput, HighlightToken, TokenKind } from "./code-block.schema.ts"
 const pattern = new RegExp(
   [
     /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)/.source,
@@ -25,10 +25,10 @@ const shell = new RegExp(
 )
 const shellKinds = ["comment", "string", "keyword", "number"] as const
 
-export const getHighlightTokens = ({
+export const mapCodeToHighlightTokens = ({
   code,
   language = "ts"
-}: GetHighlightTokensInput): ReadonlyArray<HighlightToken> => {
+}: MapCodeToHighlightTokensInput): ReadonlyArray<HighlightToken> => {
   if (language === "plain") return [["plain", code]]
   const out: Array<HighlightToken> = []
   let last = 0

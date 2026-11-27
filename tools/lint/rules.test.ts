@@ -3,8 +3,9 @@ import { assert, layer } from "@effect/vitest"
 import { Array, Context, Effect, FileSystem, Layer, Match, MutableHashMap, Option, Path, Schema } from "effect"
 import { ChildProcess, ChildProcessSpawner } from "effect/process"
 import { scan } from "./ast-grep.build.ts"
-import { findRuleFiles, repoRoot } from "./discover.build.ts"
-import { getRuleKind, getRuleScope, getRuleSuffixes } from "./kinds.pure.ts"
+import { scanRuleFiles, repoRoot } from "./discover.build.ts"
+import { mapRuleFileToRuleKind, mapRuleFileToScope } from "./kinds.pure.map.ts"
+import { getRuleSuffixes } from "./kinds.pure.ts"
 
 interface Example {
   readonly kind: string
@@ -21,7 +22,7 @@ const block = /^## (.*)$|^```ts (good|bad)([^\n]*)\n([\s\S]*?)^```$/gm
 const examplesOf = Effect.fn("lint/rules/examplesOf")(function* (mdFile: string) {
   const fs = yield* FileSystem.FileSystem
   const path = yield* Path.Path
-  const kind = getRuleKind({ ruleFile: mdFile })
+  const kind = mapRuleFileToRuleKind({ ruleFile: mdFile })
   const first = getRuleSuffixes({ ruleFile: mdFile })[0] ?? ".ts"
   const suffix = Match.value(first === ".ts").pipe(
     Match.when(true, () => ".pure.ts"),
@@ -43,7 +44,7 @@ const examplesOf = Effect.fn("lint/rules/examplesOf")(function* (mdFile: string)
         expected: heading.match(/→\s*(\S+)/)?.[1],
         path: Match.value(at).pipe(
           Match.when(undefined, () =>
-            path.join(getRuleScope({ ruleFile: mdFile }), "__rule_tests__", `${kind}-${i}${suffix}`)
+            path.join(mapRuleFileToScope({ ruleFile: mdFile }), "__rule_tests__", `${kind}-${i}${suffix}`)
           ),
           Match.orElse((given) => path.join(repoRoot, given))
         ),
@@ -56,7 +57,7 @@ const examplesOf = Effect.fn("lint/rules/examplesOf")(function* (mdFile: string)
 
 const { mdFiles, examples } = await Effect.runPromise(
   Effect.gen(function* () {
-    const files = yield* findRuleFiles("md")
+    const files = yield* scanRuleFiles("md")
     return { mdFiles: files, examples: Array.flatten(yield* Effect.forEach(files, examplesOf)) }
   }).pipe(Effect.provide(BunServices.layer))
 )

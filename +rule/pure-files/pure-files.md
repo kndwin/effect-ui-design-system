@@ -1,6 +1,6 @@
 # rule: pure files
 
-A `*.pure.ts` file holds **pure functions**. Importing it does nothing, and its functions give the
+A `*.pure.ts`, `*.pure.map.ts` or `*.pure.predicate.ts` file holds **pure functions**. Importing it does nothing, and its functions give the
 same output for the same input. The other data kinds follow the same no-effects rule: `*.make.ts`,
 `*.schema.ts`, `*.constant.ts`, `*.component.style.ts`, `*.token.ts` and `*.theme.ts`.
 
@@ -30,11 +30,11 @@ Every exported function takes **one object parameter**, and its type is a Schema
 
 ```ts
 // highlight.schema.ts
-export const GetHighlightTokensInput = Schema.Struct({ code: Schema.String, language: Schema.optionalKey(Language) })
-export type GetHighlightTokensInput = typeof GetHighlightTokensInput.Type
+export const MapCodeToHighlightTokensInput = Schema.Struct({ code: Schema.String, language: Schema.optionalKey(Language) })
+export type MapCodeToHighlightTokensInput = typeof MapCodeToHighlightTokensInput.Type
 
 // highlight.pure.ts
-export const getHighlightTokens = ({ code, language = "ts" }: GetHighlightTokensInput) => …
+export const mapCodeToHighlightTokens = ({ code, language = "ts" }: MapCodeToHighlightTokensInput) => …
 ```
 
 - The Schema is the input's type; nothing is decoded per call. Code at a boundary can decode with it.
@@ -42,22 +42,16 @@ export const getHighlightTokens = ({ code, language = "ts" }: GetHighlightTokens
   input, so it only needs the single object parameter.
 - Private helpers and callbacks inside the file are exempt.
 
-## Names: A/HC/LC
+## Three pure kinds
 
-Names follow [the naming cheatsheet](https://github.com/kettanaito/naming-cheatsheet):
-`prefix? + action + high context + low context`, with no contractions.
+| file                  | holds                 | names                    |
+| :-------------------- | :-------------------- | :----------------------- |
+| `*.pure.ts`           | getters and composers | `get…`, `compose…`       |
+| `*.pure.map.ts`       | mappers               | `mapXToY`                |
+| `*.pure.predicate.ts` | predicates            | `is…`, `has…`, `should…` |
 
-| action    | means                                     | example                                       |
-| :-------- | :---------------------------------------- | :-------------------------------------------- |
-| `get`     | read or derive a value                    | `getThemeVars`, `getClassName`, `getInitials` |
-| `compose` | build new data from existing data         | `composeInlineStyle`, `composeRecipe`         |
-| `is`      | a boolean about a state or characteristic | `isCustomized`, `isInScope`                   |
-| `has`     | a boolean about containing something      | `hasDocs`                                     |
-| `should`  | a boolean about whether to do something   | `shouldScale`                                 |
-
-Exported functions in a `*.pure.ts` start with one of these. `set`, `reset`, `remove`, `delete` and
-`handle` change things, so they don't belong in a pure file. Name variables in full too:
-`theme`, `mode` and `vars`, not `t`, `m` and `x`.
+Each has a colocated test named after it: `x.pure.map.ts` → `x.pure.map.test.ts`. Naming is
+checked by `+rule/function-names/function-names.md`.
 
 ## ✅
 
@@ -82,14 +76,6 @@ export const getTotal = ({ values }: GetSumInput) => values.length
 
 ```ts bad
 export const getDouble = ({ value }: { readonly value: number }) => value * 2
-```
-
-## ❌ no action in the name → pure-files/naming
-
-```ts bad
-import type { GetDoubleInput } from "./double.schema.ts"
-
-export const double = ({ value }: GetDoubleInput) => value * 2
 ```
 
 ## ❌ exports a value → pure-files/functions

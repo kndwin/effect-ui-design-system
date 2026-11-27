@@ -2,16 +2,16 @@ import * as Style from "@acme/design-system/Style"
 import * as Variant from "@acme/design-system/Variant"
 import { SectionParts } from "./layout.parts.constant.ts"
 import { Colors, Radius, Stroke } from "../contract.token.ts"
-import { Space, Surface } from "../scales.schema.ts"
+import { SpaceSchema, SurfaceSchema } from "../scales.schema.ts"
 import { composeSpaceVariants } from "./space.pure.ts"
 
 export const SectionStyle = Style.make(SectionParts)({
   base: { root: { display: "flex", flexDirection: "column", minWidth: 0, boxSizing: "border-box" } },
   variants: {
-    gap: Variant.make(Space, composeSpaceVariants({ property: "gap" }), { default: "0" }),
-    pad: Variant.make(Space, composeSpaceVariants({ property: "padding" }), { default: "0" }),
+    gap: Variant.make(SpaceSchema, composeSpaceVariants({ property: "gap" }), { default: "0" }),
+    pad: Variant.make(SpaceSchema, composeSpaceVariants({ property: "padding" }), { default: "0" }),
     surface: Variant.make(
-      Surface,
+      SurfaceSchema,
       {
         none: {},
         base: { root: { background: Colors.surface, color: Colors.fg } },
@@ -31,7 +31,7 @@ export const SectionStyle = Style.make(SectionParts)({
       { default: "none" }
     ),
 
-    divided: Variant.flag({
+    divided: Variant.makeFlag({
       root: { borderBottomWidth: Stroke.border, borderBottomStyle: "solid", borderBottomColor: Colors.border }
     })
   }

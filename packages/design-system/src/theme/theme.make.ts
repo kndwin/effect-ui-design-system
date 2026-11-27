@@ -1,6 +1,7 @@
 import { Array, Cause, Data, Exit, Match, Record, Schema, SchemaIssue } from "effect"
 import { GroupTypeId } from "../tokens/token.constant.ts"
-import { type AnyGroup, getCssVarName, type Input } from "../tokens/token.pure.ts"
+import type { AnyGroup, Input } from "../tokens/token.pure.ts"
+import { mapTokenKeyToCssVarName } from "../tokens/token.pure.map.ts"
 
 export type Contract = Readonly<Record<string, AnyGroup>>
 
@@ -65,7 +66,7 @@ const decode = (tokens: Contract, values: unknown, theme: string, mode?: string)
   return Object.assign(
     {},
     ...Record.toEntries(tokens).map(([group, g]) =>
-      Record.mapKeys(decoded[group] ?? {}, (key) => getCssVarName({ prefix: g[GroupTypeId].prefix, key }))
+      Record.mapKeys(decoded[group] ?? {}, (key) => mapTokenKeyToCssVarName({ prefix: g[GroupTypeId].prefix, key }))
     )
   )
 }

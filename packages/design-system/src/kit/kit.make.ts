@@ -37,7 +37,7 @@ export type StateName<K, Part extends string> =
     ? (Part extends keyof Parts ? keyof Parts[Part]["states"] & string : never) | P
     : never
 
-export const single = <const Name extends string, const States extends Readonly<Record<string, string>> = {}>(
+export const makeSingle = <const Name extends string, const States extends Readonly<Record<string, string>> = {}>(
   name: Name,
   states?: States
 ) =>

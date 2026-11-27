@@ -23,7 +23,7 @@ const ruleDirs = (dir: string): Effect.Effect<ReadonlyArray<string>, never, File
     return Array.flatten(nested)
   })
 
-export const findRuleFiles = Effect.fn("lint/findRuleFiles")(function* (ext: RuleExt, dir: string = repoRoot) {
+export const scanRuleFiles = Effect.fn("lint/scanRuleFiles")(function* (ext: RuleExt, dir: string = repoRoot) {
   const fs = yield* FileSystem.FileSystem
   const path = yield* Path.Path
   const files = yield* Effect.forEach(yield* ruleDirs(dir), (ruleDir) =>

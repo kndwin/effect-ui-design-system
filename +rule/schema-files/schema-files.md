@@ -4,10 +4,11 @@ A `*.schema.ts` file holds **Schemas**: the shapes of data, built with `Schema.*
 `UiSchema.*` for messages). Each export is a Schema, optionally with its type next to it:
 
 ```ts
-export const Tone = Schema.Literals(["primary", "neutral", "danger"])
-export type Tone = typeof Tone.Type
+export const ToneSchema = Schema.Literals(["primary", "neutral", "danger"])
+export type Tone = typeof ToneSchema.Type
 ```
 
+- Exports are Schemas, named `…Schema`, and their types, named without the suffix.
 - Exports are Schemas and types only. A function goes in a `*.pure.ts`; a plain value in a
   `*.constant.ts`.
 - Imports come from `effect`, `@effect/ui`, another `*.schema.ts`, or a package export of one,
@@ -22,9 +23,9 @@ export type Tone = typeof Tone.Type
 ```ts good
 import { Schema } from "effect"
 
-export const Size = Schema.Literals(["sm", "md"]).pipe(Schema.annotate({ title: "Size" }))
-export type Size = typeof Size.Type
-export const Point = Schema.Struct({ x: Schema.Number, y: Schema.Number })
+export const SizeSchema = Schema.Literals(["sm", "md"]).pipe(Schema.annotate({ title: "Size" }))
+export type Size = typeof SizeSchema.Type
+export const PointSchema = Schema.Struct({ x: Schema.Number, y: Schema.Number })
 ```
 
 ## ❌ not a Schema → schema-files/only-schemas
@@ -32,7 +33,7 @@ export const Point = Schema.Struct({ x: Schema.Number, y: Schema.Number })
 ```ts bad
 import { Schema } from "effect"
 
-export const Size = Schema.Literals(["sm", "md"])
+export const SizeSchema = Schema.Literals(["sm", "md"])
 export const sizes = ["sm", "md"] as const
 ```
 
@@ -51,5 +52,5 @@ export const isSmall = (s: string) => s === "sm"
 import { Schema } from "effect"
 import { Button } from "./button.component.ts"
 
-export const Props = Schema.Struct({ label: Schema.String })
+export const PropsSchema = Schema.Struct({ label: Schema.String })
 ```

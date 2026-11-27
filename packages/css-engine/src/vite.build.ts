@@ -4,12 +4,12 @@ import { fileURLToPath } from "node:url"
 import { Cause, Context, Data, Effect, Exit, Layer, ManagedRuntime, Match, MutableHashMap, Option } from "effect"
 import { createServer, isRunnableDevEnvironment, type Plugin, type RunnableDevEnvironment } from "vite"
 import { compileFile, EvaluationError, ModuleLoader } from "./engine.build.ts"
-import { getMessage } from "./message.pure.ts"
+import { mapCauseToMessage } from "./message.pure.map.ts"
 import type { Options } from "./vite.schema.ts"
 
 export class RunnerError extends Data.TaggedError("RunnerError")<{ readonly cause: unknown }> {
   override get message() {
-    return `css-engine: the ssr environment can't run modules: ${getMessage({ cause: this.cause })}`
+    return `css-engine: the ssr environment can't run modules: ${mapCauseToMessage({ cause: this.cause })}`
   }
 }
 
@@ -74,7 +74,7 @@ export class SsrEnvironment extends Context.Service<SsrEnvironment, RunnableDevE
   "@acme/css-engine/SsrEnvironment"
 ) {}
 
-export const layer = (root: string) => {
+export const makeLayer = (root: string) => {
   const ssr = Layer.effect(SsrEnvironment, runnerOf(root))
   const loader = Layer.effect(
     ModuleLoader,
@@ -93,7 +93,7 @@ const cssPath = (root: string, id: string) => {
   )
 }
 
-const failure = (cause: Cause.Cause<unknown>) => getMessage({ cause: Cause.squash(cause) })
+const failure = (cause: Cause.Cause<unknown>) => mapCauseToMessage({ cause: Cause.squash(cause) })
 
 type Services = SsrEnvironment | ModuleLoader
 
@@ -187,11 +187,11 @@ const pluginOf = (options: Options, host: Host): Plugin => {
   }
 }
 
-export const cssEngine = (options: Options): Plugin => {
+export const makePlugin = (options: Options): Plugin => {
   let root = process.cwd()
   let runtime: ManagedRuntime.ManagedRuntime<Services, RunnerError> | undefined
   return pluginOf(options, {
-    run: (effect) => (runtime ??= ManagedRuntime.make(layer(root))).runPromiseExit(effect),
+    run: (effect) => (runtime ??= ManagedRuntime.make(makeLayer(root))).runPromiseExit(effect),
     started: () => runtime !== undefined,
     configure: (next) => {
       root = next
@@ -204,7 +204,7 @@ export const cssEngine = (options: Options): Plugin => {
   })
 }
 
-export const plugin = Effect.fn("css-engine/vite/plugin")(function* (options: Options) {
+export const loadPlugin = Effect.fn("css-engine/vite/loadPlugin")(function* (options: Options) {
   const context = yield* Effect.context<Services>()
   const run = Effect.runPromiseExitWith(context)
   return pluginOf(options, {

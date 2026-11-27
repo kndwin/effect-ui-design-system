@@ -10,7 +10,7 @@ import { Avatar } from "../src/avatar/avatar.component.ts"
 import { Button } from "../src/button/button.component.ts"
 import type { ButtonStyle } from "../src/button/button.component.style.ts"
 import { Colors, Spacing, Tokens } from "../src/contract.token.ts"
-import { Tone } from "../src/scales.schema.ts"
+import { ToneSchema } from "../src/scales.schema.ts"
 
 const M = UiSchema.TaggedEnum({ A: {} })
 declare const h: Html.H<typeof M.Type>
@@ -36,7 +36,7 @@ Style.make(AvatarKit)({ base: { image: { states: { loaded: {} } } } })
 
 Style.make(ButtonKit)({
   // @ts-expect-error
-  variants: { tone: Variant.make(Tone, { primary: {}, neutral: {} }) }
+  variants: { tone: Variant.make(ToneSchema, { primary: {}, neutral: {} }) }
 })
 
 // @ts-expect-error

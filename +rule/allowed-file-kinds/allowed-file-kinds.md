@@ -4,21 +4,23 @@ Every file under `packages/*/src`, `packages/themes/*/src`, `apps/*/src` and `te
 these kinds. Each kind with a rule has `+rule/<kind>/<kind>.md` in its folder or an ancestor, and
 lint fails without one.
 
-| file                                                         | what it holds                                               | rule                                                   |
-| :----------------------------------------------------------- | :---------------------------------------------------------- | :----------------------------------------------------- |
-| `*.component.ts`                                             | UI; the rule lives in `packages/components` and `apps/docs` | `+rule/component-files/component-files.md`             |
-| `*.component.style.ts`                                       | only `Style.make(Parts)({…})`, tokens only                  | `+rule/component-style-files/component-style-files.md` |
-| `*.token.ts`                                                 | the token contract                                          | `+rule/token-files/token-files.md`                     |
-| `*.theme.ts`                                                 | only `Theme.make(Tokens, …)`                                | `+rule/theme-files/theme-files.md`                     |
-| `*.make.ts`                                                  | a module's interface: exports `make`                        | `+rule/make-files/make-files.md`                       |
-| `*.schema.ts`                                                | Schemas and their types                                     | `+rule/schema-files/schema-files.md`                   |
-| `*.constant.ts`                                              | plain values and their types                                | `+rule/constant-files/constant-files.md`               |
-| `*.pure.ts`                                                  | pure functions                                              | `+rule/pure-files/pure-files.md`                       |
-| `*.pure.test.ts`                                             | the test for the `*.pure.ts` next to it                     | `+rule/test-files/test-files.md`                       |
-| `*.build.ts`                                                 | build-time Node code (the CSS engine)                       | `+rule/build-files/build-files.md`                     |
-| `*.d.ts`                                                     | type declarations                                           |                                                        |
-| `test/*.test.ts`, `test/*.test-d.ts`, `test/**/*.fixture.ts` | tests and their inputs                                      | `+rule/test-files/test-files.md`                       |
-| `main.ts`                                                    | an app's entry (`apps/*` only)                              |                                                        |
+| file                                                               | what it holds                                               | rule                                                   |
+| :----------------------------------------------------------------- | :---------------------------------------------------------- | :----------------------------------------------------- |
+| `*.component.ts`                                                   | UI; the rule lives in `packages/components` and `apps/docs` | `+rule/component-files/component-files.md`             |
+| `*.component.style.ts`                                             | only `Style.make(Parts)({…})`, tokens only                  | `+rule/component-style-files/component-style-files.md` |
+| `*.token.ts`                                                       | the token contract                                          | `+rule/token-files/token-files.md`                     |
+| `*.theme.ts`                                                       | only `Theme.make(Tokens, …)`                                | `+rule/theme-files/theme-files.md`                     |
+| `*.make.ts`                                                        | a module's interface: exports `make`                        | `+rule/make-files/make-files.md`                       |
+| `*.schema.ts`                                                      | Schemas and their types                                     | `+rule/schema-files/schema-files.md`                   |
+| `*.constant.ts`                                                    | plain values and their types                                | `+rule/constant-files/constant-files.md`               |
+| `*.pure.ts`                                                        | pure getters and composers                                  | `+rule/pure-files/pure-files.md`                       |
+| `*.pure.map.ts`                                                    | pure mappers, `mapXToY`                                     | `+rule/pure-files/pure-files.md`                       |
+| `*.pure.predicate.ts`                                              | pure predicates, `is…`, `has…`, `should…`                   | `+rule/pure-files/pure-files.md`                       |
+| `*.pure.test.ts`, `*.pure.map.test.ts`, `*.pure.predicate.test.ts` | the test for the pure file next to it                       | `+rule/test-files/test-files.md`                       |
+| `*.build.ts`                                                       | build-time Node code (the CSS engine)                       | `+rule/build-files/build-files.md`                     |
+| `*.d.ts`                                                           | type declarations                                           |                                                        |
+| `test/*.test.ts`, `test/*.test-d.ts`, `test/**/*.fixture.ts`       | tests and their inputs                                      | `+rule/test-files/test-files.md`                       |
+| `main.ts`                                                          | an app's entry (`apps/*` only)                              |                                                        |
 
 Also:
 

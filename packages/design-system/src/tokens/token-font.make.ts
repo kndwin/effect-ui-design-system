@@ -1,7 +1,7 @@
 import { Match, Schema, SchemaTransformation } from "effect"
 import * as Token from "./token.pure.ts"
 
-export const Value = Schema.Array(Schema.String)
+export const ValueSchema = Schema.Array(Schema.String)
   .check(Schema.isMinLength(1))
   .pipe(
     Schema.decodeTo(
@@ -21,4 +21,4 @@ export const Value = Schema.Array(Schema.String)
     )
   ) as unknown as Schema.Codec<string, ReadonlyArray<string>>
 
-export const make = Token.composeTokenKind({ kind: "Font", value: Value })
+export const make = Token.composeTokenKind({ kind: "Font", value: ValueSchema })

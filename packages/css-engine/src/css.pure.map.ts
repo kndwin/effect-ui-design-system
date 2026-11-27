@@ -1,10 +1,10 @@
 import { Array, HashSet, Match, Predicate, Record } from "effect"
 import type {
-  GetDeclarationsInput,
-  GetGlobalRulesInput,
-  GetPropertyNameInput,
-  GetPropertyValueInput,
-  GetRulesInput
+  MapStyleRuleToDeclarationsInput,
+  MapGlobalRuleToCssRulesInput,
+  MapPropertyNameToCssNameInput,
+  MapValueToCssValueInput,
+  MapStyleRuleToCssRulesInput
 } from "./css.schema.ts"
 
 const unitless = HashSet.make(
@@ -31,7 +31,7 @@ const unitless = HashSet.make(
 
 const nested = HashSet.make("vars", "selectors", "@media")
 
-export const getPropertyName = ({ name }: GetPropertyNameInput): string =>
+export const mapPropertyNameToCssName = ({ name }: MapPropertyNameToCssNameInput): string =>
   Match.value(name.startsWith("--")).pipe(
     Match.when(true, () => name),
     Match.orElse(() =>
@@ -41,7 +41,7 @@ export const getPropertyName = ({ name }: GetPropertyNameInput): string =>
     )
   )
 
-export const getPropertyValue = ({ name, value }: GetPropertyValueInput): string =>
+export const mapValueToCssValue = ({ name, value }: MapValueToCssValueInput): string =>
   Match.value(value).pipe(
     Match.when(
       (v: unknown): v is number => Predicate.isNumber(v) && v !== 0 && !HashSet.has(unitless, name),
@@ -50,16 +50,16 @@ export const getPropertyValue = ({ name, value }: GetPropertyValueInput): string
     Match.orElse((other) => String(other))
   )
 
-export const getDeclarations = ({ style }: GetDeclarationsInput): string =>
+export const mapStyleRuleToDeclarations = ({ style }: MapStyleRuleToDeclarationsInput): string =>
   [
     ...Record.collect(style.vars ?? {}, (name, v) => `${name}:${v}`),
     ...Record.toEntries(style)
       .filter(([name, v]) => !HashSet.has(nested, name) && Predicate.isNotNullish(v))
-      .map(([name, v]) => `${getPropertyName({ name })}:${getPropertyValue({ name, value: v })}`)
+      .map(([name, v]) => `${mapPropertyNameToCssName({ name })}:${mapValueToCssValue({ name, value: v })}`)
   ].join(";")
 
-export const getRules = ({ selector, style }: GetRulesInput): ReadonlyArray<string> => {
-  const own = getDeclarations({ style })
+export const mapStyleRuleToCssRules = ({ selector, style }: MapStyleRuleToCssRulesInput): ReadonlyArray<string> => {
+  const own = mapStyleRuleToDeclarations({ style })
   return [
     ...Match.value(own).pipe(
       Match.when("", () => []),
@@ -67,18 +67,18 @@ export const getRules = ({ selector, style }: GetRulesInput): ReadonlyArray<stri
     ),
     ...Array.flatten(
       Record.collect(style.selectors ?? {}, (nestedSelector, s) =>
-        getRules({ selector: nestedSelector.replaceAll("&", selector), style: s })
+        mapStyleRuleToCssRules({ selector: nestedSelector.replaceAll("&", selector), style: s })
       )
     ),
     ...Record.collect(
       style["@media"] ?? {},
-      (query, s) => `@media ${query}{${getRules({ selector, style: s }).join("")}}`
+      (query, s) => `@media ${query}{${mapStyleRuleToCssRules({ selector, style: s }).join("")}}`
     )
   ]
 }
 
-export const getGlobalRules = ({ rule }: GetGlobalRulesInput): ReadonlyArray<string> =>
-  getRules({
+export const mapGlobalRuleToCssRules = ({ rule }: MapGlobalRuleToCssRulesInput): ReadonlyArray<string> =>
+  mapStyleRuleToCssRules({
     selector: rule.selector,
     style: {
       ...rule.style,

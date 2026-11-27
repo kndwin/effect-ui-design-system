@@ -33,8 +33,8 @@ packages/
     src/tokens/      token.constant.ts, token.pure.ts, token-color.make.ts, … (one per kind)
     src/theme/       theme.make.ts        Theme.make(Tokens, { name, values, modes })
     src/style/       style.make.ts        Style.make(Parts)({ base, variants, compound }); rule.constant.ts
-    src/variant/     variant.make.ts      Variant.make(Schema, …), Variant.flag(…)
-    src/kit/         kit.make.ts          Kit.make / Kit.single: the parts-and-states descriptor type
+    src/variant/     variant.make.ts      Variant.make(Schema, …), Variant.makeFlag(…)
+    src/kit/         kit.make.ts          Kit.make / Kit.makeSingle: the parts-and-states descriptor type
     src/element/     element.make.ts      Element.make(Style): a component from a style, for any element
     src/manifest/    manifest.make.ts     tokens + components, as data
     src/compile/     compile.pure.ts      the adapter for @acme/css-engine
@@ -68,29 +68,30 @@ A rule applies to files of its kind in the folder holding `+rule/`, and below.
 The ✅/❌ blocks in each `<rule>.md` are the rule tests. Each ✅ passes both tools, and each ❌
 fails with the id its heading names (`→ component-style-files/tokens-only`).
 
-| rule                    | where                 | covers                                                                                       |
-| :---------------------- | :-------------------- | :------------------------------------------------------------------------------------------- |
-| `allowed-file-kinds`    | root                  | allowed kinds, kebab-case names, a rule doc above every file, colocated tests, no barrels    |
-| `no-comments`           | root                  | no comments in any `.ts`, except `@ts-expect-error` and `// Arrange / Act / Assert` in tests |
-| `no-ternary`            | root                  | no `a ? b : c`: branch with `Match` from `effect`                                            |
-| `pure-files`            | root                  | data kinds have no effects; `*.pure.ts` exports only functions and has a `*.pure.test.ts`    |
-|                         |                       | exported pure functions take one Schema-typed object and are named get/compose/is/has/should |
-| `types-from-schema`     | root                  | data shapes are Schemas (`typeof X.Type`); only generic and function types stay plain        |
-| `schema-files`          | root                  | a `*.schema.ts` exports only Schemas, and imports only `effect`, `@effect/ui` and schemas    |
-| `constant-files`        | root                  | a `*.constant.ts` exports values, no functions                                               |
-| `make-files`            | root                  | a `*.make.ts` exports `make`                                                                 |
-| `test-files`            | root                  | tests import `@effect/vitest`, and every test is `// Arrange`, `// Act`, `// Assert`         |
-| `component-files`       | `packages/components` | a library component: `Html.component`, a view function or `Element.make(Style)`              |
-| `component-files`       | `apps/docs`           | an app component: an `Html.component`; examples also export `title` and `order`              |
-| `component-style-files` | `packages/components` | only `Style.make(…)` exports, tokens only, `@acme/*` imports only                            |
-| `token-files`           | `packages/components` | the contract: only `Token*.make(…)` groups                                                   |
-| `theme-files`           | `packages/themes`     | only `Theme.make(Tokens, …)`                                                                 |
-| `build-files`           | `packages/css-engine` | build-time Node code (doc only)                                                              |
+| rule                    | where                 | covers                                                                                           |
+| :---------------------- | :-------------------- | :----------------------------------------------------------------------------------------------- |
+| `allowed-file-kinds`    | root                  | allowed kinds, kebab-case names, a rule doc above every file, colocated tests, no barrels        |
+| `no-comments`           | root                  | no comments in any `.ts`, except `@ts-expect-error` and `// Arrange / Act / Assert` in tests     |
+| `function-names`        | root                  | names by file kind: get/compose, mapXToY, is/has/should, make…, …Schema                          |
+| `no-ternary`            | root                  | no `a ? b : c`: branch with `Match` from `effect`                                                |
+| `pure-files`            | root                  | data kinds have no effects; `*.pure.ts` exports only functions and has a `*.pure.test.ts`        |
+|                         |                       | exported pure functions take one Schema-typed object; mappers and predicates get their own files |
+| `types-from-schema`     | root                  | data shapes are Schemas (`typeof X.Type`); only generic and function types stay plain            |
+| `schema-files`          | root                  | a `*.schema.ts` exports only Schemas, and imports only `effect`, `@effect/ui` and schemas        |
+| `constant-files`        | root                  | a `*.constant.ts` exports values, no functions                                                   |
+| `make-files`            | root                  | a `*.make.ts` exports `make`                                                                     |
+| `test-files`            | root                  | tests import `@effect/vitest`, and every test is `// Arrange`, `// Act`, `// Assert`             |
+| `component-files`       | `packages/components` | a library component: `Html.component`, a view function or `Element.make(Style)`                  |
+| `component-files`       | `apps/docs`           | an app component: an `Html.component`; examples also export `title` and `order`                  |
+| `component-style-files` | `packages/components` | only `Style.make(…)` exports, tokens only, `@acme/*` imports only                                |
+| `token-files`           | `packages/components` | the contract: only `Token*.make(…)` groups                                                       |
+| `theme-files`           | `packages/themes`     | only `Theme.make(Tokens, …)`                                                                     |
+| `build-files`           | `packages/css-engine` | build-time Node code (doc only)                                                                  |
 
 ## The CSS engine: `@acme/css-engine`
 
 ```ts
-cssEngine({ include: /\.(component\.style|theme)\.ts$/, adapter: "@acme/design-system/Compile" })
+makePlugin({ include: /\.(component\.style|theme)\.ts$/, adapter: "@acme/design-system/Compile" })
 ```
 
 - **Evaluate:** each file matching `include` is loaded in Node through an internal Vite module runner.

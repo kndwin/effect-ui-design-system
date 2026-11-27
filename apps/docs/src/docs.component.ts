@@ -15,21 +15,23 @@ import { Html } from "@effect/ui/html"
 import { Array, Match } from "effect"
 import { install, installCommand, pages, sources } from "./content.constant.ts"
 import { initialChoices, scales } from "./customize.constant.ts"
-import { type Choices, Mode, Model, Msg, type Page, type Tab } from "./docs.schema.ts"
+import { type Choices, type Model, ModeSchema, ModelSchema, MsgSchema, type Page, type Tab } from "./docs.schema.ts"
 import * as Customize from "./customize.pure.ts"
+import { mapVarsToInlineStyle } from "./customize.pure.map.ts"
+import { isCustomized } from "./customize.pure.predicate.ts"
 import { type Example, examples } from "./registry.constant.ts"
 
 const themes: ReadonlyArray<Theme> = [shadcn, astryx]
-type H = Html.H<typeof Msg.Type>
+type H = Html.H<typeof MsgSchema.Type>
 
 const currentTheme = (model: Model) => themes.find((t) => t.name === model.theme) ?? themes[0]!
 
 const customStyle = (model: Model) =>
-  Customize.composeInlineStyle({
+  mapVarsToInlineStyle({
     vars: Customize.getOverrides({ choices: model.choices, themes, theme: currentTheme(model), mode: model.mode })
   }) || undefined
 
-export const Docs = Html.component({ name: "Docs", model: Model, message: Msg }).make({
+export const Docs = Html.component({ name: "Docs", model: ModelSchema, message: MsgSchema }).make({
   init: () => ({
     page: "introduction",
     theme: "shadcn",
@@ -94,7 +96,7 @@ const pill = (h: H, text: string) =>
 const segmented = (
   h: H,
   label: string,
-  items: ReadonlyArray<readonly [key: string, text: string, active: boolean, msg: typeof Msg.Type]>
+  items: ReadonlyArray<readonly [key: string, text: string, active: boolean, msg: typeof MsgSchema.Type]>
 ) =>
   Section(h.div, { surface: "muted", pad: "1" })
     .attr("role", "group")
@@ -118,7 +120,7 @@ const header = (h: H, model: Model) =>
   LayoutHeader(h.header).children(
     Button(h, {
       tone: "ghost",
-      onPress: Msg.Navigated({ page: "introduction" }),
+      onPress: MsgSchema.Navigated({ page: "introduction" }),
       children: [
         Swatch(h.span, { color: "var(--color-accent)" }),
         Text(h.span, { weight: "semibold", tone: "default" }).children("acme/ui")
@@ -127,7 +129,7 @@ const header = (h: H, model: Model) =>
     HStack(h.div, { gap: "2", wrap: true, justify: "end" }).children(
       Button(h, {
         size: "sm",
-        onPress: Msg.ToggledMode(),
+        onPress: MsgSchema.ToggledMode(),
         label: Match.value(model.mode === "light").pipe(
           Match.when(true, () => "Dark mode"),
           Match.orElse(() => "Light mode")
@@ -143,8 +145,8 @@ const header = (h: H, model: Model) =>
           Match.when(true, () => "primary" as const),
           Match.orElse(() => "neutral" as const)
         ),
-        onPress: Msg.ToggledPanel(),
-        children: Match.value(Customize.isCustomized({ choices: model.choices })).pipe(
+        onPress: MsgSchema.ToggledPanel(),
+        children: Match.value(isCustomized({ choices: model.choices })).pipe(
           Match.when(true, () => `Theme: ${model.theme} •`),
           Match.orElse(() => `Theme: ${model.theme}`)
         )
@@ -169,7 +171,7 @@ const sidebar = (h: H, current: Page) =>
               size: "sm",
               fill: true,
               pressed: p.id === current.id,
-              onPress: Msg.Navigated({ page: p.id }),
+              onPress: MsgSchema.Navigated({ page: p.id }),
               children: p.title
             })
           )
@@ -183,7 +185,7 @@ const pager = (h: H, page: Page) => {
     Match.value(Array.get(pages, at)).pipe(
       Match.tag("None", () => h.span),
       Match.tag("Some", ({ value }) =>
-        Button(h, { onPress: Msg.Navigated({ page: value.id }), children: label(value) })
+        Button(h, { onPress: MsgSchema.Navigated({ page: value.id }), children: label(value) })
       ),
       Match.exhaustive
     )
@@ -195,13 +197,13 @@ const pager = (h: H, page: Page) => {
 
 const builder = (h: H, model: Model) => {
   const c = model.choices
-  const choose = (patch: Partial<Choices>) => Msg.Chose({ choices: { ...c, ...patch } })
+  const choose = (patch: Partial<Choices>) => MsgSchema.Chose({ choices: { ...c, ...patch } })
   const row = (title: string, content: ReturnType<H["div"]["class"]>) =>
     VStack(h.section, { gap: "2" }).children(Text(h.h3, { size: "sm", weight: "semibold" }).children(title), content)
   return VStack(h.div, { gap: "6" }).children(
     HStack(h.div, { justify: "between", align: "center", gap: "2" }).children(
       Text(h.h2, { size: "lg", weight: "semibold" }).children("Theme"),
-      Button(h, { tone: "ghost", size: "sm", onPress: Msg.ToggledPanel(), label: "Close", children: "✕" })
+      Button(h, { tone: "ghost", size: "sm", onPress: MsgSchema.ToggledPanel(), label: "Close", children: "✕" })
     ),
     row(
       "Base",
@@ -209,12 +211,12 @@ const builder = (h: H, model: Model) => {
         segmented(
           h,
           "Theme",
-          themes.map((t) => [t.name, t.name, model.theme === t.name, Msg.PickedTheme({ theme: t.name })] as const)
+          themes.map((t) => [t.name, t.name, model.theme === t.name, MsgSchema.PickedTheme({ theme: t.name })] as const)
         ),
         segmented(
           h,
           "Mode",
-          Mode.literals.map(
+          ModeSchema.literals.map(
             (m) =>
               [
                 m,
@@ -223,7 +225,7 @@ const builder = (h: H, model: Model) => {
                   Match.orElse(() => "☾ Dark")
                 ),
                 model.mode === m,
-                Msg.PickedMode({ mode: m })
+                MsgSchema.PickedMode({ mode: m })
               ] as const
           )
         )
@@ -273,7 +275,7 @@ const builder = (h: H, model: Model) => {
         scales.map((s) => [String(s), `${s}%`, c.scale === s, choose({ scale: s })] as const)
       )
     ),
-    Button(h, { size: "sm", fill: true, onPress: Msg.ResetChoices(), children: "Reset" })
+    Button(h, { size: "sm", fill: true, onPress: MsgSchema.ResetChoices(), children: "Reset" })
   )
 }
 
@@ -390,7 +392,7 @@ const tokens = (h: H) =>
       ),
       Section(h.div, { surface: "card", pad: "4" }).children(
         Grid(h.div, { columns: "5", gap: "2" }).children(
-          ...["Token", ...themes.flatMap((th) => Mode.literals.map((m) => `${th.name} · ${m}`))].map((label) =>
+          ...["Token", ...themes.flatMap((th) => ModeSchema.literals.map((m) => `${th.name} · ${m}`))].map((label) =>
             Text(h.div, { size: "xs", tone: "muted", weight: "medium", truncate: true }).children(label)
           ),
           ...t.keys.flatMap((key) => {
@@ -398,7 +400,7 @@ const tokens = (h: H) =>
             return [
               Text(h.code, { mono: true, size: "xs", weight: "medium", truncate: true }).children(`${group}.${key}`),
               ...themes.flatMap((th) =>
-                Mode.literals.map((m) => {
+                ModeSchema.literals.map((m) => {
                   const value = Customize.getThemeVars({ theme: th, mode: m })[name] ?? ""
                   return HStack(h.div, { gap: "2" }).children(
                     Match.value(t.kind === "Color").pipe(
@@ -445,7 +447,7 @@ const exampleBlock = (h: H, example: Example, model: Model, initial: Tab) => {
                 tone: "ghost",
                 size: "sm",
                 pressed: tab === t,
-                onPress: Msg.PickedTab({ id: example.id, tab: t }),
+                onPress: MsgSchema.PickedTab({ id: example.id, tab: t }),
                 children: t[0]!.toUpperCase() + t.slice(1)
               })
             )
@@ -462,7 +464,7 @@ const exampleBlock = (h: H, example: Example, model: Model, initial: Tab) => {
         Match.value(tab === "themes").pipe(
           Match.when(true, () =>
             Grid(h.div, { columns: "2", stack: true }).children(
-              ...themes.flatMap((t) => Mode.literals.map((m) => frame(t.name, m, true)))
+              ...themes.flatMap((t) => ModeSchema.literals.map((m) => frame(t.name, m, true)))
             )
           ),
           Match.orElse(() => frame(model.theme, model.mode, false, customStyle(model)))

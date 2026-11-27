@@ -6,7 +6,7 @@ import * as TokenColor from "../tokens/token-color.make.ts"
 import { composeOutput } from "./compile.pure.ts"
 
 const Colors = TokenColor.make("color", ["accent"])
-const Parts = Kit.single("Card", { open: "[data-open]" })
+const Parts = Kit.makeSingle("Card", { open: "[data-open]" })
 
 describe("compile (the css-engine adapter)", () => {
   it("turns a Style into one recipe per slot, with states as selectors", () => {

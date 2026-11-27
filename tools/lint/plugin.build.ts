@@ -3,8 +3,9 @@ import { BunServices } from "@effect/platform-bun"
 import { Array, Effect, Match, Record } from "effect"
 import { Plugin } from "effect-oxlint"
 import type { RuleModule } from "./rule-module.make.ts"
-import { findRuleFiles } from "./discover.build.ts"
-import { isInScope, getRuleKind } from "./kinds.pure.ts"
+import { scanRuleFiles } from "./discover.build.ts"
+import { isInScope } from "./kinds.pure.predicate.ts"
+import { mapRuleFileToRuleKind } from "./kinds.pure.map.ts"
 
 type AnyRule = { readonly create: (context: { readonly filename: string }) => object }
 
@@ -18,7 +19,7 @@ const scoped = (rule: AnyRule, ruleFile: string): AnyRule => ({
 })
 
 const load = Effect.gen(function* () {
-  const files = yield* findRuleFiles("lint.ts")
+  const files = yield* scanRuleFiles("lint.ts")
   return yield* Effect.forEach(files, (file) =>
     Effect.promise(() => import(file)).pipe(Effect.map((m) => ({ file, module: m.default as RuleModule })))
   )
@@ -30,7 +31,8 @@ const entries = Array.flatMap(modules, ({ module }) => {
   const file = fileURLToPath(module.url)
   return Record.collect(
     module.rules,
-    (name, rule) => [`${getRuleKind({ ruleFile: file })}/${name}`, scoped(rule as unknown as AnyRule, file)] as const
+    (name, rule) =>
+      [`${mapRuleFileToRuleKind({ ruleFile: file })}/${name}`, scoped(rule as unknown as AnyRule, file)] as const
   )
 })
 

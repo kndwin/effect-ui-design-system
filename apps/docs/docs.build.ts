@@ -6,10 +6,10 @@ import { build, createServer, type InlineConfig, preview } from "vite"
 
 const root = import.meta.dirname
 
-const port = Flag.Int("port").pipe(Flag.withDefault(5173))
+const portFlag = Flag.Int("port").pipe(Flag.withDefault(5173))
 
 const config = Effect.gen(function* () {
-  const css = yield* CssEngine.plugin({
+  const css = yield* CssEngine.loadPlugin({
     include: /\.(component\.style|theme)\.ts$/,
     adapter: "@acme/design-system/Compile"
   })
@@ -23,7 +23,7 @@ const serve = <S extends { close(): Promise<void>; printUrls(): void }>(start: (
     return yield* Effect.never
   })
 
-const dev = Command.make("dev", { port }, ({ port }) =>
+const dev = Command.make("dev", { port: portFlag }, ({ port }) =>
   Effect.gen(function* () {
     const inline = yield* config
     return yield* serve(async () => (await createServer({ ...inline, server: { port, strictPort: true } })).listen())
@@ -37,7 +37,7 @@ const bundle = Command.make("build", {}, () =>
   })
 )
 
-const previewCommand = Command.make("preview", { port }, ({ port }) =>
+const previewCommand = Command.make("preview", { port: portFlag }, ({ port }) =>
   serve(() => preview({ root, configFile: false, preview: { port, strictPort: true } }))
 )
 
@@ -45,6 +45,6 @@ const docs = Command.make("docs").pipe(Command.withSubcommands([dev, bundle, pre
 
 Command.run(docs, { version: "0.0.0" }).pipe(
   Effect.scoped,
-  Effect.provide(Layer.merge(CssEngine.layer(root), BunServices.layer)),
+  Effect.provide(Layer.merge(CssEngine.makeLayer(root), BunServices.layer)),
   BunRuntime.runMain
 )

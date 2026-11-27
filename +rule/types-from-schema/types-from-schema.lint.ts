@@ -2,7 +2,7 @@ import * as Effect from "effect/Effect"
 import * as Match from "effect/Match"
 import { Rule, RuleContext } from "effect-oxlint"
 import * as RuleModule from "../../tools/lint/rule-module.make.ts"
-import { isGoverned } from "../../tools/lint/kinds.pure.ts"
+import { isGoverned } from "../../tools/lint/kinds.pure.predicate.ts"
 
 const exempt = /\.(schema|test|test-d|d)\.ts$/
 
@@ -49,7 +49,7 @@ export default RuleModule.make(import.meta.url, {
       const governed = isGoverned({ path: ctx.filename }) && !exempt.test(ctx.filename)
       const check = (node: any, members: ReadonlyArray<any>) =>
         Match.value(governed && !node.typeParameters && isDataShape(members)).pipe(
-          Match.when(true, () => RuleModule.report(node, message)),
+          Match.when(true, () => RuleModule.makeReport(node, message)),
           Match.orElse(() => Effect.void)
         )
       return {

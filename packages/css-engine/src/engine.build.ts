@@ -1,10 +1,10 @@
 import { Array, Context, Data, Effect, Record } from "effect"
-import { getModuleSource } from "./codegen.pure.ts"
+import { mapExportsToModuleSource } from "./codegen.pure.map.ts"
 import type { CompiledExport } from "./codegen.schema.ts"
-import { getGlobalRules } from "./css.pure.ts"
-import { getCompiledRecipe } from "./recipe.pure.ts"
-import { getMessage } from "./message.pure.ts"
-import { type Adapter, isAdapter } from "./rules.pure.ts"
+import { mapGlobalRuleToCssRules } from "./css.pure.map.ts"
+import { mapRecipeToCompiledRecipe } from "./recipe.pure.map.ts"
+import { mapCauseToMessage } from "./message.pure.map.ts"
+import { type Adapter, isAdapter } from "./rules.pure.predicate.ts"
 import type { Output } from "./rules.schema.ts"
 import type { CompiledFile, CompileOptions } from "./engine.schema.ts"
 
@@ -13,7 +13,7 @@ export class EvaluationError extends Data.TaggedError("EvaluationError")<{
   readonly cause: unknown
 }> {
   override get message() {
-    return `css-engine: couldn't evaluate ${this.file}: ${getMessage({ cause: this.cause })}`
+    return `css-engine: couldn't evaluate ${this.file}: ${mapCauseToMessage({ cause: this.cause })}`
   }
 }
 
@@ -23,7 +23,7 @@ export class AdapterError extends Data.TaggedError("AdapterError")<{
   readonly cause: unknown
 }> {
   override get message() {
-    const reason = getMessage({ cause: this.cause })
+    const reason = mapCauseToMessage({ cause: this.cause })
     return `css-engine: adapter ${this.adapter} failed on ${this.exportName}: ${reason}`
   }
 }
@@ -48,11 +48,11 @@ const adapterOf = Effect.fn("css-engine/adapterOf")(function* (options: CompileO
 
 const getLowered = (name: string, value: unknown, out: Output | undefined, options: CompileOptions) => {
   if (out === undefined) return { css: [], exported: { name, value } satisfies CompiledExport }
-  const globals = (out.globals ?? []).flatMap((rule) => getGlobalRules({ rule }))
+  const globals = (out.globals ?? []).flatMap((rule) => mapGlobalRuleToCssRules({ rule }))
   if (out.recipes === undefined)
     return { css: globals, exported: { name, value: out.runtime } satisfies CompiledExport }
   const compiled = Record.map(out.recipes, (recipe) =>
-    getCompiledRecipe({ recipe, scope: options.scope, debug: options.debug })
+    mapRecipeToCompiledRecipe({ recipe, scope: options.scope, debug: options.debug })
   )
   return {
     css: [...globals, ...Array.flatten(Record.collect(compiled, (_, c) => c.css))],
@@ -87,7 +87,7 @@ export const compileFile = Effect.fn("css-engine/compileFile")(function* (file: 
   )
   return {
     css: Array.flatMap(lowered, (l) => l.css).join("\n"),
-    code: getModuleSource({
+    code: mapExportsToModuleSource({
       exports: Array.map(lowered, (l) => l.exported),
       imports: { css: options.cssImport, runtime: options.runtimeImport }
     })
