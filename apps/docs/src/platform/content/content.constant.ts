@@ -18,6 +18,41 @@ const componentPages: {
     kit: "Button",
     lead: "A native button with tones and sizes. Loading keeps it focusable and marks it busy."
   },
+  field: {
+    title: "Field & Input",
+    kit: "Field",
+    lead: "A text input with its label, description and error, wired by ui-kit's Field: ids, aria-describedby and aria-invalid are handled for you. Input on its own is the bare control."
+  },
+  checkbox: {
+    title: "Checkbox",
+    kit: "Checkbox",
+    lead: "A button with role checkbox, including the indeterminate state. The tick is drawn from data-checked and data-indeterminate."
+  },
+  switch: {
+    title: "Switch",
+    kit: "Switch",
+    lead: "An on/off control with role switch. The thumb slides by the difference between the track's width and height tokens."
+  },
+  "radio-group": {
+    title: "Radio Group",
+    kit: "RadioGroup",
+    lead: "One choice from a list, with a roving tabindex: arrow keys move and pick. Vertical or horizontal."
+  },
+  select: {
+    title: "Select",
+    kit: "Select",
+    lead: "A listbox in the browser's top layer, positioned under its trigger. It keeps its own open state and reports only the picked value."
+  },
+  slider: {
+    title: "Slider",
+    kit: "Slider",
+    lead: "A range input with a draggable thumb. ui-kit places the indicator and thumb through CSS variables; the style only reads them."
+  },
+  toggle: {
+    title: "Toggle",
+    kit: "Toggle",
+    lead: "A button that stays pressed, with aria-pressed and data-pressed, for toolbars and formatting controls."
+  },
   avatar: {
     title: "Avatar",
     kit: "Avatar",

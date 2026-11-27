@@ -46,9 +46,17 @@ export const astryx = Theme.make(Tokens, {
       sidebar: 248,
       panel: 360,
       content: 840,
-      column: 280
+      column: 280,
+      check: 18,
+      switchWidth: 36,
+      switchHeight: 20,
+      switchThumb: 16,
+      sliderTrack: 6,
+      sliderThumb: 18,
+      field: 320,
+      popup: 300
     },
-    Radius: { control: 12, avatarSquare: 8, container: 16, full: 9999 },
+    Radius: { check: 6, control: 12, avatarSquare: 8, container: 16, full: 9999 },
     Stroke: { border: 1, focus: 2, focusOffset: 3 },
     Text: {
       xs: "0.75rem",

@@ -1,4 +1,12 @@
 import * as Manifest from "@acme/design-system/Manifest"
+import { CheckboxStyle } from "../../feature/checkbox/checkbox.component.style.ts"
+import { FieldStyle } from "../../feature/field/field.component.style.ts"
+import { InputStyle } from "../../feature/field/input.component.style.ts"
+import { RadioGroupStyle } from "../../feature/radio-group/radio-group.component.style.ts"
+import { SelectStyle } from "../../feature/select/select.component.style.ts"
+import { SliderStyle } from "../../feature/slider/slider.component.style.ts"
+import { SwitchStyle } from "../../feature/switch/switch.component.style.ts"
+import { ToggleStyle } from "../../feature/toggle/toggle.component.style.ts"
 import { AvatarStyle } from "../../feature/avatar/avatar.component.style.ts"
 import { ButtonStyle } from "../../feature/button/button.component.style.ts"
 import { CodeBlockStyle } from "../../feature/code-block/code-block.component.style.ts"
@@ -23,6 +31,14 @@ export const manifest = Manifest.make({
     ButtonStyle,
     AvatarStyle,
     CodeBlockStyle,
+    InputStyle,
+    FieldStyle,
+    CheckboxStyle,
+    SwitchStyle,
+    RadioGroupStyle,
+    SelectStyle,
+    SliderStyle,
+    ToggleStyle,
     StackStyle,
     StackItemStyle,
     GridStyle,

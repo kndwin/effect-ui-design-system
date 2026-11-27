@@ -42,9 +42,17 @@ export const Size = TokenLength.make("size", [
   "sidebar",
   "panel",
   "content",
-  "column"
+  "column",
+  "check",
+  "switchWidth",
+  "switchHeight",
+  "switchThumb",
+  "sliderTrack",
+  "sliderThumb",
+  "field",
+  "popup"
 ])
-export const Radius = TokenLength.make("radius", ["control", "avatarSquare", "container", "full"])
+export const Radius = TokenLength.make("radius", ["control", "check", "avatarSquare", "container", "full"])
 export const Stroke = TokenLength.make("stroke", ["border", "focus", "focusOffset"])
 export const Text = TokenLength.make("text", ["xs", "sm", "md", "lg", "xl", "2xl", "code"])
 export const Font = TokenFont.make("font", ["body", "mono"])
