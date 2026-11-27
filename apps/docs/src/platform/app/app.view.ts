@@ -6,6 +6,7 @@ import { Head } from "@effect/ui"
 import type { Html } from "@effect/ui/html"
 import { Array, Match } from "effect"
 import { ComponentDocsPage } from "../../feature/component-docs/component-docs.view.ts"
+import { GetStartedPage } from "../../feature/get-started/get-started.view.ts"
 import { IntroductionPage } from "../../feature/introduction/introduction.view.ts"
 import { ThemeBuilder } from "../../feature/theme-builder/theme-builder.component.ts"
 import { getOverrides } from "../../feature/theme-builder/customize.pure.ts"
@@ -112,7 +113,8 @@ const Pager = AppDef.fragment((h, model: AppModel, page: Page) => {
 
 const Body = AppDef.fragment((h, model: AppModel, page: Page) =>
   AppRoute.match(model.route, {
-    Introduction: () => IntroductionPage(h, getLook(model)),
+    Introduction: () => IntroductionPage(h),
+    GetStarted: () => GetStartedPage(h),
     Theming: () => ThemingPage(h),
     Component: () => ComponentDocsPage(h, page, getLook(model)),
     Template: () => TemplatePage(h, page, getLook(model)),

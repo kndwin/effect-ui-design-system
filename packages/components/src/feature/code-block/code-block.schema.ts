@@ -28,6 +28,7 @@ export const CodeBlockOptionsSchema = Schema.Struct({
   marks: Schema.optional(Schema.Record(Schema.String, LineMarkSchema)),
   wrap: Schema.optional(Schema.Boolean),
   copy: Schema.optional(Schema.Boolean),
+  collapsible: Schema.optional(Schema.Boolean),
   key: Schema.optional(Schema.String),
   class: Schema.optional(Schema.String)
 })
@@ -37,7 +38,8 @@ export const CodeBlockMessageSchema = UiSchema.TaggedEnum({
   PressedCopy: {},
   Copied: {},
   CopyFailed: {},
-  ClearedCopied: {}
+  ClearedCopied: {},
+  PressedExpand: {}
 })
 export type CodeBlockMessage = typeof CodeBlockMessageSchema.Type
 
@@ -47,6 +49,8 @@ export const CodeBlockClassesSchema = Schema.Struct({
   title: Schema.String,
   copy: Schema.String,
   content: Schema.String,
+  expand: Schema.String,
+  expandButton: Schema.String,
   line: Schema.String,
   lineNumber: Schema.String,
   token: Schema.String
@@ -61,8 +65,9 @@ export const CodeBlockPropsSchema = Schema.Struct({
   marks: Schema.optional(Schema.Record(Schema.String, LineMarkSchema)),
   wrap: Schema.optional(Schema.Boolean),
   copy: Schema.optional(Schema.Boolean),
+  collapsible: Schema.optional(Schema.Boolean),
   extraClass: Schema.optional(Schema.String),
   classes: CodeBlockClassesSchema
 })
 
-export const CodeBlockModelSchema = Schema.Struct({ copied: Schema.Boolean })
+export const CodeBlockModelSchema = Schema.Struct({ copied: Schema.Boolean, expanded: Schema.Boolean })

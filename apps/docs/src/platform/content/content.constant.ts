@@ -302,6 +302,12 @@ export const pages: ReadonlyArray<Page> = [
     lead: "Typed, themeable styles for @effect/ui-kit. Components are written against a token contract; themes fill the contract in. Swap the theme, keep the components."
   },
   {
+    id: "get-started",
+    section: "Getting started",
+    title: "Get started",
+    lead: "From an empty folder to a themed Weft app: get the workspace, add an app, compile styles with Vite, pick a theme and render your first components."
+  },
+  {
     id: "theming",
     section: "Getting started",
     title: "Theming",
@@ -380,17 +386,3 @@ export const pages: ReadonlyArray<Page> = [
 ]
 
 export const sources = { contract, themes: { shadcn: shadcnTheme, astryx: astryxTheme } }
-
-export const installCommand = "pnpm add @weft/components @weft/theme-shadcn"
-
-export const install = `// main.ts
-import "@weft/theme-shadcn"
-
-// anywhere in a view
-import { Avatar } from "@weft/components/avatar"
-import { Button } from "@weft/components/button"
-
-h.div.attr("data-theme", "shadcn").attr("data-mode", "dark").children(
-  Avatar(h, { name: "Ada Lovelace", src: user.photo }),
-  Button(h, { tone: "primary", onPress: Msg.Saved(), children: "Save" }),
-)`

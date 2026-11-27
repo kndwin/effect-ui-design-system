@@ -5,5 +5,6 @@ export const update = CodeBlockDef.update({
   PressedCopy: ($) => $.run(CopyCode.make({ text: $.props.code })),
   Copied: ($) => $.evolve({ copied: true }).run(ClearCopied.make({})),
   CopyFailed: ($) => $.model,
-  ClearedCopied: ($) => $.evolve({ copied: false })
+  ClearedCopied: ($) => $.evolve({ copied: false }),
+  PressedExpand: ($) => $.evolve({ expanded: true })
 })

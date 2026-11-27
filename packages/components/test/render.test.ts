@@ -20,7 +20,8 @@ const Demo = Html.component({ name: "Demo", model: Schema.Struct({}), message: M
         title: "a.ts",
         lineNumbers: true,
         marks: { 2: "added" }
-      })
+      }),
+      CodeBlock(h, { key: "folded", code: "const folded = 1", collapsible: true })
     )
 })
 
@@ -71,6 +72,18 @@ describe("components", () => {
       assert.match(html, /data-token="string">"x"<\/span>/)
       assert.match(html, /data-token="comment">\/\/ hi<\/span>/)
       assert.match(html, /data-mark="added"[^>]*>.*?aria-hidden="true">2<\/span>/)
+    })
+  )
+
+  it.effect("CodeBlock: collapsible starts clipped with a View code button", () =>
+    Effect.gen(function* () {
+      // Arrange
+      const demo = Demo
+      // Act
+      const { html } = yield* HtmlServer.renderToHtml(demo, {})
+      // Assert
+      assert.strictEqual(html.match(/data-collapsed/g)?.length, 1)
+      assert.match(html, /<button class="\S*CodeBlock_expandButton__[^"]*"[^>]*aria-expanded="false"[^>]*>View code</)
     })
   )
 })

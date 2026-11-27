@@ -30,6 +30,7 @@ export const view = CodeBlockDef.view((h, model) => {
   const first = p.startLine ?? 1
   const lines = p.code.replace(/\n$/, "").split("\n")
   const floating = p.title === undefined
+  const collapsed = p.collapsible === true && !model.expanded
   const copy = Match.value(p.copy === false).pipe(
     Match.when(true, () => undefined),
     Match.orElse(() =>
@@ -85,6 +86,13 @@ export const view = CodeBlockDef.view((h, model) => {
           Match.orElse(() => undefined)
         )
       )
+      .attr(
+        "data-collapsed",
+        Match.value(collapsed).pipe(
+          Match.when(true, () => ""),
+          Match.orElse(() => undefined)
+        )
+      )
       .attr("dir", "ltr")
       .attr("tabindex", "0")
       .children(
@@ -114,7 +122,19 @@ export const view = CodeBlockDef.view((h, model) => {
           })
         )
       ),
-
+    Match.value(collapsed).pipe(
+      Match.when(true, () =>
+        h.div
+          .class(c.expand)
+          .children(
+            KitButton(h, { onPress: CodeBlockMessageSchema.PressedExpand() })
+              .class(c.expandButton)
+              .attr("aria-expanded", "false")
+              .children("View code")
+          )
+      ),
+      Match.orElse(() => undefined)
+    ),
     h.span
       .attr("aria-live", "polite")
       .attr("style", "position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)")
