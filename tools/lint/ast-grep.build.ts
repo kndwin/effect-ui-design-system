@@ -1,7 +1,9 @@
-import { execFileSync } from "node:child_process"
-import { join, relative } from "node:path"
+import { NodeRuntime, NodeServices } from "@effect/platform-node"
+import { Array, Console, Effect, Path, Schema } from "effect"
+import { ChildProcess, ChildProcessSpawner } from "effect/process"
 import { findRuleFiles, repoRoot } from "./discover.build.ts"
-import { inScope, kinds, ruleKindOf, scopeOf } from "./kinds.pure.ts"
+import { kinds } from "./kinds.constant.ts"
+import { inScope, ruleKindOf, scopeOf } from "./kinds.pure.ts"
 
 export interface Match {
   readonly ruleId: string
@@ -10,56 +12,72 @@ export interface Match {
   readonly message: string
 }
 
-const binary = join(repoRoot, "node_modules", ".bin", "ast-grep")
+const Found = Schema.fromJsonString(
+  Schema.Array(
+    Schema.Struct({
+      ruleId: Schema.String,
+      file: Schema.String,
+      message: Schema.String,
+      range: Schema.Struct({ start: Schema.Struct({ line: Schema.Number }) })
+    })
+  )
+)
 
-const scanRule = (ruleFile: string, only?: ReadonlyArray<string>): ReadonlyArray<Match> => {
+const scanRule = Effect.fn("lint/ast-grep/scanRule")(function* (ruleFile: string, only?: ReadonlyArray<string>) {
+  const path = yield* Path.Path
+  const spawner = yield* ChildProcessSpawner.ChildProcessSpawner
   const dir = scopeOf(ruleFile)
-  const targets = only ? only.filter((f) => inScope(ruleFile, f)).map((f) => relative(dir, f)) : ["."]
+  const targets = only
+    ? Array.map(
+        Array.filter(only, (f) => inScope(ruleFile, f)),
+        (f) => path.relative(dir, f)
+      )
+    : ["."]
   if (targets.length === 0) return []
-  const globs = (kinds[ruleKindOf(ruleFile)] ?? []).flatMap((s) => ["--globs", `**/*${s}`])
-  const run = (args: ReadonlyArray<string>): string => {
-    try {
-      return execFileSync(binary, args, {
-        cwd: dir,
-        encoding: "utf8",
-        stdio: ["ignore", "pipe", "ignore"],
-        maxBuffer: 64 * 1024 * 1024
-      })
-    } catch (error) {
-      const { stdout } = error as { stdout?: string }
-      if (typeof stdout === "string") return stdout
-      throw error
-    }
-  }
-  const output = run([
-    "scan",
-    "--rule",
-    ruleFile,
-    ...globs,
-    "--globs",
-    "!**/node_modules/**",
-    "--globs",
-    "!vendor/**",
-    "--json=compact",
-    ...targets
-  ])
-  const found = JSON.parse(output || "[]") as ReadonlyArray<{
-    ruleId: string
-    file: string
-    message: string
-    range: { start: { line: number } }
-  }>
-  return found
-    .map((m) => ({ ruleId: m.ruleId, file: join(dir, m.file), line: m.range.start.line + 1, message: m.message }))
-    .filter((m) => inScope(ruleFile, m.file))
-}
+  const globs = Array.flatMap(kinds[ruleKindOf(ruleFile)] ?? [], (s) => ["--globs", `**/*${s}`])
+  const output = yield* spawner.string(
+    ChildProcess.make(
+      path.join(repoRoot, "node_modules", ".bin", "ast-grep"),
+      [
+        "scan",
+        "--rule",
+        ruleFile,
+        ...globs,
+        "--globs",
+        "!**/node_modules/**",
+        "--globs",
+        "!vendor/**",
+        "--json=compact",
+        ...targets
+      ],
+      { cwd: dir }
+    )
+  )
+  const found = yield* Schema.decodeUnknownEffect(Found)(output.trim() || "[]")
+  return Array.filter(
+    Array.map(found, (m) => ({
+      ruleId: m.ruleId,
+      file: path.join(dir, m.file),
+      line: m.range.start.line + 1,
+      message: m.message
+    })),
+    (m) => inScope(ruleFile, m.file)
+  )
+})
 
-export const scan = (only?: ReadonlyArray<string>): ReadonlyArray<Match> =>
-  findRuleFiles("yml").flatMap((ruleFile) => scanRule(ruleFile, only))
+export const scan = Effect.fn("lint/ast-grep/scan")(function* (only?: ReadonlyArray<string>) {
+  const rules = yield* findRuleFiles("yml")
+  const found = yield* Effect.forEach(rules, (ruleFile) => scanRule(ruleFile, only))
+  return { rules: rules.length, matches: Array.flatten(found) }
+})
 
-if (import.meta.main) {
-  const matches = scan()
-  for (const m of matches) console.log(`${relative(repoRoot, m.file)}:${m.line}: error ${m.ruleId}: ${m.message}`)
-  console.log(`ast-grep: ${matches.length} problem(s) from ${findRuleFiles("yml").length} rule file(s)`)
-  process.exitCode = matches.length > 0 ? 1 : 0
-}
+const main = Effect.gen(function* () {
+  const path = yield* Path.Path
+  const { rules, matches } = yield* scan()
+  for (const m of matches)
+    yield* Console.log(`${path.relative(repoRoot, m.file)}:${m.line}: error ${m.ruleId}: ${m.message}`)
+  yield* Console.log(`ast-grep: ${matches.length} problem(s) from ${rules} rule file(s)`)
+  if (matches.length > 0) yield* Effect.sync(() => (process.exitCode = 1))
+})
+
+if (import.meta.main) NodeRuntime.runMain(main.pipe(Effect.provide(NodeServices.layer)))

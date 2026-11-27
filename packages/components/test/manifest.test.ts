@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest"
-import { manifest } from "./manifest.pure.ts"
+import { assert, describe, it } from "@effect/vitest"
+import { manifest } from "../src/manifest.constant.ts"
 
 describe("manifest", () => {
   it("lists every component with its variants", () => {
@@ -8,7 +8,7 @@ describe("manifest", () => {
     // Act
     const tones = button?.variants.tone?.values
     // Assert
-    expect(tones).toEqual(["primary", "neutral", "danger", "ghost"])
+    assert.deepStrictEqual(tones, ["primary", "neutral", "danger", "ghost"])
   })
 
   it("lists the contract's groups with their kinds", () => {
@@ -17,6 +17,6 @@ describe("manifest", () => {
     // Act
     const kinds = [groups.Colors.kind, groups.Spacing.kind, groups.Font.kind]
     // Assert
-    expect(kinds).toEqual(["Color", "Length", "Font"])
+    assert.deepStrictEqual(kinds, ["Color", "Length", "Font"])
   })
 })

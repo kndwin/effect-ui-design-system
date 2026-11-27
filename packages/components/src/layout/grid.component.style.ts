@@ -1,7 +1,7 @@
 import * as Style from "@acme/design-system/Style"
 import * as Variant from "@acme/design-system/Variant"
-import { GridParts, GridSpanParts } from "./layout.parts.pure.ts"
-import { Columns, Space, Span } from "../scales.pure.ts"
+import { GridParts, GridSpanParts } from "./layout.parts.constant.ts"
+import { Columns, Space, Span } from "../scales.schema.ts"
 import { Size } from "../contract.token.ts"
 import { space } from "./space.pure.ts"
 

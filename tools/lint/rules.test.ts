@@ -1,10 +1,11 @@
-import { execFileSync } from "node:child_process"
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs"
-import { dirname, join, relative } from "node:path"
-import { afterAll, beforeAll, describe, expect, it } from "vitest"
+import { NodeServices } from "@effect/platform-node"
+import { assert, layer } from "@effect/vitest"
+import { Array, Context, Effect, FileSystem, Layer, MutableHashMap, Option, Path, Schema } from "effect"
+import { ChildProcess, ChildProcessSpawner } from "effect/process"
 import { scan } from "./ast-grep.build.ts"
 import { findRuleFiles, repoRoot } from "./discover.build.ts"
-import { kinds, ruleKindOf, scopeOf } from "./kinds.pure.ts"
+import { kinds } from "./kinds.constant.ts"
+import { ruleKindOf, scopeOf } from "./kinds.pure.ts"
 
 interface Example {
   readonly kind: string
@@ -18,94 +19,130 @@ interface Example {
 
 const block = /^## (.*)$|^```ts (good|bad)([^\n]*)\n([\s\S]*?)^```$/gm
 
-const examplesOf = (mdFile: string): ReadonlyArray<Example> => {
+const examplesOf = Effect.fn("lint/rules/examplesOf")(function* (mdFile: string) {
+  const fs = yield* FileSystem.FileSystem
+  const path = yield* Path.Path
   const kind = ruleKindOf(mdFile)
   const first = kinds[kind]?.[0] ?? ".ts"
   const suffix = first === ".ts" ? ".pure.ts" : first
+  const text = yield* fs.readFileString(mdFile)
   let heading = ""
-  return [...readFileSync(mdFile, "utf8").matchAll(block)].flatMap((m, i) => {
+  return Array.flatMap([...text.matchAll(block)], (m, i): ReadonlyArray<Example> => {
     if (m[1] !== undefined) {
       heading = m[1]
       return []
     }
+    const at = m[3]?.match(/path=(\S+)/)?.[1]
     return [
       {
         kind,
-        title: `${heading} (${relative(repoRoot, mdFile)} #${i})`,
+        title: `${heading} (${path.relative(repoRoot, mdFile)} #${i})`,
         good: m[2] === "good",
         expected: heading.match(/→\s*(\S+)/)?.[1],
-        path: m[3]?.match(/path=(\S+)/)
-          ? join(repoRoot, m[3].match(/path=(\S+)/)![1]!)
-          : join(scopeOf(mdFile), "__rule_tests__", `${kind}-${i}${suffix}`),
+        path: at ? path.join(repoRoot, at) : path.join(scopeOf(mdFile), "__rule_tests__", `${kind}-${i}${suffix}`),
         code: m[4] ?? "",
         untested: /\buntested\b/.test(m[3] ?? "")
       }
     ]
   })
-}
-
-const examples = findRuleFiles("md").flatMap(examplesOf)
-const found = new Map<string, Set<string>>()
-
-const oxlint = (files: ReadonlyArray<string>): string => {
-  try {
-    return execFileSync(
-      join(repoRoot, "node_modules", ".bin", "oxlint"),
-      ["--disable-nested-config", "-c", "oxlint.config.ts", "-f", "json", ...files],
-      { cwd: repoRoot, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"], maxBuffer: 64 * 1024 * 1024 }
-    )
-  } catch (error) {
-    return (error as { stdout?: string }).stdout ?? "{}"
-  }
-}
-
-const add = (file: string, id: string) => found.set(file, (found.get(file) ?? new Set()).add(id))
-
-beforeAll(() => {
-  for (const e of examples) {
-    mkdirSync(dirname(e.path), { recursive: true })
-    writeFileSync(e.path, e.code)
-    if (e.path.endsWith(".pure.ts") && !e.untested)
-      writeFileSync(e.path.replace(/\.pure\.ts$/, ".pure.test.ts"), "export {}\n")
-  }
-  const files = examples.map((e) => e.path)
-  const { diagnostics } = JSON.parse(oxlint(files)) as {
-    diagnostics?: ReadonlyArray<{ code: string; filename: string }>
-  }
-  for (const d of diagnostics ?? []) {
-    const id = d.code.match(/^acme\((.+)\)$/)?.[1]
-    if (id) add(join(repoRoot, d.filename), id)
-  }
-  for (const m of scan(files)) add(m.file, m.ruleId)
-}, 120_000)
-
-afterAll(() => {
-  for (const e of examples) {
-    rmSync(e.path, { force: true })
-    rmSync(e.path.replace(/\.pure\.ts$/, ".pure.test.ts"), { force: true })
-  }
-  for (const dir of new Set(examples.map((e) => dirname(e.path)))) rmSync(dir, { recursive: true, force: true })
-  rmSync(join(repoRoot, "packages", "__rules__"), { recursive: true, force: true })
 })
 
-describe("every *.rule.md example", () => {
+const { mdFiles, examples } = await Effect.runPromise(
+  Effect.gen(function* () {
+    const files = yield* findRuleFiles("md")
+    return { mdFiles: files, examples: Array.flatten(yield* Effect.forEach(files, examplesOf)) }
+  }).pipe(Effect.provide(NodeServices.layer))
+)
+
+const OxlintReport = Schema.fromJsonString(
+  Schema.Struct({
+    diagnostics: Schema.optionalKey(Schema.Array(Schema.Struct({ code: Schema.String, filename: Schema.String })))
+  })
+)
+
+const siblingTest = (file: string) => file.replace(/\.pure\.ts$/, ".pure.test.ts")
+
+const writeExamples = Effect.gen(function* () {
+  const fs = yield* FileSystem.FileSystem
+  const path = yield* Path.Path
+  for (const e of examples) {
+    yield* fs.makeDirectory(path.dirname(e.path), { recursive: true })
+    yield* fs.writeFileString(e.path, e.code)
+    if (e.path.endsWith(".pure.ts") && !e.untested) yield* fs.writeFileString(siblingTest(e.path), "export {}\n")
+  }
+})
+
+const removeExamples = Effect.gen(function* () {
+  const fs = yield* FileSystem.FileSystem
+  const path = yield* Path.Path
+  const dirs = new Set(Array.map(examples, (e) => path.dirname(e.path)))
+  for (const e of examples) {
+    yield* fs.remove(e.path, { force: true })
+    yield* fs.remove(siblingTest(e.path), { force: true })
+  }
+  for (const dir of [...dirs, path.join(repoRoot, "packages", "__rules__")])
+    yield* fs.remove(dir, { recursive: true, force: true })
+}).pipe(Effect.orDie)
+
+const oxlint = Effect.gen(function* () {
+  const path = yield* Path.Path
+  const spawner = yield* ChildProcessSpawner.ChildProcessSpawner
+  const output = yield* spawner.string(
+    ChildProcess.make(
+      path.join(repoRoot, "node_modules", ".bin", "oxlint"),
+      ["--disable-nested-config", "-c", "oxlint.config.ts", "-f", "json", ...Array.map(examples, (e) => e.path)],
+      { cwd: repoRoot }
+    )
+  )
+  const { diagnostics } = yield* Schema.decodeUnknownEffect(OxlintReport)(output)
+  return Array.flatMap(diagnostics ?? [], (d) => {
+    const ruleId = d.code.match(/^acme\((.+)\)$/)?.[1]
+    return ruleId ? [{ file: path.join(repoRoot, d.filename), ruleId }] : []
+  })
+})
+
+class Findings extends Context.Service<Findings, MutableHashMap.MutableHashMap<string, ReadonlyArray<string>>>()(
+  "acme/lint/Findings"
+) {
+  static readonly layer = Layer.effect(
+    Findings,
+    Effect.gen(function* () {
+      yield* Effect.acquireRelease(writeExamples, () => removeExamples)
+      const files = Array.map(examples, (e) => e.path)
+      const reported = [...(yield* oxlint), ...(yield* scan(files)).matches]
+      const found = MutableHashMap.empty<string, ReadonlyArray<string>>()
+      for (const { file, ruleId } of reported)
+        MutableHashMap.set(found, file, [...Option.getOrElse(MutableHashMap.get(found, file), () => []), ruleId])
+      return found
+    })
+  ).pipe(Layer.provide(NodeServices.layer))
+}
+
+layer(Findings.layer, { timeout: "120 seconds" })("every +rule md example", (it) => {
   it("has examples", () => {
     // Arrange
-    const files = findRuleFiles("md")
+    const files = mdFiles
     // Act
     const count = examples.length
     // Assert
-    expect(count).toBeGreaterThan(files.length)
+    assert.isAbove(count, files.length)
   })
+
   for (const e of examples) {
-    it(`${e.good ? "✅" : "❌"} ${e.kind}: ${e.title}`, () => {
-      // Arrange
-      const reported = found.get(e.path) ?? new Set<string>()
-      // Act
-      const ids = [...reported]
-      // Assert
-      if (e.good) expect(ids.filter((id) => id.startsWith(`${e.kind}/`))).toEqual([])
-      else expect(ids).toContain(e.expected)
-    })
+    it.effect(`${e.good ? "✅" : "❌"} ${e.kind}: ${e.title}`, () =>
+      Effect.gen(function* () {
+        // Arrange
+        const found = yield* Findings
+        // Act
+        const ids = Option.getOrElse(MutableHashMap.get(found, e.path), () => [])
+        // Assert
+        if (e.good)
+          assert.deepStrictEqual(
+            ids.filter((id) => id.startsWith(`${e.kind}/`)),
+            []
+          )
+        else assert.include(ids, e.expected)
+      })
+    )
   }
 })

@@ -1,7 +1,7 @@
 import * as Style from "@acme/design-system/Style"
 import * as Variant from "@acme/design-system/Variant"
-import { AvatarParts } from "./avatar.parts.pure.ts"
-import { AvatarSize, Hue, Shape } from "../scales.pure.ts"
+import { AvatarParts } from "./avatar.parts.constant.ts"
+import { AvatarSize, Hue, Shape } from "../scales.schema.ts"
 import { Colors, Font, Hues, Radius, Size, Stroke, Text, Weight } from "../contract.token.ts"
 
 export const AvatarStyle = Style.make(AvatarParts)({

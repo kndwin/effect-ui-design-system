@@ -1,8 +1,8 @@
 import * as Style from "@acme/design-system/Style"
 import * as Variant from "@acme/design-system/Variant"
-import { SwatchParts } from "./swatch.parts.pure.ts"
+import { SwatchParts } from "./swatch.parts.constant.ts"
 import { Colors, Radius, Spacing, Stroke } from "../contract.token.ts"
-import { ControlSize } from "../scales.pure.ts"
+import { ControlSize } from "../scales.schema.ts"
 
 export const SwatchStyle = Style.make(SwatchParts)({
   base: {

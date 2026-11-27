@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest"
+import { assert, describe, it } from "@effect/vitest"
 import { moduleSource } from "./codegen.pure.ts"
 
 const imports = { css: "/x.ts.acme.css", runtime: "/runtime.pure.ts" }
@@ -11,8 +11,8 @@ describe("moduleSource", () => {
     // Act
     const [css, rt] = moduleSource(exports, imports).split("\n")
     // Assert
-    expect(css).toBe('import "/x.ts.acme.css"')
-    expect(rt).toBe('import { recipe as __recipe } from "/runtime.pure.ts"')
+    assert.strictEqual(css, 'import "/x.ts.acme.css"')
+    assert.strictEqual(rt, 'import { recipe as __recipe } from "/runtime.pure.ts"')
   })
 
   it("passes plain values through as JSON", () => {
@@ -21,7 +21,7 @@ describe("moduleSource", () => {
     // Act
     const source = moduleSource(exports, imports)
     // Assert
-    expect(source).toContain('export const answer = {"n":42}')
+    assert.include(source, 'export const answer = {"n":42}')
   })
 
   it("places compiled recipes under recipesAt", () => {
@@ -30,6 +30,6 @@ describe("moduleSource", () => {
     // Act
     const source = moduleSource(exports, imports)
     // Assert
-    expect(source).toContain('export const Card = { ...{"kit":"Card"}, "slots": {"root": __recipe(')
+    assert.include(source, 'export const Card = { ...{"kit":"Card"}, "slots": {"root": __recipe(')
   })
 })

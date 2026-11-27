@@ -1,7 +1,8 @@
 import { astryx } from "@acme/theme-astryx"
 import { shadcn } from "@acme/theme-shadcn"
-import { describe, expect, it } from "vitest"
-import { controls, initialChoices, isCustomized, overrides, themeSource, varsOf } from "./customize.pure.ts"
+import { assert, describe, it } from "@effect/vitest"
+import { initialChoices } from "./customize.constant.ts"
+import { controls, isCustomized, overrides, themeSource, varsOf } from "./customize.pure.ts"
 
 const themes = [shadcn, astryx]
 
@@ -12,8 +13,8 @@ describe("theme builder", () => {
     // Act
     const ids = accent?.options.map((o) => o.id) ?? []
     // Assert
-    expect(ids).toContain("shadcn:accent")
-    expect(ids).toContain("astryx:accent")
+    assert.include(ids, "shadcn:accent")
+    assert.include(ids, "astryx:accent")
   })
 
   it("overrides the accent tokens with the chosen theme's values", () => {
@@ -22,7 +23,7 @@ describe("theme builder", () => {
     // Act
     const vars = overrides(choices, themes, shadcn, "light")
     // Assert
-    expect(vars["--color-accent"]).toBe(varsOf(astryx, "light")["--color-accent"])
+    assert.strictEqual(vars["--color-accent"], varsOf(astryx, "light")["--color-accent"])
   })
 
   it("scales length tokens", () => {
@@ -31,7 +32,7 @@ describe("theme builder", () => {
     // Act
     const vars = overrides(choices, themes, shadcn, "light")
     // Assert
-    expect(vars["--spacing-4"]).toBe("17.6px")
+    assert.strictEqual(vars["--spacing-4"], "17.6px")
   })
 
   it("knows when nothing is customized", () => {
@@ -40,7 +41,7 @@ describe("theme builder", () => {
     // Act
     const customized = isCustomized(choices)
     // Assert
-    expect(customized).toBe(false)
+    assert.strictEqual(customized, false)
   })
 
   it("exports a Theme.make file", () => {
@@ -49,7 +50,7 @@ describe("theme builder", () => {
     // Act
     const source = themeSource(choices, themes, shadcn)
     // Assert
-    expect(source).toContain("Theme.make(Tokens, {")
-    expect(source).toContain("control: 0")
+    assert.include(source, "Theme.make(Tokens, {")
+    assert.include(source, "control: 0")
   })
 })

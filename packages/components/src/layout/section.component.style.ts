@@ -1,8 +1,8 @@
 import * as Style from "@acme/design-system/Style"
 import * as Variant from "@acme/design-system/Variant"
-import { SectionParts } from "./layout.parts.pure.ts"
+import { SectionParts } from "./layout.parts.constant.ts"
 import { Colors, Radius, Stroke } from "../contract.token.ts"
-import { Space, Surface } from "../scales.pure.ts"
+import { Space, Surface } from "../scales.schema.ts"
 import { space } from "./space.pure.ts"
 
 export const SectionStyle = Style.make(SectionParts)({

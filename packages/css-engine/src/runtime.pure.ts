@@ -1,3 +1,5 @@
+import { Array, Option, Predicate, Record } from "effect"
+
 export interface RecipeRuntime {
   readonly base: string
   readonly variants: Readonly<Record<string, Readonly<Record<string, string>>>>
@@ -8,15 +10,17 @@ export interface RecipeRuntime {
 export const recipe =
   (r: RecipeRuntime) =>
   (props: Readonly<Record<string, unknown>> = {}): string => {
-    const chosen: Record<string, string> = { ...r.defaults }
-    for (const [name, v] of Object.entries(props)) if (v !== undefined && v !== null) chosen[name] = String(v)
-    const variantClasses = Object.entries(r.variants).flatMap(([name, values]) => {
-      const picked = chosen[name]
-      const cls = picked === undefined ? undefined : values[picked]
-      return cls ? [cls] : []
-    })
+    const chosen: Readonly<Record<string, string>> = {
+      ...r.defaults,
+      ...Record.map(Record.filter(props, Predicate.isNotNullish), String)
+    }
+    const variantClasses = Array.getSomes(
+      Record.collect(r.variants, (name, values) =>
+        Option.flatMap(Record.get(chosen, name), (picked) => Record.get(values, picked))
+      )
+    )
     const compoundClasses = r.compound
-      .filter((c) => Object.entries(c.variants).every(([name, v]) => chosen[name] === v))
+      .filter((c) => Record.every(c.variants, (v, name) => chosen[name] === v))
       .map((c) => c.className)
     return [r.base, ...variantClasses, ...compoundClasses].join(" ")
   }

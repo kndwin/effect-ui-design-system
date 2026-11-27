@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest"
-import { examples } from "./registry.pure.ts"
+import { assert, describe, it } from "@effect/vitest"
+import { examples } from "../src/registry.constant.ts"
 
 describe("registry", () => {
   it("finds every example file with its source", () => {
@@ -8,8 +8,8 @@ describe("registry", () => {
     // Act
     const withSource = examples.filter((e) => e.source.includes("Html.component("))
     // Assert
-    expect([...pages].toSorted()).toEqual(["avatar", "button", "code-block", "introduction"])
-    expect(withSource.length).toBe(examples.length)
+    assert.deepStrictEqual([...pages].toSorted(), ["avatar", "button", "code-block", "introduction"])
+    assert.strictEqual(withSource.length, examples.length)
   })
 
   it("orders examples within a page", () => {
@@ -18,6 +18,9 @@ describe("registry", () => {
     // Act
     const orders = button.map((e) => e.order)
     // Assert
-    expect(orders).toEqual(orders.toSorted((a, b) => a - b))
+    assert.deepStrictEqual(
+      orders,
+      orders.toSorted((a, b) => a - b)
+    )
   })
 })

@@ -1,3 +1,5 @@
+import { Predicate } from "effect"
+
 export interface StyleRule {
   readonly [property: string]: unknown
   readonly vars?: Readonly<Record<string, string>>
@@ -33,4 +35,4 @@ export interface Output {
 
 export type Adapter = (value: unknown, exportName: string) => Output | undefined
 
-export const isAdapter = (u: unknown): u is Adapter => typeof u === "function"
+export const isAdapter = (u: unknown): u is Adapter => Predicate.isFunction(u)

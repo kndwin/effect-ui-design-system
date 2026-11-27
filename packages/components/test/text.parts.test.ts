@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest"
-import { TextParts } from "./text.parts.pure.ts"
+import { assert, describe, it } from "@effect/vitest"
+import { TextParts } from "../src/text/text.parts.constant.ts"
 
 describe("text parts", () => {
   it("is a single root named Text", () => {
@@ -8,6 +8,6 @@ describe("text parts", () => {
     // Act
     const shape = [parts.name, Object.keys(parts.parts)]
     // Assert
-    expect(shape).toEqual(["Text", ["root"]])
+    assert.deepStrictEqual(shape, ["Text", ["root"]])
   })
 })

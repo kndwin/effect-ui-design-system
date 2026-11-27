@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest"
-import { docPath, inScope, isGoverned, kindOf, ruleKindOf, scopeOf } from "./kinds.pure.ts"
+import { assert, describe, it } from "@effect/vitest"
+import { docPath, inScope, isGoverned, kebabProblem, kindOf, ruleKindOf, scopeOf } from "./kinds.pure.ts"
 
 describe("kinds", () => {
   it("matches the most specific suffix first", () => {
@@ -11,7 +11,14 @@ describe("kinds", () => {
       return k === undefined ? undefined : "name" in k ? k.name : k.suffix
     })
     // Assert
-    expect(kinds).toEqual([".component.style.ts", ".component.ts", ".pure.test.ts", ".pure.ts", "main.ts", undefined])
+    assert.deepStrictEqual(kinds, [
+      ".component.style.ts",
+      ".component.ts",
+      ".pure.test.ts",
+      ".pure.ts",
+      "main.ts",
+      undefined
+    ])
   })
 
   it("governs src and test folders of packages and apps", () => {
@@ -20,7 +27,7 @@ describe("kinds", () => {
     // Act
     const governed = paths.map(isGoverned)
     // Assert
-    expect(governed).toEqual([true, true, true, false])
+    assert.deepStrictEqual(governed, [true, true, true, false])
   })
 
   it("reads a rule's kind and scope from its +rule folder", () => {
@@ -30,9 +37,9 @@ describe("kinds", () => {
     const kind = ruleKindOf(ruleFile)
     const scope = scopeOf(ruleFile)
     // Assert
-    expect(kind).toBe("component.style")
-    expect(scope).toBe("/repo/packages/components")
-    expect(docPath(scope, kind)).toBe("/repo/packages/components/+rule/component.style/component.style.md")
+    assert.strictEqual(kind, "component.style")
+    assert.strictEqual(scope, "/repo/packages/components")
+    assert.strictEqual(docPath(scope, kind), "/repo/packages/components/+rule/component.style/component.style.md")
   })
 
   it("covers files of the rule's kind under its folder only", () => {
@@ -45,6 +52,21 @@ describe("kinds", () => {
       "/repo/packages/themes/x.component.style.ts"
     ].map((f) => inScope(ruleFile, f))
     // Assert
-    expect(results).toEqual([true, false, false])
+    assert.deepStrictEqual(results, [true, false, false])
+  })
+
+  it("names the first path segment that isn't kebab-case", () => {
+    // Arrange
+    const paths = [
+      "apps/docs/src/docs.component.ts",
+      "apps/docs/src/Docs.component.ts",
+      "packages/components/src/code-block/code-block.parts.constant.ts",
+      "packages/components/src/codeBlock/x.pure.ts",
+      "tools/lint/Any.ts"
+    ]
+    // Act
+    const problems = paths.map(kebabProblem)
+    // Assert
+    assert.deepStrictEqual(problems, [undefined, "Docs", undefined, "codeBlock", undefined])
   })
 })

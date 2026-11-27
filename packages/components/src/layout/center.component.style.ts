@@ -1,6 +1,6 @@
 import * as Style from "@acme/design-system/Style"
 import * as Variant from "@acme/design-system/Variant"
-import { CenterParts } from "./layout.parts.pure.ts"
+import { CenterParts } from "./layout.parts.constant.ts"
 
 export const CenterStyle = Style.make(CenterParts)({
   base: { root: { display: "grid", placeItems: "center", minWidth: 0 } },

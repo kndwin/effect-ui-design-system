@@ -11,50 +11,16 @@ import { Text } from "@acme/components/text"
 import type { Theme } from "@acme/design-system/Theme"
 import { astryx } from "@acme/theme-astryx"
 import { shadcn } from "@acme/theme-shadcn"
-import { UiSchema } from "@effect/ui"
 import { Html } from "@effect/ui/html"
-import { Schema } from "effect"
-import { install, installCommand, type Page, pages, sources } from "./content.pure.ts"
+import { Match } from "effect"
+import { install, installCommand, type Page, pages, sources } from "./content.constant.ts"
+import { initialChoices, scales } from "./customize.constant.ts"
+import { type Choices, Mode, Model, Msg, type Tab } from "./docs.schema.ts"
 import * as Customize from "./customize.pure.ts"
-import { type Example, examples } from "./registry.pure.ts"
+import { type Example, examples } from "./registry.constant.ts"
 
 const themes: ReadonlyArray<Theme> = [shadcn, astryx]
-const modes = ["light", "dark"] as const
-const Mode = Schema.Literals(modes)
-const Tab = Schema.Literals(["preview", "code", "themes"])
-type Tab = typeof Tab.Type
-
-const Choices = Schema.Struct({
-  accent: Schema.NullOr(Schema.String),
-  neutrals: Schema.NullOr(Schema.String),
-  radius: Schema.NullOr(Schema.String),
-  sizing: Schema.NullOr(Schema.String),
-  font: Schema.NullOr(Schema.String),
-  mono: Schema.NullOr(Schema.String),
-  scale: Schema.Number
-})
-
-const Msg = UiSchema.TaggedEnum({
-  Navigated: { page: Schema.String },
-  PickedTheme: { theme: Schema.String },
-  PickedMode: { mode: Mode },
-  ToggledMode: {},
-  PickedTab: { id: Schema.String, tab: Tab },
-  ToggledPanel: {},
-  Chose: { choices: Choices },
-  ResetChoices: {}
-})
 type H = Html.H<typeof Msg.Type>
-
-const Model = Schema.Struct({
-  page: Schema.String,
-  theme: Schema.String,
-  mode: Mode,
-  tabs: Schema.Record(Schema.String, Tab),
-  panel: Schema.Boolean,
-  choices: Choices
-})
-type Model = typeof Model.Type
 
 const currentTheme = (model: Model) => themes.find((t) => t.name === model.theme) ?? themes[0]!
 
@@ -68,7 +34,7 @@ export const Docs = Html.component({ name: "Docs", model: Model, message: Msg })
     mode: "light",
     tabs: {},
     panel: false,
-    choices: Customize.initialChoices
+    choices: initialChoices
   }),
   update: {
     Navigated: ($, { page }) => $.evolve({ page }),
@@ -78,7 +44,7 @@ export const Docs = Html.component({ name: "Docs", model: Model, message: Msg })
     PickedTab: ($, { id, tab }) => $.evolve({ tabs: (tabs) => ({ ...tabs, [id]: tab }) }),
     ToggledPanel: ($) => $.evolve({ panel: (p) => !p }),
     Chose: ($, { choices }) => $.evolve({ choices }),
-    ResetChoices: ($) => $.evolve({ choices: Customize.initialChoices })
+    ResetChoices: ($) => $.evolve({ choices: initialChoices })
   },
 
   view: (h, model) => {
@@ -205,7 +171,7 @@ const pager = (h: H, page: Page) => {
 const builder = (h: H, model: Model) => {
   const c = model.choices
   const base = currentTheme(model)
-  const choose = (patch: Partial<Customize.Choices>) => Msg.Chose({ choices: { ...c, ...patch } })
+  const choose = (patch: Partial<Choices>) => Msg.Chose({ choices: { ...c, ...patch } })
   const row = (title: string, tokens: ReadonlyArray<string>, content: ReturnType<H["div"]["class"]>) =>
     VStack(h.section, { gap: "2" }).children(
       HStack(h.div, { justify: "between", gap: "2", wrap: true }).children(
@@ -236,7 +202,7 @@ const builder = (h: H, model: Model) => {
         segmented(
           h,
           "Mode",
-          modes.map(
+          Mode.literals.map(
             (m) => [m, m === "light" ? "☀ Light" : "☾ Dark", model.mode === m, Msg.PickedMode({ mode: m })] as const
           )
         )
@@ -278,7 +244,7 @@ const builder = (h: H, model: Model) => {
       segmented(
         h,
         "Scale",
-        Customize.scales.map((s) => [String(s), `${s}%`, c.scale === s, choose({ scale: s })] as const)
+        scales.map((s) => [String(s), `${s}%`, c.scale === s, choose({ scale: s })] as const)
       )
     ),
     CodeBlock(h, {
@@ -291,64 +257,59 @@ const builder = (h: H, model: Model) => {
   )
 }
 
-const body = (h: H, model: Model, page: Page) => {
-  switch (page.id) {
-    case "introduction":
-      return [
-        ...examples.filter((e) => e.page === "introduction").map((e) => exampleBlock(h, e, model, "themes")),
-        VStack(h.section, { gap: "4" }).children(
-          heading(h, "How it fits together"),
-          Grid(h.div, { columns: "3", gap: "3", stack: true }).children(
-            stackCard(
-              h,
-              "@acme/design-system",
-              "Token kinds, Theme, Variant, Style. Knows ui-kit's parts and data attributes."
-            ),
-            stackCard(h, "@acme/components", "The token contract (names only) and the components styled against it."),
-            stackCard(h, "@acme/theme-*", "Values for every token, plus modes. shadcn and astryx ship here.")
-          )
-        ),
-        VStack(h.section, { gap: "3" }).children(
-          heading(h, "Usage"),
-          CodeBlock(h, { code: installCommand, language: "shell", key: "install" }),
-          CodeBlock(h, { code: install, title: "main.ts", key: "usage" })
-        )
-      ]
-    case "theming":
-      return [
-        VStack(h.section, { gap: "3" }).children(
-          heading(h, "The contract"),
-          Text(h.p).children(
-            "Names and kinds only. Each module (TokenColor, TokenLength, …) makes one kind, so a Length can't land where a Color is expected."
+const body = (h: H, model: Model, page: Page) =>
+  Match.value(page.id).pipe(
+    Match.when("introduction", () => [
+      ...examples.filter((e) => e.page === "introduction").map((e) => exampleBlock(h, e, model, "themes")),
+      VStack(h.section, { gap: "4" }).children(
+        heading(h, "How it fits together"),
+        Grid(h.div, { columns: "3", gap: "3", stack: true }).children(
+          stackCard(
+            h,
+            "@acme/design-system",
+            "Token kinds, Theme, Variant, Style. Knows ui-kit's parts and data attributes."
           ),
+          stackCard(h, "@acme/components", "The token contract (names only) and the components styled against it."),
+          stackCard(h, "@acme/theme-*", "Values for every token, plus modes. shadcn and astryx ship here.")
+        )
+      ),
+      VStack(h.section, { gap: "3" }).children(
+        heading(h, "Usage"),
+        CodeBlock(h, { code: installCommand, language: "shell", key: "install" }),
+        CodeBlock(h, { code: install, title: "main.ts", key: "usage" })
+      )
+    ]),
+    Match.when("theming", () => [
+      VStack(h.section, { gap: "3" }).children(
+        heading(h, "The contract"),
+        Text(h.p).children(
+          "Names and kinds only. Each module (TokenColor, TokenLength, …) makes one kind, so a Length can't land where a Color is expected."
+        ),
+        CodeBlock(h, {
+          code: sources.contract,
+          title: "packages/components/src/contract.token.ts",
+          lineNumbers: true,
+          key: "contract"
+        })
+      ),
+      VStack(h.section, { gap: "3" }).children(
+        heading(h, "A theme"),
+        Text(h.p).children(
+          'Theme.make won\'t compile unless every key is filled in. Values are decoded at build time, so "purple" for a colour fails the build with the theme, mode and path. Or open the theme builder to make one.'
+        ),
+        ...themes.map((t) =>
           CodeBlock(h, {
-            code: sources.contract,
-            title: "packages/components/src/contract.token.ts",
+            code: sources.themes[t.name as keyof typeof sources.themes],
+            title: `packages/themes/${t.name}/src/${t.name}.theme.ts`,
             lineNumbers: true,
-            key: "contract"
+            key: `theme-${t.name}`
           })
-        ),
-        VStack(h.section, { gap: "3" }).children(
-          heading(h, "A theme"),
-          Text(h.p).children(
-            'Theme.make won\'t compile unless every key is filled in. Values are decoded at build time, so "purple" for a colour fails the build with the theme, mode and path. Or open the theme builder to make one.'
-          ),
-          ...themes.map((t) =>
-            CodeBlock(h, {
-              code: sources.themes[t.name as keyof typeof sources.themes],
-              title: `packages/themes/${t.name}/src/${t.name}.theme.ts`,
-              lineNumbers: true,
-              key: `theme-${t.name}`
-            })
-          )
         )
-      ]
-    case "tokens":
-      return tokens(h)
-    default:
-      return component(h, model, page)
-  }
-}
+      )
+    ]),
+    Match.when("tokens", () => tokens(h)),
+    Match.orElse(() => component(h, model, page))
+  )
 
 const stackCard = (h: H, name: string, text: string) =>
   Section(h.div, { surface: "card", pad: "4", gap: "2" }).children(
@@ -402,7 +363,7 @@ const tokens = (h: H) =>
       ),
       Section(h.div, { surface: "card", pad: "4" }).children(
         Grid(h.div, { columns: "5", gap: "2" }).children(
-          ...["Token", ...themes.flatMap((th) => modes.map((m) => `${th.name} · ${m}`))].map((label) =>
+          ...["Token", ...themes.flatMap((th) => Mode.literals.map((m) => `${th.name} · ${m}`))].map((label) =>
             Text(h.div, { size: "xs", tone: "muted", weight: "medium", truncate: true }).children(label)
           ),
           ...t.keys.flatMap((key) => {
@@ -410,7 +371,7 @@ const tokens = (h: H) =>
             return [
               Text(h.code, { mono: true, size: "xs", weight: "medium", truncate: true }).children(`${group}.${key}`),
               ...themes.flatMap((th) =>
-                modes.map((m) => {
+                Mode.literals.map((m) => {
                   const value = Customize.varsOf(th, m)[name] ?? ""
                   return HStack(h.div, { gap: "2" }).children(
                     t.kind === "Color" ? Swatch(h.span, { color: value, size: "sm" }) : h.span,
@@ -464,7 +425,7 @@ const exampleBlock = (h: H, example: Example, model: Model, initial: Tab) => {
         )
       : tab === "themes"
         ? Grid(h.div, { columns: "2", stack: true }).children(
-            ...themes.flatMap((t) => modes.map((m) => frame(t.name, m, true)))
+            ...themes.flatMap((t) => Mode.literals.map((m) => frame(t.name, m, true)))
           )
         : frame(model.theme, model.mode, false, customStyle(model))
   )

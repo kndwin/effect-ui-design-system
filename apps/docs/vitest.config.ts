@@ -3,5 +3,5 @@ import { defineConfig } from "vitest/config"
 
 export default defineConfig({
   plugins: [cssEngine({ include: /\.(component\.style|theme)\.ts$/, adapter: "@acme/design-system/Compile" })],
-  test: { include: ["src/**/*.test.ts"] }
+  test: { include: ["src/**/*.test.ts", "test/**/*.test.ts"] }
 })

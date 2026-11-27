@@ -1,4 +1,6 @@
 import { fileURLToPath } from "node:url"
+import { NodeServices } from "@effect/platform-node"
+import { Array, Effect, Record } from "effect"
 import { Plugin } from "effect-oxlint"
 import type { RuleModule } from "./define.pure.ts"
 import { findRuleFiles } from "./discover.build.ts"
@@ -11,23 +13,23 @@ const scoped = (rule: AnyRule, ruleFile: string): AnyRule => ({
   create: (context) => (inScope(ruleFile, context.filename) ? rule.create(context) : {})
 })
 
-const modules = await Promise.all(
-  findRuleFiles("lint.ts").map(async (file) => ({ file, module: (await import(file)).default as RuleModule }))
-)
-
-export const ruleIds = modules.flatMap(({ file, module }) =>
-  Object.keys(module.rules).map((name) => `${ruleKindOf(file)}/${name}`)
-)
-
-export default Plugin.define({
-  name: "acme",
-  rules: Object.fromEntries(
-    modules.flatMap(({ module }) => {
-      const file = fileURLToPath(module.url)
-      return Object.entries(module.rules).map(([name, rule]) => [
-        `${ruleKindOf(file)}/${name}`,
-        scoped(rule as unknown as AnyRule, file) as never
-      ])
-    })
+const load = Effect.gen(function* () {
+  const files = yield* findRuleFiles("lint.ts")
+  return yield* Effect.forEach(files, (file) =>
+    Effect.promise(() => import(file)).pipe(Effect.map((m) => ({ file, module: m.default as RuleModule })))
   )
 })
+
+const modules = await Effect.runPromise(load.pipe(Effect.provide(NodeServices.layer)))
+
+const entries = Array.flatMap(modules, ({ module }) => {
+  const file = fileURLToPath(module.url)
+  return Record.collect(
+    module.rules,
+    (name, rule) => [`${ruleKindOf(file)}/${name}`, scoped(rule as unknown as AnyRule, file)] as const
+  )
+})
+
+export const ruleIds = Array.map(entries, ([id]) => id)
+
+export default Plugin.define({ name: "acme", rules: Record.fromEntries(entries) as never })

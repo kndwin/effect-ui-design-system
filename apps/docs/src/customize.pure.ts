@@ -1,14 +1,16 @@
 import { Code, Colors, Font, Hues, Radius, Size, Spacing, Text } from "@acme/components/tokens"
 import { manifest } from "@acme/components/manifest"
 import type { Theme } from "@acme/design-system/Theme"
+import { cssVarName } from "@acme/design-system/Token"
+import { Array, Match, Predicate, Record } from "effect"
+import type { Choices, Mode } from "./docs.schema.ts"
 
-export type Mode = "light" | "dark"
 type Vars = Readonly<Record<string, string>>
 
 const v = (ref: string) => ref.slice(4, -1)
 
 const label = (group: string, ref: string) => `${group}.${v(ref).split("-").slice(3).join("-")}`
-const refs = (group: object) => Object.values(group).filter((x): x is string => typeof x === "string")
+const refs = (group: object): ReadonlyArray<string> => Array.filter(Record.values(group), Predicate.isString)
 
 export const varsOf = (theme: Theme, mode: Mode): Vars => ({
   ...theme.vars.base,
@@ -33,53 +35,48 @@ export interface Control {
 }
 
 const radiusOf = (t: Theme) => varsOf(t, "light")
-const pick = (vars: Vars, group: object) => Object.fromEntries(refs(group).map((r) => [v(r), vars[v(r)] ?? ""]))
+const pick = (vars: Vars, group: object) => Record.fromEntries(Array.map(refs(group), (r) => [v(r), vars[v(r)] ?? ""]))
+
+const swatchKey = (o: Option) => o.swatch?.("light") ?? o.id
 
 export const controls = (themes: ReadonlyArray<Theme>): ReadonlyArray<Control> => {
-  const accent: Array<Option> = []
-  const seen = new Set<string>()
-  const add = (o: Option) => {
-    const key = o.swatch?.("light") ?? o.id
-    if (!seen.has(key)) {
-      seen.add(key)
-      accent.push(o)
-    }
-  }
-  for (const t of themes) {
-    add({
-      id: `${t.name}:accent`,
-      label: `${t.name}`,
-      source: `${t.name} · Colors.accent`,
-      swatch: (m) => varsOf(t, m)[v(Colors.accent)] ?? "",
-      set: (m) => {
-        const x = varsOf(t, m)
-        return {
-          [v(Colors.accent)]: x[v(Colors.accent)]!,
-          [v(Colors.accentFg)]: x[v(Colors.accentFg)]!,
-          [v(Colors.ring)]: x[v(Colors.ring)]!
-        }
+  const themeAccents = Array.map(themes, (t): Option => ({
+    id: `${t.name}:accent`,
+    label: `${t.name}`,
+    source: `${t.name} · Colors.accent`,
+    swatch: (m) => varsOf(t, m)[v(Colors.accent)] ?? "",
+    set: (m) => {
+      const x = varsOf(t, m)
+      return {
+        [v(Colors.accent)]: x[v(Colors.accent)]!,
+        [v(Colors.accentFg)]: x[v(Colors.accentFg)]!,
+        [v(Colors.ring)]: x[v(Colors.ring)]!
       }
-    })
-  }
-  for (const t of themes) {
-    for (const ref of refs(Hues).filter((r) => r !== Hues.onHue)) {
-      const name = label("Hues", ref).split(".")[1]!
-      add({
-        id: `${t.name}:${name}`,
-        label: name,
-        source: `${t.name} · Hues.${name}`,
-        swatch: (m) => varsOf(t, m)[v(ref)] ?? "",
-        set: (m) => {
-          const x = varsOf(t, m)
-          return {
-            [v(Colors.accent)]: x[v(ref)]!,
-            [v(Colors.accentFg)]: x[v(Hues.onHue)]!,
-            [v(Colors.ring)]: x[v(ref)]!
+    }
+  }))
+  const hueAccents = Array.flatMap(themes, (t) =>
+    Array.map(
+      Array.filter(refs(Hues), (r) => r !== Hues.onHue),
+      (ref): Option => {
+        const name = label("Hues", ref).split(".")[1]!
+        return {
+          id: `${t.name}:${name}`,
+          label: name,
+          source: `${t.name} · Hues.${name}`,
+          swatch: (m) => varsOf(t, m)[v(ref)] ?? "",
+          set: (m) => {
+            const x = varsOf(t, m)
+            return {
+              [v(Colors.accent)]: x[v(ref)]!,
+              [v(Colors.accentFg)]: x[v(Hues.onHue)]!,
+              [v(Colors.ring)]: x[v(ref)]!
+            }
           }
         }
-      })
-    }
-  }
+      }
+    )
+  )
+  const accent = Array.dedupeWith([...themeAccents, ...hueAccents], (a, b) => swatchKey(a) === swatchKey(b))
   return [
     {
       id: "accent",
@@ -187,88 +184,63 @@ export const controls = (themes: ReadonlyArray<Theme>): ReadonlyArray<Control> =
   ]
 }
 
-export const scales = [90, 100, 110] as const
-
-export interface Choices {
-  readonly accent: string | null
-  readonly neutrals: string | null
-  readonly radius: string | null
-  readonly sizing: string | null
-  readonly font: string | null
-  readonly mono: string | null
-  readonly scale: number
-}
-export const initialChoices: Choices = {
-  accent: null,
-  neutrals: null,
-  radius: null,
-  sizing: null,
-  font: null,
-  mono: null,
-  scale: 100
-}
 export const isCustomized = (c: Choices) =>
-  Object.entries(c).some(([k, value]) => (k === "scale" ? value !== 100 : value !== null))
+  Record.some(c, (value, k) => (k === "scale" ? value !== 100 : value !== null))
 
 const scaled = (value: string, factor: number) => {
   const m = value.match(/^(-?[\d.]+)(px|rem)$/)
   return m ? `${Math.round(Number(m[1]) * factor * 1000) / 1000}${m[2]}` : value
 }
 
-export const overrides = (
-  choices: Choices,
-  themes: ReadonlyArray<Theme>,
-  theme: Theme,
-  mode: Mode
-): Record<string, string> => {
-  const out: Record<string, string> = {}
-  for (const control of controls(themes)) {
-    const id = choices[control.id]
-    const option = control.options.find((o) => o.id === id)
-    if (option) Object.assign(out, option.set(mode))
+export const overrides = (choices: Choices, themes: ReadonlyArray<Theme>, theme: Theme, mode: Mode): Vars => {
+  const chosen = Array.reduce(controls(themes), {} as Vars, (out, control) => {
+    const option = control.options.find((o) => o.id === choices[control.id])
+    return option ? { ...out, ...option.set(mode) } : out
+  })
+  if (choices.scale === 100) return chosen
+  const current = { ...varsOf(theme, mode), ...chosen }
+  return {
+    ...chosen,
+    ...Record.fromEntries(
+      Array.map([...refs(Spacing), ...refs(Size), ...refs(Text)], (ref) => [
+        v(ref),
+        scaled(current[v(ref)] ?? "", choices.scale / 100)
+      ])
+    )
   }
-  if (choices.scale !== 100) {
-    const current = { ...varsOf(theme, mode), ...out }
-    for (const ref of [...refs(Spacing), ...refs(Size), ...refs(Text)]) {
-      out[v(ref)] = scaled(current[v(ref)] ?? "", choices.scale / 100)
-    }
-  }
-  return out
 }
 
-export const styleOf = (vars: Record<string, string>) =>
-  Object.entries(vars)
+export const styleOf = (vars: Vars) =>
+  Record.toEntries(vars)
     .map(([k, value]) => `${k}:${value}`)
     .join(";")
 
-const encode = (kind: string, css: string): string => {
-  switch (kind) {
-    case "Length": {
+const encode = (kind: string, css: string): string =>
+  Match.value(kind).pipe(
+    Match.when("Length", () => {
       const px = css.match(/^(-?[\d.]+)px$/)
       return px ? px[1]! : JSON.stringify(css)
-    }
-    case "Weight":
-      return css
-    case "Duration":
-      return JSON.stringify(`${Number.parseFloat(css) * (css.endsWith("ms") ? 1 : 1000)} millis`)
-    case "Font":
-      return `[${css
-        .split(/,\s*/)
-        .map((f) => JSON.stringify(f.replace(/^"|"$/g, "")))
-        .join(", ")}]`
-    default:
-      return JSON.stringify(css)
-  }
-}
+    }),
+    Match.when("Weight", () => css),
+    Match.when("Duration", () => JSON.stringify(`${Number.parseFloat(css) * (css.endsWith("ms") ? 1 : 1000)} millis`)),
+    Match.when(
+      "Font",
+      () =>
+        `[${css
+          .split(/,\s*/)
+          .map((f) => JSON.stringify(f.replace(/^"|"$/g, "")))
+          .join(", ")}]`
+    ),
+    Match.orElse(() => JSON.stringify(css))
+  )
 const key = (k: string) => (/^[A-Za-z_$][\w$]*$/.test(k) ? k : JSON.stringify(k))
-const cssVar = (prefix: string, k: string) => `--${prefix}-${k.replaceAll(".", "_")}`
 
 const groups = (vars: Vars, only?: (name: string, value: string) => boolean, indent = "    ") =>
-  Object.entries(manifest.tokens)
+  Record.toEntries(manifest.tokens)
     .map(([group, t]) => {
       const entries = t.keys
-        .map((k) => [k, vars[cssVar(t.prefix, k)] ?? ""] as const)
-        .filter(([k, value]) => (only ? only(cssVar(t.prefix, k), value) : true))
+        .map((k) => [k, vars[cssVarName(t.prefix, k)] ?? ""] as const)
+        .filter(([k, value]) => (only ? only(cssVarName(t.prefix, k), value) : true))
         .map(([k, value]) => `${key(k)}: ${encode(t.kind, value)}`)
       return entries.length > 0 ? `${indent}${group}: { ${entries.join(", ")} }` : ""
     })

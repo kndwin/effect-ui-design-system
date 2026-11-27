@@ -1,6 +1,7 @@
+import { Array, Data, Record } from "effect"
 import { type Descriptor, type PartName, pseudoSelectors, type StateName } from "../kit/kit.make.ts"
-import { type Breakpoint, breakpoints, type Decl, type SlotRule } from "./rule.pure.ts"
 import type { Variant } from "../variant/variant.make.ts"
+import { type Breakpoint, breakpoints, type Decl, type SlotRule } from "./rule.constant.ts"
 
 export type SlotStyles<K, Extra extends string = never> = {
   readonly [S in PartName<K> | Extra]?: SlotRule<StateName<K, S & string>>
@@ -27,6 +28,18 @@ export interface Definition {
   >
 }
 
+export class UnknownStateError extends Data.TaggedError("UnknownStateError")<{ readonly state: string }> {
+  override get message() {
+    return `Unknown state "${this.state}"`
+  }
+}
+
+export class UncompiledStyleError extends Data.TaggedError("UncompiledStyleError")<{ readonly kit: string }> {
+  override get message() {
+    return `${this.kit}: this style wasn't compiled. Add cssEngine({ adapter: "@acme/design-system/Compile" }) from @acme/css-engine/vite to the Vite config.`
+  }
+}
+
 export const isDefinition = (u: unknown): u is Definition =>
   typeof u === "object" && u !== null && (u as { "~acme"?: unknown })["~acme"] === "Style"
 
@@ -40,13 +53,19 @@ export const make =
     const definition: Definition = {
       "~acme": "Style",
       kit,
-      slots: [...Object.keys(kit.parts), ...(options?.extend ?? [])],
+      slots: [...Record.keys(kit.parts), ...(options?.extend ?? [])],
       base: (spec.base ?? {}) as Definition["base"],
       variants: (spec.variants ?? {}) as Definition["variants"],
       compound: (spec.compound ?? []) as Definition["compound"]
     }
     return definition as unknown as Style<K["name"], PartName<K> | E, { readonly [N in keyof V]?: V[N] | undefined }>
   }
+
+const selectorOf = (partStates: Readonly<Record<string, string>>, state: string): string => {
+  const sel = partStates[state] ?? (pseudoSelectors as Readonly<Record<string, string>>)[state]
+  if (sel === undefined) throw new UnknownStateError({ state })
+  return `&${sel}`
+}
 
 export const selectorsOf = (
   rule: SlotRule<string> | undefined,
@@ -56,33 +75,24 @@ export const selectorsOf = (
   readonly selectors: Readonly<Record<string, Decl>>
   readonly media: Readonly<Record<string, Decl>>
 } => {
-  const { states, media: byBreakpoint, ...decl } = rule ?? {}
-  const media: Record<string, Decl> = {}
-  for (const [name, d] of Object.entries(byBreakpoint ?? {})) media[breakpoints[name as Breakpoint]] = d as Decl
-  const selectors: Record<string, Decl> = {}
-  for (const [state, d] of Object.entries(states ?? {})) {
-    const sel = partStates[state] ?? (pseudoSelectors as Record<string, string>)[state]
-    if (sel === undefined) throw new Error(`Unknown state "${state}"`)
-    selectors[`&${sel}`] = d as Decl
+  const { states, media, ...decl } = rule ?? {}
+  return {
+    decl,
+    selectors: Record.mapKeys((states ?? {}) as Record<string, Decl>, (state) => selectorOf(partStates, state)),
+    media: Record.mapKeys((media ?? {}) as Record<string, Decl>, (name) => breakpoints[name as Breakpoint])
   }
-  return { decl, selectors, media }
 }
 
 export const classes = <Slot extends string, P>(
   style: Style<any, Slot, P>,
   props: NoInfer<P>
 ): { readonly [S in Slot]: string } => {
-  const out: Record<string, string> = {}
-  const picked: Record<string, unknown> = {}
-  for (const k of Object.keys(style.variants)) {
-    const v = (props as any)?.[k]
-    if (v !== undefined) picked[k] = v
+  if (isDefinition(style)) throw new UncompiledStyleError({ kit: style.kit.name })
+  const picked = Record.filter(
+    Record.fromEntries(Array.map(Record.keys(style.variants), (k) => [k, (props as any)?.[k]] as const)),
+    (v) => v !== undefined
+  )
+  return Record.map(style.slots as Record<Slot, (p: unknown) => string>, (fn) => fn(picked)) as {
+    readonly [S in Slot]: string
   }
-  if (isDefinition(style)) {
-    throw new Error(
-      `${style.kit.name}: this style wasn't compiled. Add cssEngine({ adapter: "@acme/design-system/Compile" }) from @acme/css-engine/vite to the Vite config.`
-    )
-  }
-  for (const [slot, fn] of Object.entries(style.slots)) out[slot] = (fn as (p: unknown) => string)(picked)
-  return out as { readonly [S in Slot]: string }
 }

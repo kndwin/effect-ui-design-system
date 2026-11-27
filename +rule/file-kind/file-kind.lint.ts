@@ -3,7 +3,8 @@ import { dirname, parse } from "node:path"
 import * as Effect from "effect/Effect"
 import { Rule, RuleContext } from "effect-oxlint"
 import { report, rules } from "../../tools/lint/define.pure.ts"
-import { allowed, docPath, isGoverned, kindOf } from "../../tools/lint/kinds.pure.ts"
+import { allowed } from "../../tools/lint/kinds.constant.ts"
+import { docPath, isGoverned, kebabProblem, kindOf } from "../../tools/lint/kinds.pure.ts"
 
 const findDoc = (dir: string, kind: string): boolean => {
   for (let d = dir; d !== parse(d).root; d = dirname(d)) if (existsSync(docPath(d, kind))) return true
@@ -43,6 +44,26 @@ export default rules(import.meta.url, {
       const ctx = yield* RuleContext
       const problem = isGoverned(ctx.filename) ? check(ctx.filename) : undefined
       return { Program: (node: unknown) => (problem ? report(node, problem) : Effect.void) }
+    }
+  }),
+  "kebab-case": Rule.define({
+    name: "kebab-case",
+    meta: Rule.meta({
+      type: "problem",
+      description: "File and folder names are kebab-case. See +rule/file-kind/file-kind.md."
+    }),
+    create: function* () {
+      const ctx = yield* RuleContext
+      const bad = isGoverned(ctx.filename) ? kebabProblem(ctx.filename) : undefined
+      return {
+        Program: (node: unknown) =>
+          bad === undefined
+            ? Effect.void
+            : report(
+                node,
+                `"${bad}" isn't kebab-case: rename it, e.g. profile-card.component.ts. See +rule/file-kind/file-kind.md.`
+              )
+      }
     }
   })
 })

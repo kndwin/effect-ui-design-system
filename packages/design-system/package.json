@@ -13,7 +13,7 @@
     "./TokenWeight": "./src/tokens/token-weight.make.ts",
     "./Theme": "./src/theme/theme.make.ts",
     "./Style": "./src/style/style.make.ts",
-    "./Rule": "./src/style/rule.pure.ts",
+    "./Rule": "./src/style/rule.constant.ts",
     "./Variant": "./src/variant/variant.make.ts",
     "./Kit": "./src/kit/kit.make.ts",
     "./Element": "./src/element/element.pure.ts",
@@ -28,6 +28,7 @@
     "csstype": "^3.1.3"
   },
   "devDependencies": {
+    "@effect/vitest": "4.1.6",
     "effect": "4.1.6",
     "vitest": "5.1.1"
   },

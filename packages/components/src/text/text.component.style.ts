@@ -1,8 +1,8 @@
 import * as Style from "@acme/design-system/Style"
 import * as Variant from "@acme/design-system/Variant"
-import { TextParts } from "./text.parts.pure.ts"
+import { TextParts } from "./text.parts.constant.ts"
 import { Colors, Font, Text, Weight } from "../contract.token.ts"
-import { TextSize, TextTone, TextWeight } from "../scales.pure.ts"
+import { TextSize, TextTone, TextWeight } from "../scales.schema.ts"
 
 export const TextStyle = Style.make(TextParts)({
   base: { root: { margin: 0, minWidth: 0 } },

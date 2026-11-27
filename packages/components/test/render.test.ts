@@ -5,7 +5,7 @@ import { Effect, Schema } from "effect"
 import { Avatar } from "../src/avatar/avatar.component.ts"
 import { Button } from "../src/button/button.component.ts"
 import { CodeBlock } from "../src/code-block/code-block.component.ts"
-import { manifest } from "../src/manifest.pure.ts"
+import { manifest } from "../src/manifest.constant.ts"
 
 const Msg = UiSchema.TaggedEnum({ Pressed: {} })
 const Demo = Html.component({ name: "Demo", model: Schema.Struct({}), message: Msg }).make({

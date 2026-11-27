@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest"
+import { assert, describe, it } from "@effect/vitest"
 import { isAdapter } from "./rules.pure.ts"
 
 describe("isAdapter", () => {
@@ -8,6 +8,6 @@ describe("isAdapter", () => {
     // Act
     const results = candidates.map(isAdapter)
     // Assert
-    expect(results).toEqual([true, false, false])
+    assert.deepStrictEqual(results, [true, false, false])
   })
 })

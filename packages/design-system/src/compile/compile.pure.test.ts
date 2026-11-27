@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest"
+import { assert, describe, it } from "@effect/vitest"
 import * as Kit from "../kit/kit.make.ts"
 import * as Style from "../style/style.make.ts"
 import * as Theme from "../theme/theme.make.ts"
@@ -15,9 +15,9 @@ describe("compile (the css-engine adapter)", () => {
     // Act
     const out = compile(CardStyle, "CardStyle")
     // Assert
-    expect(out?.recipesAt).toBe("slots")
-    expect(out?.recipes?.root?.debugId).toBe("Card_root")
-    expect(out?.recipes?.root?.base).toEqual({
+    assert.strictEqual(out?.recipesAt, "slots")
+    assert.strictEqual(out?.recipes?.root?.debugId, "Card_root")
+    assert.deepStrictEqual(out?.recipes?.root?.base, {
       color: "var(--color-accent)",
       selectors: { "&[data-open]": { opacity: 1 } }
     })
@@ -29,7 +29,9 @@ describe("compile (the css-engine adapter)", () => {
     // Act
     const out = compile(theme, "t")
     // Assert
-    expect(out?.globals).toEqual([{ kind: "global", selector: '[data-theme="t"]', vars: { "--color-accent": "#000" } }])
+    assert.deepStrictEqual(out?.globals, [
+      { kind: "global", selector: '[data-theme="t"]', vars: { "--color-accent": "#000" } }
+    ])
   })
 
   it("leaves anything else alone", () => {
@@ -38,6 +40,6 @@ describe("compile (the css-engine adapter)", () => {
     // Act
     const out = compile(value, "answer")
     // Assert
-    expect(out).toBeUndefined()
+    assert.isUndefined(out)
   })
 })

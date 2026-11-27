@@ -1,4 +1,5 @@
 import type { Schema } from "effect"
+import { GroupTypeId } from "./token.constant.ts"
 
 export type Kind = "Color" | "Length" | "Duration" | "Shadow" | "Font" | "Weight"
 
@@ -7,7 +8,6 @@ export type Ref<K extends Kind = Kind, Expr extends string = string> = Expr & {
   readonly [RefKind]: K
 }
 
-export const GroupTypeId = "~acme/ds/TokenGroup" as const
 export type Key = string | number
 
 export interface Meta<P extends string = string, K extends Kind = Kind, Keys extends Key = Key, Encoded = unknown> {

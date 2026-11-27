@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest"
+import { assert, describe, it } from "@effect/vitest"
 import { compileRecipe } from "./recipe.pure.ts"
 import { recipe } from "./runtime.pure.ts"
 
@@ -18,7 +18,7 @@ describe("compileRecipe", () => {
     // Act
     const { css, runtime } = compileRecipe(source, scope, true)
     // Assert
-    expect(css).toEqual([
+    assert.deepStrictEqual(css, [
       `.${runtime.base}{color:red}`,
       `.${runtime.variants.size!.sm}{padding:4px}`,
       `.${runtime.variants.size!.lg}{padding:16px}`,
@@ -32,6 +32,6 @@ describe("compileRecipe", () => {
     // Act
     const classes = recipe(runtime)({ size: "lg" }).split(" ")
     // Assert
-    expect(classes).toEqual([runtime.base, runtime.variants.size!.lg, runtime.compound[0]!.className])
+    assert.deepStrictEqual(classes, [runtime.base, runtime.variants.size!.lg, runtime.compound[0]!.className])
   })
 })
