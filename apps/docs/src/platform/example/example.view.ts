@@ -1,32 +1,20 @@
 import { Button } from "@weft/components/button"
 import { CodeBlock } from "@weft/components/code-block"
 import { Center } from "@weft/components/layout/center"
-import { Grid } from "@weft/components/layout/grid"
 import { Section } from "@weft/components/layout/section"
 import { HStack, StackItem } from "@weft/components/layout/stack"
 import { Text } from "@weft/components/text"
 import { Match } from "effect"
-import { ModeSchema } from "../theme/theme.schema.ts"
-import { themes } from "../theme/themes.constant.ts"
 import { ExampleDef } from "./example.define.ts"
 import { ExampleMessageSchema, TabSchema } from "./example.schema.ts"
 import { examples } from "./registry.constant.ts"
 
 export const view = ExampleDef.view((h, { tab }) => {
-  const { id, theme, mode, style } = h.props
+  const { id } = h.props
   const example = examples.find((e) => e.id === id)!
-  const frame = (frameTheme: string, frameMode: string, labelled: boolean, frameStyle?: string) =>
-    Section(h.div, { surface: "base", pad: "6", gap: "4" })
-      .attr("data-theme", frameTheme)
-      .attr("data-mode", frameMode)
-      .attr("style", frameStyle)
-      .children(
-        Match.value(labelled).pipe(
-          Match.when(true, () => Text(h.span, { size: "xs", tone: "muted" }).children(`${frameTheme} · ${frameMode}`)),
-          Match.orElse(() => h.span)
-        ),
-        Center(h.div).children(example.component(h, { key: `${example.id}:${frameTheme}:${frameMode}` }))
-      )
+  const frame = Section(h.div, { surface: "base", pad: "6", gap: "4" }).children(
+    Center(h.div).children(example.component(h, { key: example.id }))
+  )
   return Section(h.section, { surface: "card" }).children(
     Section(h.div, { pad: "3", divided: true }).children(
       HStack(h.div, { justify: "between", gap: "2", wrap: true }).children(
@@ -52,12 +40,7 @@ export const view = ExampleDef.view((h, { tab }) => {
           CodeBlock(h, { code: example.source.trim(), title: example.file, key: `code-${example.id}` })
         )
       ),
-      Match.when("themes", () =>
-        Grid(h.div, { columns: "2", stack: true }).children(
-          ...themes.flatMap((t) => ModeSchema.literals.map((m) => frame(t.name, m, true)))
-        )
-      ),
-      Match.orElse(() => frame(theme, mode, false, style))
+      Match.orElse(() => frame)
     )
   )
 })

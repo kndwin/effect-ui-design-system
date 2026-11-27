@@ -15,7 +15,7 @@ import { ThemingPage } from "../../feature/theming/theming.view.ts"
 import { TokensPage } from "../../feature/tokens/tokens.view.ts"
 import { pages } from "../content/content.constant.ts"
 import type { Page } from "../content/content.schema.ts"
-import { getTheme } from "../theme/theme.pure.ts"
+import { getTheme, getThemeVars } from "../theme/theme.pure.ts"
 import { Logo } from "../ui/ui.view.ts"
 import type { Look } from "../theme/theme.schema.ts"
 import { themes } from "../theme/themes.constant.ts"
@@ -58,7 +58,7 @@ const Header = AppDef.fragment((h, model: AppModel) =>
         ),
         onPress: AppMessageSchema.PressedPanel(),
         children: Match.value(isCustomized({ choices: model.choices })).pipe(
-          Match.when(true, () => `Theme: ${model.route.search.theme} •`),
+          Match.when(true, () => "Theme: custom"),
           Match.orElse(() => `Theme: ${model.route.search.theme}`)
         )
       }),
@@ -114,7 +114,14 @@ const Body = AppDef.fragment((h, model: AppModel, page: Page) =>
     Introduction: () => IntroductionPage(h, getLook(model)),
     Theming: () => ThemingPage(h),
     Component: () => ComponentDocsPage(h, page, getLook(model)),
-    Tokens: () => TokensPage(h),
+    Tokens: () => {
+      const { theme, mode } = model.route.search
+      const base = getTheme({ name: theme })
+      return TokensPage(h, {
+        ...getThemeVars({ theme: base, mode }),
+        ...getOverrides({ choices: model.choices, themes, theme: base, mode })
+      })
+    },
     NotFound: () => []
   })
 )

@@ -5,34 +5,44 @@ import { getThemeVars } from "../../platform/theme/theme.pure.ts"
 import { getControls, getOverrides } from "./customize.pure.ts"
 const themes = [shadcn, astryx]
 
-const initialChoices = { accent: null, neutrals: null, radius: null, sizing: null, font: null, mono: null, scale: 100 }
+const initialChoices = { custom: false, accent: null, radius: null, sizing: null, font: null, mono: null, scale: 100 }
 
 describe("theme builder", () => {
-  it("offers each theme's accent as a choice", () => {
+  it("names options by what they are, not by the theme they come from", () => {
     // Arrange
-    const accent = getControls({ themes: themes }).find((c) => c.id === "accent")
+    const controls = getControls({ themes, theme: shadcn })
     // Act
-    const ids = accent?.options.map((o) => o.id) ?? []
+    const labels = controls.flatMap((c) => c.options.map((o) => o.label))
     // Assert
-    assert.include(ids, "shadcn:accent")
-    assert.include(ids, "astryx:accent")
+    assert.notInclude(labels, "shadcn")
+    assert.notInclude(labels, "astryx")
+    assert.includeMembers(labels, ["blue", "Small", "Medium", "Compact", "Regular", "Geist", "Figtree"])
   })
 
-  it("overrides the accent tokens with the chosen theme's values", () => {
+  it("takes the accent hue from the base theme", () => {
     // Arrange
-    const choices = { ...initialChoices, accent: "astryx:accent" }
+    const choices = { ...initialChoices, custom: true, accent: "blue" }
     // Act
-    const vars = getOverrides({ choices: choices, themes: themes, theme: shadcn, mode: "light" })
+    const vars = getOverrides({ choices, themes, theme: astryx, mode: "light" })
     // Assert
-    assert.strictEqual(vars["--color-accent"], getThemeVars({ theme: astryx, mode: "light" })["--color-accent"])
+    assert.strictEqual(vars["--color-accent"], getThemeVars({ theme: astryx, mode: "light" })["--hue-blue"])
   })
 
   it("scales length tokens", () => {
     // Arrange
-    const choices = { ...initialChoices, scale: 110 }
+    const choices = { ...initialChoices, custom: true, scale: 110 }
     // Act
-    const vars = getOverrides({ choices: choices, themes: themes, theme: shadcn, mode: "light" })
+    const vars = getOverrides({ choices, themes, theme: shadcn, mode: "light" })
     // Assert
     assert.strictEqual(vars["--spacing-4"], "17.6px")
+  })
+
+  it("overrides nothing until the custom theme is picked", () => {
+    // Arrange
+    const choices = { ...initialChoices, accent: "blue" }
+    // Act
+    const vars = getOverrides({ choices, themes, theme: shadcn, mode: "light" })
+    // Assert
+    assert.deepStrictEqual(vars, {})
   })
 })

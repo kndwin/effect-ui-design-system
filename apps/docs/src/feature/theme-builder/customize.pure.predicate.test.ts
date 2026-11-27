@@ -1,14 +1,14 @@
 import { assert, describe, it } from "@effect/vitest"
 import { isCustomized } from "./customize.pure.predicate.ts"
-const initialChoices = { accent: null, neutrals: null, radius: null, sizing: null, font: null, mono: null, scale: 100 }
+const initialChoices = { custom: false, accent: null, radius: null, sizing: null, font: null, mono: null, scale: 100 }
 
 describe("isCustomized", () => {
-  it("knows when nothing is customized", () => {
+  it("knows when the custom theme is picked", () => {
     // Arrange
-    const choices = initialChoices
+    const choices = [initialChoices, { ...initialChoices, custom: true }]
     // Act
-    const customized = isCustomized({ choices: choices })
+    const customized = choices.map((c) => isCustomized({ choices: c }))
     // Assert
-    assert.strictEqual(customized, false)
+    assert.deepStrictEqual(customized, [false, true])
   })
 })

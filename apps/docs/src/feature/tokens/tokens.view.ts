@@ -6,42 +6,35 @@ import { Swatch } from "@weft/components/swatch"
 import { Text } from "@weft/components/text"
 import type { Html } from "@effect/ui/html"
 import { Match, Record } from "effect"
-import { getThemeVars } from "../../platform/theme/theme.pure.ts"
-import { ModeSchema } from "../../platform/theme/theme.schema.ts"
-import { themes } from "../../platform/theme/themes.constant.ts"
+import type { Vars } from "../../platform/theme/theme.schema.ts"
 import { Heading } from "../../platform/ui/ui.view.ts"
 
-export const TokensPage = <Msg>(h: Html.H<Msg>) =>
+export const TokensPage = <Msg>(h: Html.H<Msg>, vars: Vars) =>
   Record.toEntries(manifest.tokens).map(([group, tokenGroup]) =>
     VStack(h.section, { gap: "3" }).children(
       HStack(h.div, { gap: "3", align: "baseline", wrap: true }).children(
         Heading(h, group),
-        Text(h.span, { mono: true, size: "xs", tone: "muted" }).children(
-          `${tokenGroup.kind} · --${tokenGroup.prefix}-*`
-        )
+        Text(h.span, { mono: true, size: "xs", tone: "muted" }).children(tokenGroup.kind)
       ),
       Section(h.div, { surface: "card", pad: "4" }).children(
-        Grid(h.div, { columns: "5", gap: "2" }).children(
-          ...["Token", ...themes.flatMap((theme) => ModeSchema.literals.map((mode) => `${theme.name} · ${mode}`))].map(
-            (label) => Text(h.div, { size: "xs", tone: "muted", weight: "medium", truncate: true }).children(label)
+        Grid(h.div, { columns: "3", gap: "2" }).children(
+          ...["Token", "CSS variable", "Value"].map((label) =>
+            Text(h.div, { size: "xs", tone: "muted", weight: "medium", truncate: true }).children(label)
           ),
           ...tokenGroup.keys.flatMap((key) => {
             const name = `--${tokenGroup.prefix}-${key.replaceAll(".", "_")}`
+            const value = vars[name] ?? ""
             return [
               Text(h.code, { mono: true, size: "xs", weight: "medium", truncate: true }).children(`${group}.${key}`),
-              ...themes.flatMap((theme) =>
-                ModeSchema.literals.map((mode) => {
-                  const value = getThemeVars({ theme, mode })[name] ?? ""
-                  return HStack(h.div, { gap: "2" }).children(
-                    Match.value(tokenGroup.kind).pipe(
-                      Match.when("Color", () => Swatch(h.span, { color: value, size: "sm" })),
-                      Match.orElse(() => h.span)
-                    ),
-                    Text(h.code, { mono: true, size: "xs", tone: "muted", truncate: true })
-                      .attr("title", value)
-                      .children(value)
-                  )
-                })
+              Text(h.code, { mono: true, size: "xs", tone: "muted", truncate: true }).children(name),
+              HStack(h.div, { gap: "2" }).children(
+                Match.value(tokenGroup.kind).pipe(
+                  Match.when("Color", () => Swatch(h.span, { color: `var(${name})`, size: "sm" })),
+                  Match.orElse(() => h.span)
+                ),
+                Text(h.code, { mono: true, size: "xs", tone: "muted", truncate: true })
+                  .attr("title", value)
+                  .children(value)
               )
             ]
           })

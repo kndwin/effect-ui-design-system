@@ -1,6 +1,7 @@
 import contract from "../../../../../packages/components/src/platform/token/contract.token.ts?raw"
 import astryxTheme from "../../../../../packages/themes/astryx/src/astryx.theme.ts?raw"
 import shadcnTheme from "../../../../../packages/themes/shadcn/src/shadcn.theme.ts?raw"
+import { Array, Order } from "effect"
 import { type ComponentId, ComponentIdSchema } from "./component.schema.ts"
 import type { Page } from "./content.schema.ts"
 
@@ -164,6 +165,36 @@ const componentPages: {
     kit: "VirtualList",
     lead: "Only the rows in view are in the DOM. A thousand rows scroll like ten."
   },
+  center: {
+    title: "Center",
+    kit: "Center",
+    source: "feature/layout/center",
+    lead: "Centres its children on both axes, with an optional max width. One line: Element.make(CenterStyle)."
+  },
+  grid: {
+    title: "Grid",
+    kit: "Grid",
+    source: "feature/layout/grid",
+    lead: "A CSS grid with a fixed column count and token gaps. GridSpan lets a child span columns, and stack collapses to one column on narrow screens."
+  },
+  layout: {
+    title: "Layout",
+    kit: "Layout",
+    source: "feature/layout/layout",
+    lead: "The app shell: a header, start and end panels, content and a footer. These docs are built with it."
+  },
+  section: {
+    title: "Section",
+    kit: "Section",
+    source: "feature/layout/section",
+    lead: "A surface with padding, gap and an optional divider: base, card or muted. Cards, frames and panels in these docs are Sections."
+  },
+  stack: {
+    title: "Stack",
+    kit: "Stack",
+    source: "feature/layout/stack",
+    lead: "A flex row or column with token gaps, alignment and wrapping. HStack and VStack are the two directions; StackItem grows or shrinks a child."
+  },
   toggle: {
     title: "Toggle",
     kit: "Toggle",
@@ -276,12 +307,15 @@ export const pages: ReadonlyArray<Page> = [
     title: "Theming",
     lead: "A theme is a package that fills in every token of the contract, with optional modes layered on top. It is checked by the compiler, and bad values fail the build."
   },
-  ...ComponentIdSchema.literals.map(getComponentPage),
+  ...Array.sort(
+    ComponentIdSchema.literals.map(getComponentPage),
+    Order.mapInput(Order.String, (page: Page) => page.title)
+  ),
   {
     id: "tokens",
     section: "Foundations",
     title: "Tokens",
-    lead: "Every token in the contract, and the value each theme gives it."
+    lead: "Every token in the contract. Components only use the names; the theme you pick applies the values."
   }
 ]
 

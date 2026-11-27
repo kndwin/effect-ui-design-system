@@ -2,7 +2,7 @@ import { UiSchema } from "@effect/ui"
 import { Schema } from "effect"
 import { ModeSchema } from "../theme/theme.schema.ts"
 
-export const TabSchema = Schema.Literals(["preview", "themes", "code"])
+export const TabSchema = Schema.Literals(["preview", "code"])
 export type Tab = typeof TabSchema.Type
 
 export const ExamplePropsSchema = Schema.Struct({
