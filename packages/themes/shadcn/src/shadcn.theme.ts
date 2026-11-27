@@ -53,9 +53,17 @@ export const shadcn = Theme.make(Tokens, {
       sidebar: 240,
       panel: 360,
       content: 820,
-      column: 280
+      column: 280,
+      check: 16,
+      switchWidth: 32,
+      switchHeight: 18,
+      switchThumb: 14,
+      sliderTrack: 4,
+      sliderThumb: 16,
+      field: 320,
+      popup: 300
     },
-    Radius: { control: 8, avatarSquare: 8, container: 14, full: 9999 },
+    Radius: { check: 4, control: 8, avatarSquare: 8, container: 14, full: 9999 },
     Stroke: { border: 1, focus: 3, focusOffset: 0 },
     Text: {
       xs: "0.75rem",

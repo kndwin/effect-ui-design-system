@@ -16,7 +16,15 @@
     "./layout/section": "./src/feature/layout/section.component.ts",
     "./layout/layout": "./src/feature/layout/layout.component.ts",
     "./text": "./src/feature/text/text.component.ts",
-    "./swatch": "./src/feature/swatch/swatch.component.ts"
+    "./swatch": "./src/feature/swatch/swatch.component.ts",
+    "./input": "./src/feature/field/input.component.ts",
+    "./field": "./src/feature/field/field.component.ts",
+    "./checkbox": "./src/feature/checkbox/checkbox.component.ts",
+    "./switch": "./src/feature/switch/switch.component.ts",
+    "./radio-group": "./src/feature/radio-group/radio-group.component.ts",
+    "./select": "./src/feature/select/select.component.ts",
+    "./slider": "./src/feature/slider/slider.component.ts",
+    "./toggle": "./src/feature/toggle/toggle.component.ts"
   },
   "scripts": {
     "test": "bun --bun x vitest run"
