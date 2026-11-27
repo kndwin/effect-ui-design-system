@@ -1,5 +1,5 @@
 import { Tokens } from "@acme/components/tokens"
-import * as Theme from "@acme/ds/Theme"
+import * as Theme from "@acme/design-system/Theme"
 
 export const shadcn = Theme.make(Tokens, {
   name: "shadcn",

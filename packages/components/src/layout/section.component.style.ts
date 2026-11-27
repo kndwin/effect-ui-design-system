@@ -1,11 +1,11 @@
-import * as Style from "@acme/ds/Style"
-import * as Variant from "@acme/ds/Variant"
-import { Section } from "@acme/ds/kit/layout"
+import * as Style from "@acme/design-system/Style"
+import * as Variant from "@acme/design-system/Variant"
+import { SectionParts } from "./layout.parts.pure.ts"
 import { Colors, Radius, Stroke } from "../contract.token.ts"
 import { Space, Surface } from "../scales.pure.ts"
 import { space } from "./space.pure.ts"
 
-export const SectionStyle = Style.make(Section)({
+export const SectionStyle = Style.make(SectionParts)({
   base: { root: { display: "flex", flexDirection: "column", minWidth: 0, boxSizing: "border-box" } },
   variants: {
     gap: Variant.make(

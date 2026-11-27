@@ -8,6 +8,6 @@
   },
   "dependencies": {
     "@acme/components": "workspace:*",
-    "@acme/ds": "workspace:*"
+    "@acme/design-system": "workspace:*"
   }
 }

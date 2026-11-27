@@ -1,7 +1,7 @@
 import { execFileSync } from "node:child_process"
-import { dirname, join, relative } from "node:path"
+import { join, relative } from "node:path"
 import { findRuleFiles, repoRoot } from "./discover.build.ts"
-import { inScope, kinds, ruleKindOf } from "./kinds.pure.ts"
+import { inScope, kinds, ruleKindOf, scopeOf } from "./kinds.pure.ts"
 
 export interface Match {
   readonly ruleId: string
@@ -13,7 +13,7 @@ export interface Match {
 const binary = join(repoRoot, "node_modules", ".bin", "ast-grep")
 
 const scanRule = (ruleFile: string, only?: ReadonlyArray<string>): ReadonlyArray<Match> => {
-  const dir = dirname(ruleFile)
+  const dir = scopeOf(ruleFile)
   const targets = only ? only.filter((f) => inScope(ruleFile, f)).map((f) => relative(dir, f)) : ["."]
   if (targets.length === 0) return []
   const globs = (kinds[ruleKindOf(ruleFile)] ?? []).flatMap((s) => ["--globs", `**/*${s}`])

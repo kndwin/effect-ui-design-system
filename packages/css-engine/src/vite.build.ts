@@ -1,65 +1,79 @@
-import { existsSync, readFileSync } from "node:fs"
-import { join } from "node:path"
+import { existsSync } from "node:fs"
+import { join, relative } from "node:path"
 import { fileURLToPath } from "node:url"
-import { type Compiler, createCompiler } from "@vanilla-extract/compiler"
-import type { Plugin } from "vite"
-
-const WRAPPER = ".acme.css.ts"
-const CSS = ".acme.css"
-const register = fileURLToPath(new URL("./register.build.ts", import.meta.url))
+import { Effect } from "effect"
+import { createServer, isRunnableDevEnvironment, type Plugin, type ViteDevServer } from "vite"
+import { compileFile, EvaluationError, ModuleLoader } from "./engine.build.ts"
 
 export interface Options {
   readonly include: RegExp
-
   readonly adapter: string
 }
 
-const exportNames = (file: string) =>
-  [...readFileSync(file, "utf8").matchAll(/^export const (\w+)/gm)].map((m) => m[1]!)
-
-async function resolveFromEngine(
-  this: { resolve: (s: string, i?: string, o?: { skipSelf?: boolean }) => Promise<unknown> },
-  source: string
-) {
-  return source.startsWith("@vanilla-extract/") ? this.resolve(source, register, { skipSelf: true }) : null
-}
-
-const wrapper = (adapter: string): Plugin => ({
-  name: "css-engine-wrapper",
-  enforce: "pre",
-  async resolveId(id) {
-    if (id.endsWith(WRAPPER)) return id
-    return (await resolveFromEngine.call(this, id)) as never
-  },
-  load(id) {
-    if (!id.endsWith(WRAPPER)) return null
-    const file = id.slice(0, -WRAPPER.length)
-    this.addWatchFile(file)
-    const names = exportNames(file)
-    return [
-      `import * as source from ${JSON.stringify(file)}`,
-      `import { register } from ${JSON.stringify(register)}`,
-      `import { compile } from ${JSON.stringify(adapter)}`,
-      `const compiled = register(source, compile)`,
-      ...names.map((n) => `export const ${n} = compiled.${n}`)
-    ].join("\n")
-  }
-})
+const CSS = ".acme.css"
+const runtimeImport = fileURLToPath(new URL("./runtime.pure.ts", import.meta.url))
 
 export const cssEngine = (options: Options): Plugin => {
-  let compiler: Compiler | undefined
-
-  const dependents = new Map<string, Set<string>>()
   let root = process.cwd()
   let isBuild = false
-  const ensure = () =>
-    (compiler ??= createCompiler({
+  let inner: Promise<ViteDevServer> | undefined
+  const sheets = new Map<string, string>()
+  const dependents = new Map<string, Set<string>>()
+
+  const server = () =>
+    (inner ??= createServer({
       root,
-      identifiers: isBuild ? "short" : "debug",
-      enableFileWatcher: !isBuild,
-      cssImportSpecifier: (id) => id.replace(WRAPPER, "") + CSS,
-      viteConfig: { plugins: [wrapper(options.adapter)] }
+      configFile: false,
+      logLevel: "silent",
+      appType: "custom",
+      server: { middlewareMode: true, hmr: false, watch: null },
+      optimizeDeps: { noDiscovery: true, include: [] }
     }))
+
+  const environment = async () => {
+    const env = (await server()).environments.ssr
+    if (!env || !isRunnableDevEnvironment(env)) throw new Error("css-engine: the ssr environment can't run modules")
+    return env
+  }
+
+  const load = (id: string, importer?: string) =>
+    Effect.tryPromise({
+      try: async () => {
+        const env = await environment()
+        const resolved = importer ? ((await env.pluginContainer.resolveId(id, importer))?.id ?? id) : id
+        return (await env.runner.import(resolved)) as Record<string, unknown>
+      },
+      catch: (cause) => new EvaluationError({ file: id, cause })
+    })
+
+  const track = async (file: string) => {
+    const env = await environment()
+    const seen = new Set<string>()
+    const visit = (id: string | undefined) => {
+      const node = id ? env.moduleGraph.getModuleById(id) : undefined
+      if (!node?.file || seen.has(node.file) || node.file.includes("node_modules")) return
+      seen.add(node.file)
+      for (const child of node.importedModules) visit(child.id ?? undefined)
+    }
+    visit(file)
+    for (const dep of seen) dependents.set(dep, (dependents.get(dep) ?? new Set()).add(file))
+  }
+
+  const compile = async (file: string) => {
+    const result = await Effect.runPromise(
+      compileFile(file, {
+        adapter: options.adapter,
+        scope: relative(root, file),
+        debug: !isBuild,
+        cssImport: file + CSS,
+        runtimeImport
+      }).pipe(Effect.provideService(ModuleLoader, { load }))
+    )
+    sheets.set(file, result.css)
+    await track(file)
+    return result
+  }
+
   return {
     name: "css-engine",
     enforce: "pre",
@@ -67,58 +81,44 @@ export const cssEngine = (options: Options): Plugin => {
       root = config.root
       isBuild = config.command === "build"
     },
-    async resolveId(source) {
-      if (source.endsWith(CSS)) return source
-      const engineDep = await resolveFromEngine.call(this, source)
-      if (engineDep) return engineDep as never
-
-      if (source.endsWith(WRAPPER)) return `\0${source}`
-      return null
-    },
+    resolveId: (source) => (source.endsWith(CSS) ? source : null),
     async load(id) {
-      if (id.startsWith("\0") && id.endsWith(WRAPPER)) return "export {}"
       if (!id.endsWith(CSS)) return null
-
       const absolute = id.slice(0, -CSS.length)
       const file = existsSync(absolute) ? absolute : join(root, absolute)
-
-      await ensure().processVanillaFile(file + WRAPPER, { outputCss: true })
-      return ensure().getCssForFile(file + WRAPPER).css
+      if (!sheets.has(file)) await compile(file)
+      return sheets.get(file) ?? ""
     },
     async transform(_code, id) {
       if (id.includes("?") || !options.include.test(id)) return null
-      const { source, watchFiles } = await ensure().processVanillaFile(id + WRAPPER, { outputCss: true })
-      for (const watched of [id, ...watchFiles]) {
-        const file = watched.replace(WRAPPER, "").split("?")[0]!
-        if (file.includes("node_modules")) continue
-        if (file !== id) this.addWatchFile(file)
-        dependents.set(file, (dependents.get(file) ?? new Set()).add(id))
+      try {
+        return { code: (await compile(id)).code, map: null }
+      } catch (error) {
+        return this.error(error instanceof Error ? error.message : String(error))
       }
-      return { code: source, map: { mappings: "" } }
     },
-    async handleHotUpdate({ file, server, modules }) {
+    async handleHotUpdate({ file, server: outer, modules }) {
       const styles = dependents.get(file)
-      if (!styles || !compiler) return
-      await compiler.unstable_invalidateAllModules()
+      if (!styles || !inner) return
+      const env = await environment()
+      env.moduleGraph.invalidateAll()
+      env.runner.clearCache()
       const affected = new Set(modules)
       for (const style of styles) {
         for (const id of [style, style + CSS]) {
-          const mod = server.moduleGraph.getModuleById(id)
+          const mod = outer.moduleGraph.getModuleById(id)
           if (mod) {
-            server.moduleGraph.invalidateModule(mod)
+            outer.moduleGraph.invalidateModule(mod)
             affected.add(mod)
           }
         }
       }
       return [...affected]
     },
-
     async buildEnd() {
-      await compiler?.close()
-      compiler = undefined
-    },
-    async closeWatcher() {
-      await compiler?.close()
+      const closing = inner
+      inner = undefined
+      if (closing) await (await closing).close()
     }
   }
 }

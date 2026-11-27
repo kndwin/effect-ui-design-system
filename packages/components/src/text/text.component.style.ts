@@ -1,10 +1,10 @@
-import * as Style from "@acme/ds/Style"
-import * as Variant from "@acme/ds/Variant"
-import { Text as TextKit } from "@acme/ds/kit/layout"
+import * as Style from "@acme/design-system/Style"
+import * as Variant from "@acme/design-system/Variant"
+import { TextParts } from "./text.parts.pure.ts"
 import { Colors, Font, Text, Weight } from "../contract.token.ts"
 import { TextSize, TextTone, TextWeight } from "../scales.pure.ts"
 
-export const TextStyle = Style.make(TextKit)({
+export const TextStyle = Style.make(TextParts)({
   base: { root: { margin: 0, minWidth: 0 } },
   variants: {
     size: Variant.make(TextSize, {

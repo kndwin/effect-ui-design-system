@@ -1,0 +1,37 @@
+{
+  "name": "@acme/design-system",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./Token": "./src/tokens/token.pure.ts",
+    "./TokenColor": "./src/tokens/token-color.make.ts",
+    "./TokenLength": "./src/tokens/token-length.make.ts",
+    "./TokenDuration": "./src/tokens/token-duration.make.ts",
+    "./TokenFont": "./src/tokens/token-font.make.ts",
+    "./TokenShadow": "./src/tokens/token-shadow.make.ts",
+    "./TokenWeight": "./src/tokens/token-weight.make.ts",
+    "./Theme": "./src/theme/theme.make.ts",
+    "./Style": "./src/style/style.make.ts",
+    "./Rule": "./src/style/rule.pure.ts",
+    "./Variant": "./src/variant/variant.make.ts",
+    "./Kit": "./src/kit/kit.make.ts",
+    "./Element": "./src/element/element.pure.ts",
+    "./Manifest": "./src/manifest/manifest.make.ts",
+    "./Compile": "./src/compile/compile.pure.ts"
+  },
+  "scripts": {
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@acme/css-engine": "workspace:*",
+    "csstype": "^3.1.3"
+  },
+  "devDependencies": {
+    "effect": "4.1.6",
+    "vitest": "5.1.1"
+  },
+  "peerDependencies": {
+    "effect": "^4.1.6"
+  }
+}

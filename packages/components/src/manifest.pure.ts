@@ -1,4 +1,4 @@
-import * as Manifest from "@acme/ds/Manifest"
+import * as Manifest from "@acme/design-system/Manifest"
 import { AvatarStyle } from "./avatar/avatar.component.style.ts"
 import { ButtonStyle } from "./button/button.component.style.ts"
 import { CodeBlockStyle } from "./code-block/code-block.component.style.ts"

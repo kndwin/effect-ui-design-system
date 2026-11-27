@@ -1,5 +1,5 @@
-import { type Classable, type Classed, render } from "@acme/ds/kit/element"
-import * as Style from "@acme/ds/Style"
+import { type Classable, type Classed, render } from "@acme/design-system/Element"
+import * as Style from "@acme/design-system/Style"
 import { TextStyle } from "./text.component.style.ts"
 
 export type TextProps = Style.Props<typeof TextStyle> & { readonly class?: string | undefined }

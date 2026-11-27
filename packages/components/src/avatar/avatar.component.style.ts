@@ -1,10 +1,10 @@
-import * as Style from "@acme/ds/Style"
-import * as Variant from "@acme/ds/Variant"
-import { Avatar } from "@acme/ds/kit/avatar"
+import * as Style from "@acme/design-system/Style"
+import * as Variant from "@acme/design-system/Variant"
+import { AvatarParts } from "./avatar.parts.pure.ts"
 import { AvatarSize, Hue, Shape } from "../scales.pure.ts"
 import { Colors, Font, Hues, Radius, Size, Stroke, Text, Weight } from "../contract.token.ts"
 
-export const AvatarStyle = Style.make(Avatar)({
+export const AvatarStyle = Style.make(AvatarParts)({
   base: {
     root: {
       display: "inline-flex",

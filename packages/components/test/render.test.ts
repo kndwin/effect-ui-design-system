@@ -28,7 +28,11 @@ const Demo = Html.component({ name: "Demo", model: Schema.Struct({}), message: M
 describe("components", () => {
   it.effect("Button: variant classes, and loading → disabled + focusable + aria-busy", () =>
     Effect.gen(function* () {
-      const { html } = yield* HtmlServer.renderToHtml(Demo, {})
+      // Arrange
+      const demo = Demo
+      // Act
+      const { html } = yield* HtmlServer.renderToHtml(demo, {})
+      // Assert
       const buttons = [...html.matchAll(/<button[^>]*>/g)].map((m) => m[0])
       for (const cls of [/Button_root__/, /Button_root_tone_primary__/, /Button_root_size_md__/])
         assert.match(buttons[0]!, cls)
@@ -41,7 +45,11 @@ describe("components", () => {
 
   it.effect("Avatar: initials on the server, data-status on the root, hue from the name", () =>
     Effect.gen(function* () {
-      const { html } = yield* HtmlServer.renderToHtml(Demo, {})
+      // Arrange
+      const demo = Demo
+      // Act
+      const { html } = yield* HtmlServer.renderToHtml(demo, {})
+      // Assert
       const root = html.match(/<span class="([^"]*Avatar_root__[^"]+)"[^>]*data-status="(\w+)"/)
       assert.isNotNull(root)
       assert.match(root![1]!, /Avatar_root_size_lg__\w+ \S*Avatar_root_shape_square__\w+ \S*Avatar_root_hue_\w+__\w+/)
@@ -53,7 +61,11 @@ describe("components", () => {
 
   it.effect("CodeBlock: title, copy button, line numbers, marks and token kinds", () =>
     Effect.gen(function* () {
-      const { html } = yield* HtmlServer.renderToHtml(Demo, {})
+      // Arrange
+      const demo = Demo
+      // Act
+      const { html } = yield* HtmlServer.renderToHtml(demo, {})
+      // Assert
       assert.match(html, /<span class="\S*CodeBlock_title__[^"]*">a\.ts<\/span>/)
       assert.match(html, /<button class="\S*CodeBlock_copy__[^"]*"[^>]*aria-label="Copy"/)
       assert.match(html, /data-token="keyword">const<\/span>/)
@@ -64,16 +76,18 @@ describe("components", () => {
   )
 
   it("manifest lists components, slots, variants and the token contract", () => {
+    // Arrange
+    const { components, tokens } = manifest
+    // Act
+    const shape = components.slice(0, 3).map((c) => [c.kit, c.slots, Object.keys(c.variants)])
+    // Assert
+    assert.deepStrictEqual(shape, [
+      ["Button", ["root"], ["tone", "fill", "size"]],
+      ["Avatar", ["root", "image", "fallback"], ["size", "shape", "hue"]],
+      ["CodeBlock", ["root", "header", "title", "copy", "content", "line", "lineNumber", "token"], ["size", "tone"]]
+    ])
     assert.deepStrictEqual(
-      manifest.components.slice(0, 3).map((c) => [c.kit, c.slots, Object.keys(c.variants)]),
-      [
-        ["Button", ["root"], ["tone", "fill", "size"]],
-        ["Avatar", ["root", "image", "fallback"], ["size", "shape", "hue"]],
-        ["CodeBlock", ["root", "header", "title", "copy", "content", "line", "lineNumber", "token"], ["size", "tone"]]
-      ]
-    )
-    assert.deepStrictEqual(
-      manifest.components.slice(3).map((c) => c.kit),
+      components.slice(3).map((c) => c.kit),
       [
         "Stack",
         "StackItem",
@@ -90,6 +104,6 @@ describe("components", () => {
         "Swatch"
       ]
     )
-    assert.deepStrictEqual(manifest.tokens.Colors?.kind, "Color")
+    assert.deepStrictEqual(tokens.Colors?.kind, "Color")
   })
 })

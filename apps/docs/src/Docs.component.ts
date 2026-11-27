@@ -8,7 +8,7 @@ import { HStack, StackItem, VStack } from "@acme/components/layout/stack"
 import { manifest } from "@acme/components/manifest"
 import { Swatch } from "@acme/components/swatch"
 import { Text } from "@acme/components/text"
-import type { Theme } from "@acme/ds/Theme"
+import type { Theme } from "@acme/design-system/Theme"
 import { astryx } from "@acme/theme-astryx"
 import { shadcn } from "@acme/theme-shadcn"
 import { UiSchema } from "@effect/ui"
@@ -299,7 +299,11 @@ const body = (h: H, model: Model, page: Page) => {
         VStack(h.section, { gap: "4" }).children(
           heading(h, "How it fits together"),
           Grid(h.div, { columns: "3", gap: "3", stack: true }).children(
-            stackCard(h, "@acme/ds", "Token kinds, Theme, Variant, Style. Knows ui-kit's parts and data attributes."),
+            stackCard(
+              h,
+              "@acme/design-system",
+              "Token kinds, Theme, Variant, Style. Knows ui-kit's parts and data attributes."
+            ),
             stackCard(h, "@acme/components", "The token contract (names only) and the components styled against it."),
             stackCard(h, "@acme/theme-*", "Values for every token, plus modes. shadcn and astryx ship here.")
           )

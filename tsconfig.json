@@ -1,16 +1,19 @@
 {
   "extends": "./tsconfig.base.json",
-  "compilerOptions": { "types": ["node", "vite/client"] },
+  "compilerOptions": {
+    "types": ["node", "vite/client"]
+  },
   "include": [
     "packages/*/src",
     "packages/*/test",
     "packages/*/vitest.config.ts",
-    "packages/*/*.rule.ts",
+    "packages/*/+rule/**/*.lint.ts",
     "packages/themes/*/src",
     "apps/*/src",
     "apps/*/vite.config.ts",
+    "apps/*/vitest.config.ts",
     "tools",
-    "*.rule.ts",
+    "+rule/**/*.lint.ts",
     "oxlint.config.ts"
   ]
 }

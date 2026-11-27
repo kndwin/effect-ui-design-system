@@ -1,13 +1,13 @@
-import * as Style from "@acme/ds/Style"
-import * as Variant from "@acme/ds/Variant"
-import { Grid, GridSpan } from "@acme/ds/kit/layout"
+import * as Style from "@acme/design-system/Style"
+import * as Variant from "@acme/design-system/Variant"
+import { GridParts, GridSpanParts } from "./layout.parts.pure.ts"
 import { Columns, Space, Span } from "../scales.pure.ts"
 import { Size } from "../contract.token.ts"
 import { space } from "./space.pure.ts"
 
 const cols = (n: number) => ({ root: { gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` } })
 
-export const GridStyle = Style.make(Grid)({
+export const GridStyle = Style.make(GridParts)({
   base: { root: { display: "grid", minWidth: 0 } },
   variants: {
     columns: Variant.make(
@@ -33,7 +33,7 @@ export const GridStyle = Style.make(Grid)({
   }
 })
 
-export const GridSpanStyle = Style.make(GridSpan)({
+export const GridSpanStyle = Style.make(GridSpanParts)({
   base: { root: { minWidth: 0 } },
   variants: {
     span: Variant.make(Span, {
