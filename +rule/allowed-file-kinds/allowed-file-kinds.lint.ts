@@ -80,10 +80,10 @@ export default rules(import.meta.url, {
         Program: (node: unknown) =>
           Match.value(bad).pipe(
             Match.when(undefined, () => Effect.void),
-            Match.orElse((bad) =>
+            Match.orElse((segment) =>
               report(
                 node,
-                `"${bad}" isn't kebab-case: rename it, e.g. profile-card.component.ts. See +rule/allowed-file-kinds/allowed-file-kinds.md.`
+                `"${segment}" isn't kebab-case: rename it, e.g. profile-card.component.ts. See +rule/allowed-file-kinds/allowed-file-kinds.md.`
               )
             )
           )

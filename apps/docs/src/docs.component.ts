@@ -76,7 +76,7 @@ export const Docs = Html.component({ name: "Docs", model: Model, message: Msg })
         ),
         Match.value(model.panel).pipe(
           Match.when(true, () =>
-            LayoutPanel(h.aside, { side: "end" }).attr("aria-label", "Theme builder").children(builder(h, model))
+            LayoutPanel(h.aside, { side: "end" }).attr("aria-label", "Theme").children(builder(h, model))
           ),
           Match.orElse(() => undefined)
         )
@@ -123,11 +123,6 @@ const header = (h: H, model: Model) =>
       ]
     }),
     HStack(h.div, { gap: "2", wrap: true, justify: "end" }).children(
-      segmented(
-        h,
-        "Theme",
-        themes.map((t) => [t.name, t.name, model.theme === t.name, Msg.PickedTheme({ theme: t.name })] as const)
-      ),
       Button(h, {
         size: "sm",
         onPress: Msg.ToggledMode(),
@@ -148,8 +143,8 @@ const header = (h: H, model: Model) =>
         ),
         onPress: Msg.ToggledPanel(),
         children: Match.value(Customize.isCustomized(model.choices)).pipe(
-          Match.when(true, () => "Theme builder •"),
-          Match.orElse(() => "Theme builder")
+          Match.when(true, () => `Theme: ${model.theme} •`),
+          Match.orElse(() => `Theme: ${model.theme}`)
         )
       }),
       Text(h.a, { size: "sm", tone: "muted" })
@@ -198,33 +193,20 @@ const pager = (h: H, page: Page) => {
 
 const builder = (h: H, model: Model) => {
   const c = model.choices
-  const base = currentTheme(model)
   const choose = (patch: Partial<Choices>) => Msg.Chose({ choices: { ...c, ...patch } })
-  const row = (title: string, tokens: ReadonlyArray<string>, content: ReturnType<H["div"]["class"]>) =>
-    VStack(h.section, { gap: "2" }).children(
-      HStack(h.div, { justify: "between", gap: "2", wrap: true }).children(
-        Text(h.h3, { size: "sm", weight: "semibold" }).children(title),
-        HStack(h.div, { gap: "1", wrap: true }).children(...tokens.map((t) => pill(h, t)))
-      ),
-      content
-    )
+  const row = (title: string, content: ReturnType<H["div"]["class"]>) =>
+    VStack(h.section, { gap: "2" }).children(Text(h.h3, { size: "sm", weight: "semibold" }).children(title), content)
   return VStack(h.div, { gap: "6" }).children(
-    HStack(h.div, { justify: "between", align: "start", gap: "2" }).children(
-      VStack(h.div, { gap: "1" }).children(
-        Text(h.h2, { size: "lg", weight: "semibold" }).children("Theme builder"),
-        Text(h.p, { size: "sm", tone: "muted" }).children(
-          "Mix token values from the installed themes. Every choice is a value some theme defines."
-        )
-      ),
+    HStack(h.div, { justify: "between", align: "center", gap: "2" }).children(
+      Text(h.h2, { size: "lg", weight: "semibold" }).children("Theme"),
       Button(h, { tone: "ghost", size: "sm", onPress: Msg.ToggledPanel(), label: "Close", children: "✕" })
     ),
     row(
-      "Start from",
-      ["*.theme.ts", "data-mode"],
+      "Base",
       VStack(h.div, { gap: "2" }).children(
         segmented(
           h,
-          "Base theme",
+          "Theme",
           themes.map((t) => [t.name, t.name, model.theme === t.name, Msg.PickedTheme({ theme: t.name })] as const)
         ),
         segmented(
@@ -248,7 +230,6 @@ const builder = (h: H, model: Model) => {
     ...Customize.controls(themes).map((control) =>
       row(
         control.title,
-        control.tokens,
         HStack(h.div, { gap: "2", wrap: true }).children(
           Button(h, {
             size: "sm",
@@ -284,19 +265,12 @@ const builder = (h: H, model: Model) => {
     ),
     row(
       "Scale",
-      ["× Spacing.*", "Size.*", "Text.*"],
       segmented(
         h,
         "Scale",
         scales.map((s) => [String(s), `${s}%`, c.scale === s, choose({ scale: s })] as const)
       )
     ),
-    CodeBlock(h, {
-      code: Customize.themeSource(c, themes, base),
-      title: "custom.theme.ts",
-      size: "sm",
-      key: "theme-source"
-    }),
     Button(h, { size: "sm", fill: true, onPress: Msg.ResetChoices(), children: "Reset" })
   )
 }
@@ -362,13 +336,13 @@ const stackCard = (h: H, name: string, text: string) =>
   )
 
 const component = (h: H, model: Model, page: Page) => {
-  const info = manifest.components.find((c) => c.kit === page.kit)
+  const kitInfo = manifest.components.find((c) => c.kit === page.kit)
   return [
     VStack(h.section, { gap: "4" }).children(
       heading(h, "Examples"),
       ...examples.filter((e) => e.page === page.id).map((e) => exampleBlock(h, e, model, "preview"))
     ),
-    Match.value(info).pipe(
+    Match.value(kitInfo).pipe(
       Match.when(undefined, () => h.span),
       Match.orElse((info) =>
         VStack(h.section, { gap: "3" }).children(
