@@ -1,4 +1,15 @@
-import { Button, CodeBlock, DS } from "@acme/components"
+// The docs, composed only from @acme/components: layout, Text, Swatch, Button, CodeBlock.
+// There is no docs stylesheet.
+import { Button } from "@acme/components/button"
+import { CodeBlock } from "@acme/components/code-block"
+import { Center } from "@acme/components/layout/center"
+import { Grid } from "@acme/components/layout/grid"
+import { Layout, LayoutContent, LayoutHeader, LayoutPanel } from "@acme/components/layout/layout"
+import { Section } from "@acme/components/layout/section"
+import { HStack, StackItem, VStack } from "@acme/components/layout/stack"
+import { manifest } from "@acme/components/manifest"
+import { Swatch } from "@acme/components/swatch"
+import { Text } from "@acme/components/text"
 import type { Theme } from "@acme/ds/Theme"
 import { astryx } from "@acme/theme-astryx"
 import { shadcn } from "@acme/theme-shadcn"
@@ -17,10 +28,12 @@ type Tab = typeof Tab.Type
 
 const Choices = Schema.Struct({
   accent: Schema.NullOr(Schema.String),
-  gray: Schema.NullOr(Schema.String),
+  neutrals: Schema.NullOr(Schema.String),
   radius: Schema.NullOr(Schema.String),
-  scaling: Schema.Number,
-  font: Schema.NullOr(Schema.String)
+  sizing: Schema.NullOr(Schema.String),
+  font: Schema.NullOr(Schema.String),
+  mono: Schema.NullOr(Schema.String),
+  scale: Schema.Number
 })
 
 const Msg = UiSchema.TaggedEnum({
@@ -48,7 +61,7 @@ type Model = typeof Model.Type
 const currentTheme = (model: Model) => themes.find((t) => t.name === model.theme) ?? themes[0]!
 /** The customizer's CSS variable overrides, as an inline style. */
 const customStyle = (model: Model) =>
-  Customize.styleOf(Customize.overrides(model.choices, currentTheme(model), model.mode)) || undefined
+  Customize.styleOf(Customize.overrides(model.choices, themes, currentTheme(model), model.mode)) || undefined
 
 export const Docs = Html.component({ name: "Docs", model: Model, message: Msg }).make({
   init: () => ({
@@ -69,45 +82,75 @@ export const Docs = Html.component({ name: "Docs", model: Model, message: Msg })
     Chose: ($, { choices }) => $.evolve({ choices }),
     ResetChoices: ($) => $.evolve({ choices: Customize.initialChoices })
   },
-  // The docs chrome sits inside the same data-theme / data-mode as the examples and
-  // reads the same contract variables, so it re-themes with them, customizer included.
+  // The shell sits inside the same data-theme / data-mode as the examples, so it re-themes with them.
   view: (h, model) => {
     const page = pages.find((p) => p.id === model.page) ?? pages[0]!
-    return h.div
-      .class("docs", model.panel && "docs-with-panel")
+    return Layout(h.div)
       .attr("data-theme", model.theme)
       .attr("data-mode", model.mode)
       .attr("style", customStyle(model))
       .children(
         header(h, model),
-        h.div
-          .class("docs-shell")
-          .children(
-            sidebar(h, page),
-            h.main
-              .class("docs-main")
-              .children(
-                h.div.class("docs-eyebrow").children(page.section),
-                h.h1.children(page.title),
-                h.p.class("docs-lead").children(page.lead),
-                ...body(h, model, page),
-                pager(h, page)
-              )
-          ),
-        model.panel ? panel(h, model) : undefined
+        LayoutPanel(h.nav, { side: "start" }).attr("aria-label", "Pages").children(sidebar(h, page)),
+        LayoutContent(h.main).children(
+          VStack(h.div, { gap: "8" }).children(
+            VStack(h.header, { gap: "2" }).children(
+              Text(h.div, { size: "sm", tone: "muted", weight: "medium" }).children(page.section),
+              Text(h.h1, { size: "2xl", weight: "semibold" }).children(page.title),
+              Text(h.p, { size: "lg", tone: "muted" }).children(page.lead)
+            ),
+            ...body(h, model, page),
+            pager(h, page)
+          )
+        ),
+        model.panel
+          ? LayoutPanel(h.aside, { side: "end" }).attr("aria-label", "Theme builder").children(builder(h, model))
+          : undefined
       )
   }
 })
 
-// ─── chrome ────────────────────────────────────────────────────────────────
+// ─── pieces ────────────────────────────────────────────────────────────────
+
+const heading = (h: H, text: string) => Text(h.h2, { size: "xl", weight: "semibold" }).children(text)
+const code = (h: H, text: string) => Text(h.code, { mono: true, size: "xs" }).children(text)
+const pill = (h: H, text: string) =>
+  Text(Section(h.code, { surface: "muted", pad: "1" }), { mono: true, size: "xs", tone: "muted" }).children(text)
+
+const segmented = (
+  h: H,
+  label: string,
+  items: ReadonlyArray<readonly [key: string, text: string, active: boolean, msg: typeof Msg.Type]>
+) =>
+  Section(h.div, { surface: "muted", pad: "1" })
+    .attr("role", "group")
+    .attr("aria-label", label)
+    .children(
+      HStack(h.div, { gap: "1" }).children(
+        ...items.map(([key, text, active, msg]) =>
+          Button(h, {
+            tone: "ghost",
+            size: "sm",
+            pressed: active,
+            onPress: msg,
+            label: `${label}: ${key}`,
+            children: text
+          })
+        )
+      )
+    )
 
 const header = (h: H, model: Model) =>
-  h.header.class("docs-header").children(
-    h.button
-      .class("docs-brand")
-      .on("click", Msg.Navigated({ page: "introduction" }))
-      .children(h.span.class("docs-brand-mark").children("◆"), h.span.children("acme/ui")),
-    h.div.class("docs-header-controls").children(
+  LayoutHeader(h.header).children(
+    Button(h, {
+      tone: "ghost",
+      onPress: Msg.Navigated({ page: "introduction" }),
+      children: [
+        Swatch(h.span, { color: "var(--color-accent)" }),
+        Text(h.span, { weight: "semibold", tone: "default" }).children("acme/ui")
+      ]
+    }),
+    HStack(h.div, { gap: "2", wrap: true, justify: "end" }).children(
       segmented(
         h,
         "Theme",
@@ -116,224 +159,142 @@ const header = (h: H, model: Model) =>
       Button(h, {
         size: "sm",
         onPress: Msg.ToggledMode(),
-        class: "docs-icon-button",
+        label: model.mode === "light" ? "Dark mode" : "Light mode",
         children: model.mode === "light" ? "☾" : "☀"
       }),
       Button(h, {
         size: "sm",
         tone: model.panel ? "primary" : "neutral",
         onPress: Msg.ToggledPanel(),
-        children: Customize.isCustomized(model.choices) ? "Customize •" : "Customize"
+        children: Customize.isCustomized(model.choices) ? "Theme builder •" : "Theme builder"
       }),
-      h.a
-        .class("docs-header-link")
+      Text(h.a, { size: "sm", tone: "muted" })
         .attr("href", "https://github.com/kndwin/effect-ui-design-system")
         .attr("target", "_blank")
         .children("GitHub")
     )
   )
 
-const segmented = (
-  h: H,
-  label: string,
-  items: ReadonlyArray<readonly [key: string, text: string, active: boolean, msg: typeof Msg.Type]>
-) =>
-  h.div
-    .class("docs-segmented")
-    .attr("role", "group")
-    .attr("aria-label", label)
-    .children(
-      ...items.map(([key, text, active, msg]) =>
-        h.button
-          .class("docs-segment", active && "docs-segment-active")
-          .attr("aria-pressed", active ? "true" : "false")
-          .attr("data-key", key)
-          .on("click", msg)
-          .children(text)
-      )
-    )
-
-const sidebar = (h: H, current: Page) => {
-  const sections = [...new Set(pages.map((p) => p.section))]
-  return h.nav.class("docs-nav").children(
-    ...sections.map((section) =>
-      h.div.class("docs-nav-section").children(
-        h.div.class("docs-nav-heading").children(section),
+const sidebar = (h: H, current: Page) =>
+  VStack(h.div, { gap: "6" }).children(
+    ...[...new Set(pages.map((p) => p.section))].map((section) =>
+      VStack(h.div, { gap: "1" }).children(
+        Text(h.div, { size: "xs", weight: "semibold", tone: "muted", caps: true }).children(section),
         ...pages
           .filter((p) => p.section === section)
           .map((p) =>
-            h.button
-              .class("docs-nav-link", p.id === current.id && "docs-nav-link-active")
-              .on("click", Msg.Navigated({ page: p.id }))
-              .children(p.title)
+            Button(h, {
+              tone: "ghost",
+              size: "sm",
+              fill: true,
+              pressed: p.id === current.id,
+              onPress: Msg.Navigated({ page: p.id }),
+              children: p.title
+            })
           )
       )
     )
   )
-}
 
 const pager = (h: H, page: Page) => {
   const i = pages.indexOf(page)
   const prev = pages[i - 1]
   const next = pages[i + 1]
-  return h.div.class("docs-pager").children(
-    prev
-      ? h.button
-          .class("docs-pager-link")
-          .on("click", Msg.Navigated({ page: prev.id }))
-          .children(h.small.children("Previous"), h.span.children(`← ${prev.title}`))
-      : h.span,
-    next
-      ? h.button
-          .class("docs-pager-link", "docs-pager-next")
-          .on("click", Msg.Navigated({ page: next.id }))
-          .children(h.small.children("Next"), h.span.children(`${next.title} →`))
-      : h.span
+  return HStack(h.nav, { justify: "between", gap: "3" }).children(
+    prev ? Button(h, { onPress: Msg.Navigated({ page: prev.id }), children: `← ${prev.title}` }) : h.span,
+    next ? Button(h, { onPress: Msg.Navigated({ page: next.id }), children: `${next.title} →` }) : h.span
   )
 }
 
-// ─── customizer panel ──────────────────────────────────────────────────────
+// ─── theme builder ─────────────────────────────────────────────────────────
 
-const panel = (h: H, model: Model) => {
+const builder = (h: H, model: Model) => {
   const c = model.choices
+  const base = currentTheme(model)
   const choose = (patch: Partial<Customize.Choices>) => Msg.Chose({ choices: { ...c, ...patch } })
-  const section = (title: string, tokens: ReadonlyArray<string>, content: ReturnType<H["div"]["class"]>) =>
-    h.section
-      .class("docs-panel-section")
-      .children(
-        h.div.class("docs-panel-heading").children(h.h3.children(title), h.code.children(tokens.join(" · "))),
-        content
-      )
-  const option = (active: boolean, msg: typeof Msg.Type, cls: string, label: string) =>
-    h.button
-      .class(cls, active && `${cls}-active`)
-      .attr("aria-pressed", active ? "true" : "false")
-      .attr("aria-label", label)
-      .attr("title", label)
-      .on("click", msg)
-  return h.aside
-    .class("docs-panel")
-    .attr("aria-label", "Customize theme")
-    .children(
-      h.div
-        .class("docs-panel-top")
-        .children(
-          h.h2.children("Theme"),
-          h.button.class("docs-panel-close").attr("aria-label", "Close").on("click", Msg.ToggledPanel()).children("✕")
-        ),
-      section(
-        "Base theme",
-        ["@acme/theme-*"],
-        h.div
-          .class("docs-panel-grid docs-panel-grid-2")
-          .children(
-            ...themes.map((t) =>
-              option(model.theme === t.name, Msg.PickedTheme({ theme: t.name }), "docs-tile", t.name).children(t.name)
-            )
-          )
+  const row = (title: string, tokens: ReadonlyArray<string>, content: ReturnType<H["div"]["class"]>) =>
+    VStack(h.section, { gap: "2" }).children(
+      HStack(h.div, { justify: "between", gap: "2", wrap: true }).children(
+        Text(h.h3, { size: "sm", weight: "semibold" }).children(title),
+        HStack(h.div, { gap: "1", wrap: true }).children(...tokens.map((t) => pill(h, t)))
       ),
-      section(
-        "Accent color",
-        Customize.sets.accent,
-        h.div
-          .class("docs-swatches")
-          .children(
-            option(c.accent === null, choose({ accent: null }), "docs-swatch-button", "Theme default").children(
-              h.span.class("docs-swatch-dot docs-swatch-default")
-            ),
-            ...Customize.accents.map(([name, color]) =>
-              option(c.accent === name, choose({ accent: name }), "docs-swatch-button", name).children(
-                h.span.class("docs-swatch-dot").attr("style", `background:${color}`)
-              )
-            )
-          )
-      ),
-      section(
-        "Gray color",
-        Customize.sets.gray,
-        h.div
-          .class("docs-swatches")
-          .children(
-            option(c.gray === null, choose({ gray: null }), "docs-swatch-button", "Theme default").children(
-              h.span.class("docs-swatch-dot docs-swatch-default")
-            ),
-            ...Object.entries(Customize.grays).map(([name, [color]]) =>
-              option(c.gray === name, choose({ gray: name }), "docs-swatch-button", name).children(
-                h.span.class("docs-swatch-dot").attr("style", `background:${color}`)
-              )
-            )
-          )
-      ),
-      section(
-        "Appearance",
-        ["data-mode"],
-        h.div
-          .class("docs-panel-grid docs-panel-grid-2")
-          .children(
-            ...modes.map((m) =>
-              option(model.mode === m, Msg.PickedMode({ mode: m }), "docs-tile", m).children(
-                m === "light" ? "☀  Light" : "☾  Dark"
-              )
-            )
-          )
-      ),
-      section(
-        "Radius",
-        Customize.sets.radius,
-        h.div
-          .class("docs-panel-grid docs-panel-grid-5")
-          .children(
-            ...Object.entries(Customize.radii).map(([name, r]) =>
-              h.div
-                .class("docs-radius")
-                .children(
-                  option(c.radius === name, choose({ radius: name }), "docs-tile", name).children(
-                    h.span
-                      .class("docs-radius-shape")
-                      .attr("style", `border-top-left-radius:${Math.min(r.control, 18)}px`)
-                  ),
-                  h.span.class("docs-radius-label").children(name[0]!.toUpperCase() + name.slice(1))
-                )
-            )
-          )
-      ),
-      section(
-        "Scaling",
-        Customize.sets.scaling,
-        h.div
-          .class("docs-panel-grid docs-panel-grid-5")
-          .children(
-            ...Customize.scalings.map((s) =>
-              option(c.scaling === s, choose({ scaling: s }), "docs-tile", `${s}%`).children(`${s}%`)
-            )
-          )
-      ),
-      section(
-        "Font",
-        Customize.sets.font,
-        h.div.class("docs-panel-grid docs-panel-grid-2").children(
-          option(c.font === null, choose({ font: null }), "docs-tile", "Theme default").children("Default"),
-          ...Object.entries(Customize.fonts).map(([name, stack]) =>
-            option(c.font === name, choose({ font: name }), "docs-tile", name)
-              .attr("style", `font-family:${stack.map((f) => (/^[a-z-]+$/.test(f) ? f : `'${f}'`)).join(",")}`)
-              .children(name)
-          )
+      content
+    )
+  return VStack(h.div, { gap: "6" }).children(
+    HStack(h.div, { justify: "between", align: "start", gap: "2" }).children(
+      VStack(h.div, { gap: "1" }).children(
+        Text(h.h2, { size: "lg", weight: "semibold" }).children("Theme builder"),
+        Text(h.p, { size: "sm", tone: "muted" }).children(
+          "Mix token values from the installed themes. Every choice is a value some theme defines."
         )
       ),
-      h.section.class("docs-panel-section").children(
-        h.div
-          .class("docs-panel-heading")
-          .children(h.h3.children("Copy theme"), h.code.children("Theme.make(Tokens, …)")),
-        CodeBlock(h, {
-          code: Customize.themeSource(c, currentTheme(model)),
-          title: "theme.css.ts",
-          size: "sm",
-          key: "theme-source",
-          class: "docs-panel-code"
-        }),
-        Button(h, { size: "sm", onPress: Msg.ResetChoices(), children: "Reset", class: "docs-panel-reset" })
+      Button(h, { tone: "ghost", size: "sm", onPress: Msg.ToggledPanel(), label: "Close", children: "✕" })
+    ),
+    row(
+      "Start from",
+      ["*.theme.ts", "data-mode"],
+      VStack(h.div, { gap: "2" }).children(
+        segmented(
+          h,
+          "Base theme",
+          themes.map((t) => [t.name, t.name, model.theme === t.name, Msg.PickedTheme({ theme: t.name })] as const)
+        ),
+        segmented(
+          h,
+          "Mode",
+          modes.map(
+            (m) => [m, m === "light" ? "☀ Light" : "☾ Dark", model.mode === m, Msg.PickedMode({ mode: m })] as const
+          )
+        )
       )
-    )
+    ),
+    ...Customize.controls(themes).map((control) =>
+      row(
+        control.title,
+        control.tokens,
+        HStack(h.div, { gap: "2", wrap: true }).children(
+          Button(h, {
+            size: "sm",
+            pressed: c[control.id] === null,
+            onPress: choose({ [control.id]: null }),
+            children: "Base"
+          }),
+          ...control.options.map((o) =>
+            Button(h, {
+              size: "sm",
+              pressed: c[control.id] === o.id,
+              onPress: choose({ [control.id]: o.id }),
+              label: o.source,
+              children: [
+                ...(o.swatch ? [Swatch(h.span, { color: o.swatch(model.mode), size: "sm", round: true })] : []),
+                control.id === "font" || control.id === "mono"
+                  ? h.span.attr("style", `font-family:${o.sample}`).children(o.label)
+                  : control.id === "radius" && o.sample
+                    ? `${o.label} · ${o.sample}`
+                    : o.label
+              ]
+            })
+          )
+        )
+      )
+    ),
+    row(
+      "Scale",
+      ["× Spacing.*", "Size.*", "Text.*"],
+      segmented(
+        h,
+        "Scale",
+        Customize.scales.map((s) => [String(s), `${s}%`, c.scale === s, choose({ scale: s })] as const)
+      )
+    ),
+    CodeBlock(h, {
+      code: Customize.themeSource(c, themes, base),
+      title: "custom.theme.ts",
+      size: "sm",
+      key: "theme-source"
+    }),
+    Button(h, { size: "sm", fill: true, onPress: Msg.ResetChoices(), children: "Reset" })
+  )
 }
 
 // ─── pages ─────────────────────────────────────────────────────────────────
@@ -343,48 +304,47 @@ const body = (h: H, model: Model, page: Page) => {
     case "introduction":
       return [
         ...examples.filter((e) => e.page === "introduction").map((e) => exampleBlock(h, e, model, "themes")),
-        h.h2.children("How it fits together"),
-        h.div
-          .class("docs-stack")
-          .children(
+        VStack(h.section, { gap: "4" }).children(
+          heading(h, "How it fits together"),
+          Grid(h.div, { columns: "3", gap: "3", stack: true }).children(
             stackCard(h, "@acme/ds", "Token kinds, Theme, Variant, Style. Knows ui-kit's parts and data attributes."),
             stackCard(h, "@acme/components", "The token contract (names only) and the components styled against it."),
             stackCard(h, "@acme/theme-*", "Values for every token, plus modes. shadcn and astryx ship here.")
-          ),
-        h.h2.children("Usage"),
-        CodeBlock(h, { code: installCommand, language: "shell", key: "install" }),
-        h.div.class("docs-gap"),
-        CodeBlock(h, { code: install, title: "main.ts", key: "usage" })
+          )
+        ),
+        VStack(h.section, { gap: "3" }).children(
+          heading(h, "Usage"),
+          CodeBlock(h, { code: installCommand, language: "shell", key: "install" }),
+          CodeBlock(h, { code: install, title: "main.ts", key: "usage" })
+        )
       ]
     case "theming":
       return [
-        h.h2.children("The contract"),
-        h.p.children(
-          "Names and kinds only. Each module (TokenColor, TokenLength, …) makes one kind, so a Length can't land where a Color is expected."
+        VStack(h.section, { gap: "3" }).children(
+          heading(h, "The contract"),
+          Text(h.p).children(
+            "Names and kinds only. Each module (TokenColor, TokenLength, …) makes one kind, so a Length can't land where a Color is expected."
+          ),
+          CodeBlock(h, {
+            code: sources.contract,
+            title: "packages/components/src/contract.token.ts",
+            lineNumbers: true,
+            key: "contract"
+          })
         ),
-        CodeBlock(h, {
-          code: sources.contract,
-          title: "packages/components/src/tokens.ts",
-          lineNumbers: true,
-          key: "contract"
-        }),
-        h.h2.children("A theme"),
-        h.p.children(
-          'Theme.make won\'t compile unless every key is filled in. Values are decoded at build time, so "purple" for a colour fails vite build with the theme, mode and path. Or open Customize to build one.'
-        ),
-        ...themes.map((t) =>
-          h.details
-            .class("docs-details")
-            .attr("open", t.name === model.theme ? "" : undefined)
-            .children(
-              h.summary.children(`@acme/theme-${t.name}`),
-              CodeBlock(h, {
-                code: sources.themes[t.name as keyof typeof sources.themes],
-                title: `packages/themes/${t.name}/src/theme.css.ts`,
-                lineNumbers: true,
-                key: `theme-${t.name}`
-              })
-            )
+        VStack(h.section, { gap: "3" }).children(
+          heading(h, "A theme"),
+          Text(h.p).children(
+            'Theme.make won\'t compile unless every key is filled in. Values are decoded at build time, so "purple" for a colour fails the build with the theme, mode and path. Or open the theme builder to make one.'
+          ),
+          ...themes.map((t) =>
+            CodeBlock(h, {
+              code: sources.themes[t.name as keyof typeof sources.themes],
+              title: `packages/themes/${t.name}/src/${t.name}.theme.ts`,
+              lineNumbers: true,
+              key: `theme-${t.name}`
+            })
+          )
         )
       ]
     case "tokens":
@@ -395,79 +355,77 @@ const body = (h: H, model: Model, page: Page) => {
 }
 
 const stackCard = (h: H, name: string, text: string) =>
-  h.div.class("docs-stack-card").children(h.code.children(name), h.p.children(text))
+  Section(h.div, { surface: "card", pad: "4", gap: "2" }).children(
+    Text(h.code, { mono: true, weight: "semibold", size: "sm" }).children(name),
+    Text(h.p, { size: "sm", tone: "muted" }).children(text)
+  )
 
 const component = (h: H, model: Model, page: Page) => {
-  const info = DS.manifest.components.find((c) => c.kit === page.kit)
+  const info = manifest.components.find((c) => c.kit === page.kit)
   return [
-    h.h2.children("Examples"),
-    ...examples.filter((e) => e.page === page.id).map((e) => exampleBlock(h, e, model, "preview")),
-    h.h2.children("API"),
+    VStack(h.section, { gap: "4" }).children(
+      heading(h, "Examples"),
+      ...examples.filter((e) => e.page === page.id).map((e) => exampleBlock(h, e, model, "preview"))
+    ),
     info
-      ? h.div
-          .class("docs-table-wrap")
-          .children(
-            h.table
-              .class("docs-table")
-              .children(
-                h.thead.children(
-                  h.tr.children(h.th.children("Variant"), h.th.children("Values"), h.th.children("Default"))
-                ),
-                h.tbody.children(
-                  ...Object.entries(info.variants).map(([name, v]) =>
-                    h.tr.children(
-                      h.td.children(h.code.class("docs-prop").children(name)),
-                      h.td.children(...v.values.map((value) => h.code.class("docs-pill").children(value))),
-                      h.td.children(
-                        v.default === undefined ? h.em.children("from name") : h.code.children(String(v.default))
-                      )
-                    )
-                  )
-                )
-              )
-          )
+      ? VStack(h.section, { gap: "3" }).children(
+          heading(h, "API"),
+          Section(h.div, { surface: "card", pad: "4" }).children(
+            Grid(h.div, { columns: "3", gap: "3" }).children(
+              ...["Variant", "Values", "Default"].map((t) =>
+                Text(h.div, { size: "xs", tone: "muted", weight: "medium" }).children(t)
+              ),
+              ...Object.entries(info.variants).flatMap(([name, v]) => [
+                Text(h.code, { mono: true, size: "sm", weight: "medium" }).children(name),
+                HStack(h.div, { gap: "1", wrap: true }).children(...v.values.map((value) => pill(h, value))),
+                v.default === undefined
+                  ? Text(h.em, { size: "sm", tone: "muted" }).children("derived")
+                  : code(h, String(v.default))
+              ])
+            )
+          ),
+          Text(h.p, { size: "sm", tone: "muted" }).children(`Slots: ${info.slots.join(", ")}`)
+        )
       : h.span,
-    info ? h.p.class("docs-muted").children(`Slots: ${info.slots.join(", ")}`) : h.span,
-    h.h2.children("Styles"),
-    h.p.children("The whole component's look is this file. It only references the token contract."),
     page.style
-      ? CodeBlock(h, { code: page.style, title: page.styleFile, lineNumbers: true, key: `style-${page.id}` })
+      ? VStack(h.section, { gap: "3" }).children(
+          heading(h, "Styles"),
+          Text(h.p).children("The whole component's look is this file. It only references the token contract."),
+          CodeBlock(h, { code: page.style, title: page.styleFile, lineNumbers: true, key: `style-${page.id}` })
+        )
       : h.span
   ]
 }
 
 const tokens = (h: H) =>
-  Object.entries(DS.manifest.tokens).map(([group, t]) =>
-    h.section.class("docs-token-group").children(
-      h.h2.children(group, h.span.class("docs-token-kind").children(`${t.kind} · --${t.prefix}-*`)),
-      h.div.class("docs-table-wrap").children(
-        h.table.class("docs-table").children(
-          h.thead.children(
-            h.tr.children(
-              h.th.children("Token"),
-              ...themes.flatMap((th) => modes.map((m) => h.th.children(`${th.name} · ${m}`)))
-            )
+  Object.entries(manifest.tokens).map(([group, t]) =>
+    VStack(h.section, { gap: "3" }).children(
+      HStack(h.div, { gap: "3", align: "baseline", wrap: true }).children(
+        heading(h, group),
+        Text(h.span, { mono: true, size: "xs", tone: "muted" }).children(`${t.kind} · --${t.prefix}-*`)
+      ),
+      Section(h.div, { surface: "card", pad: "4" }).children(
+        Grid(h.div, { columns: "5", gap: "2" }).children(
+          ...["Token", ...themes.flatMap((th) => modes.map((m) => `${th.name} · ${m}`))].map((label) =>
+            Text(h.div, { size: "xs", tone: "muted", weight: "medium", truncate: true }).children(label)
           ),
-          h.tbody.children(
-            ...t.keys.map((key) => {
-              const name = `--${t.prefix}-${key.replaceAll(".", "_")}`
-              return h.tr.children(
-                h.td.children(h.code.class("docs-prop").children(`${group}.${key}`)),
-                ...themes.flatMap((th) =>
-                  modes.map((m) => {
-                    const dark = (th.vars.modes as Record<string, Record<string, string>>)["dark"]
-                    const value = (m === "dark" ? dark?.[name] : undefined) ?? th.vars.base[name] ?? ""
-                    return h.td
-                      .class("docs-token-value")
-                      .children(
-                        t.kind === "Color" ? h.span.class("docs-swatch").attr("style", `background:${value}`) : h.span,
-                        h.code.children(value)
-                      )
-                  })
-                )
+          ...t.keys.flatMap((key) => {
+            const name = `--${t.prefix}-${key.replaceAll(".", "_")}`
+            return [
+              Text(h.code, { mono: true, size: "xs", weight: "medium", truncate: true }).children(`${group}.${key}`),
+              ...themes.flatMap((th) =>
+                modes.map((m) => {
+                  const value = Customize.varsOf(th, m)[name] ?? ""
+                  return HStack(h.div, { gap: "2" }).children(
+                    t.kind === "Color" ? Swatch(h.span, { color: value, size: "sm" }) : h.span,
+                    Text(h.code, { mono: true, size: "xs", tone: "muted", truncate: true })
+                      .attr("title", value)
+                      .children(value)
+                  )
+                })
               )
-            })
-          )
+            ]
+          })
         )
       )
     )
@@ -477,46 +435,44 @@ const tokens = (h: H) =>
 
 const exampleBlock = (h: H, example: Example, model: Model, initial: Tab) => {
   const tab = model.tabs[example.id] ?? initial
-  const tabButton = (t: Tab, label: string) =>
-    h.button
-      .class("docs-tab", tab === t && "docs-tab-active")
-      .attr("aria-selected", tab === t ? "true" : "false")
-      .attr("role", "tab")
-      .on("click", Msg.PickedTab({ id: example.id, tab: t }))
-      .children(label)
-  // A frame re-declares its theme's variables, so the customizer's overrides go on it
-  // too. The Themes grid shows the stock themes.
+  // A frame re-declares its theme's variables, so the builder's overrides go on it too.
+  // The Themes grid shows the stock themes.
   const frame = (theme: string, mode: string, labelled: boolean, style?: string) =>
-    h.div
-      .class("docs-frame")
+    Section(h.div, { surface: "base", pad: "6", gap: "4" })
       .attr("data-theme", theme)
       .attr("data-mode", mode)
       .attr("style", style)
       .children(
-        labelled ? h.span.class("docs-frame-label").children(`${theme} · ${mode}`) : h.span,
-        example.component(h, { key: `${example.id}:${theme}:${mode}` })
+        labelled ? Text(h.span, { size: "xs", tone: "muted" }).children(`${theme} · ${mode}`) : h.span,
+        Center(h.div).children(example.component(h, { key: `${example.id}:${theme}:${mode}` }))
       )
-  return h.section.class("docs-example").children(
-    h.div
-      .class("docs-example-bar")
-      .children(
-        h.h3.children(example.title),
-        h.div
-          .class("docs-tabs")
+  return Section(h.section, { surface: "card" }).children(
+    Section(h.div, { pad: "3", divided: true }).children(
+      HStack(h.div, { justify: "between", gap: "2", wrap: true }).children(
+        StackItem(Text(h.h3, { size: "sm", weight: "medium" }), { grow: true }).children(example.title),
+        HStack(h.div, { gap: "1" })
           .attr("role", "tablist")
-          .children(tabButton("preview", "Preview"), tabButton("themes", "Themes"), tabButton("code", "Code"))
-      ),
+          .children(
+            ...(["preview", "themes", "code"] as const).map((t) =>
+              Button(h, {
+                tone: "ghost",
+                size: "sm",
+                pressed: tab === t,
+                onPress: Msg.PickedTab({ id: example.id, tab: t }),
+                children: t[0]!.toUpperCase() + t.slice(1)
+              })
+            )
+          )
+      )
+    ),
     tab === "code"
-      ? CodeBlock(h, {
-          code: example.source.trim(),
-          title: example.file,
-          key: `code-${example.id}`,
-          class: "docs-example-code"
-        })
+      ? Section(h.div, { pad: "3" }).children(
+          CodeBlock(h, { code: example.source.trim(), title: example.file, key: `code-${example.id}` })
+        )
       : tab === "themes"
-        ? h.div.class("docs-frames").children(...themes.flatMap((t) => modes.map((m) => frame(t.name, m, true))))
-        : h.div
-            .class("docs-frames docs-frames-single")
-            .children(frame(model.theme, model.mode, false, customStyle(model)))
+        ? Grid(h.div, { columns: "2", stack: true }).children(
+            ...themes.flatMap((t) => modes.map((m) => frame(t.name, m, true)))
+          )
+        : frame(model.theme, model.mode, false, customStyle(model))
   )
 }

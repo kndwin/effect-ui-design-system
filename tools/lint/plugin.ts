@@ -1,7 +1,17 @@
 // Local oxlint plugin, written with effect-oxlint. Loaded through `jsPlugins` in .oxlintrc.json.
+import { existsSync } from "node:fs"
+import { dirname, join, parse } from "node:path"
 import * as Effect from "effect/Effect"
 import { Diagnostic, Plugin, Rule, RuleContext } from "effect-oxlint"
 import { allowedList, isGoverned, kindOf } from "./file-kinds.pure.ts"
+
+/** The nearest `doc` file in `dir` or an ancestor. */
+const findDoc = (dir: string, doc: string): string | undefined => {
+  for (let d = dir; d !== parse(d).root; d = dirname(d)) {
+    if (existsSync(join(d, doc))) return join(d, doc)
+  }
+  return undefined
+}
 
 const report = (node: any, message: string) =>
   Effect.gen(function* () {
@@ -20,11 +30,21 @@ const fileKind = Rule.define({
       Program: (node: any) => {
         if (!isGoverned(path)) return Effect.void
         const kind = kindOf(path)
-        if (kind === undefined) return report(node, `Unknown file kind. Rename to one of: ${allowedList}.`)
+        if (kind === undefined) {
+          return report(
+            node,
+            path.endsWith("/index.ts")
+              ? "No barrel files: export from the file itself and add it to package.json `exports`."
+              : `Unknown file kind. Rename to one of: ${allowedList}.`
+          )
+        }
+        const name = "name" in kind ? kind.name : kind.suffix
         const inTest = /\/test\//.test(path)
-        if ((kind === ".test.ts" || kind === ".test-d.ts") !== inTest)
+        if ((name === ".test.ts" || name === ".test-d.ts") !== inTest)
           return report(node, inTest ? "Files in test/ must be *.test.ts or *.test-d.ts." : "Tests belong in test/.")
-        if (kind === "main.ts" && !/\/apps\//.test(path)) return report(node, "main.ts is for app entries (apps/*).")
+        if (name === "main.ts" && !/\/apps\//.test(path)) return report(node, "main.ts is for app entries (apps/*).")
+        if ("doc" in kind && findDoc(dirname(path), kind.doc) === undefined)
+          return report(node, `*${name} files need a ${kind.doc} in this folder or an ancestor, explaining the rule.`)
         return Effect.void
       }
     }
@@ -108,7 +128,7 @@ const vanillaImports = Rule.define({
         node.importKind !== "type" &&
         typeof node.source?.value === "string" &&
         node.source.value.startsWith("@vanilla-extract/")
-          ? report(node, "vanilla-extract runs at build time: import it only from *.css.ts or *.vanilla.ts.")
+          ? report(node, "vanilla-extract is a build detail: use Style.make / Theme.make; only tools/vite imports it.")
           : Effect.void
     }
   }
@@ -124,7 +144,7 @@ const check = (node: any, text: unknown) => {
   return match
     ? report(
         node,
-        `Raw value ${JSON.stringify(match[0])}: use a token from tokens.pure.ts. Need one that doesn't exist? Stop and ask; don't hard-code a value.`
+        `Raw value ${JSON.stringify(match[0])}: use a token from contract.token.ts. Need one that doesn't exist? Stop and ask; don't hard-code a value.`
       )
     : Effect.void
 }

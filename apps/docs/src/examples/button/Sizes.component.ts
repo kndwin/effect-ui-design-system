@@ -1,4 +1,5 @@
-import { Button } from "@acme/components"
+import { Button } from "@acme/components/button"
+import { HStack } from "@acme/components/layout/stack"
 import { Html } from "@effect/ui/html"
 import { Schema } from "effect"
 
@@ -9,12 +10,10 @@ export default Html.component({ name: "ButtonSizes", model: Schema.Null, message
   init: () => null,
   update: ($) => $.model,
   view: (h) =>
-    h.div
-      .class("example-row")
-      .children(
-        Button(h, { size: "sm", tone: "primary", children: "Small" }),
-        Button(h, { size: "md", tone: "primary", children: "Medium" }),
-        Button(h, { size: "sm", children: "Small" }),
-        Button(h, { size: "md", children: "Medium" })
-      )
+    HStack(h.div, { gap: "3", wrap: true, justify: "center" }).children(
+      Button(h, { size: "sm", tone: "primary", children: "Small" }),
+      Button(h, { size: "md", tone: "primary", children: "Medium" }),
+      Button(h, { size: "sm", children: "Small" }),
+      Button(h, { size: "md", children: "Medium" })
+    )
 })

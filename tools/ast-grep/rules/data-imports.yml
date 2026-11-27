@@ -1,0 +1,14 @@
+id: data-imports
+language: TypeScript
+severity: error
+message: Style, token and theme files only import @acme/* modules and local files, so they stay plain data.
+files:
+  - "packages/**/src/**/*.component.style.ts"
+  - "packages/**/src/**/*.token.ts"
+  - "packages/**/src/**/*.theme.ts"
+rule:
+  kind: import_statement
+  has:
+    field: source
+    not:
+      regex: ^["'](@acme/|\.)

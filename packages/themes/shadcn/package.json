@@ -4,11 +4,10 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/theme.css.ts"
+    ".": "./src/shadcn.theme.ts"
   },
   "dependencies": {
     "@acme/components": "workspace:*",
-    "@acme/ds": "workspace:*",
-    "@vanilla-extract/css": "^1.21.3"
+    "@acme/ds": "workspace:*"
   }
 }

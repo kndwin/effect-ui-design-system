@@ -1,3 +1,4 @@
-import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin"
 import { defineConfig } from "vitest/config"
-export default defineConfig({ plugins: [vanillaExtractPlugin()], test: { include: ["test/**/*.test.ts"] } })
+import { acmeStyles } from "../../tools/vite/acme-styles.ts"
+
+export default defineConfig({ plugins: [acmeStyles()], test: { include: ["test/**/*.test.ts"] } })

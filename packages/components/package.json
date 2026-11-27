@@ -4,22 +4,31 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts",
-    "./tokens": "./src/tokens.pure.ts"
+    "./button": "./src/button/button.component.ts",
+    "./avatar": "./src/avatar/avatar.component.ts",
+    "./code-block": "./src/code-block/code-block.component.ts",
+    "./tokens": "./src/contract.token.ts",
+    "./scales": "./src/scales.pure.ts",
+    "./manifest": "./src/manifest.pure.ts",
+    "./layout/stack": "./src/layout/stack.component.ts",
+    "./layout/grid": "./src/layout/grid.component.ts",
+    "./layout/center": "./src/layout/center.component.ts",
+    "./layout/section": "./src/layout/section.component.ts",
+    "./layout/layout": "./src/layout/layout.component.ts",
+    "./text": "./src/text/text.component.ts",
+    "./swatch": "./src/swatch/swatch.component.ts"
   },
   "scripts": {
     "test": "vitest run"
   },
   "dependencies": {
     "@acme/ds": "workspace:*",
-    "@vanilla-extract/css": "^1.21.3",
     "@vanilla-extract/recipes": "^0.5.7"
   },
   "devDependencies": {
     "@effect/ui": "link:../../vendor/effect-ui/packages/ui",
     "@effect/ui-kit": "link:../../vendor/effect-ui/packages/ui-kit",
     "@effect/vitest": "4.1.6",
-    "@vanilla-extract/vite-plugin": "^5.2.6",
     "effect": "4.1.6",
     "vitest": "5.1.1"
   },

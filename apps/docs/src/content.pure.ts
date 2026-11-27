@@ -1,11 +1,11 @@
 // Page metadata and the real source files the docs show. Everything shown as code
 // is imported with ?raw, so the docs can't drift from what's in the repo.
-import avatarStyle from "../../../packages/components/src/avatar.css.ts?source"
-import codeBlockStyle from "../../../packages/components/src/code-block.css.ts?source"
-import buttonStyle from "../../../packages/components/src/button.css.ts?source"
-import contract from "../../../packages/components/src/tokens.pure.ts?source"
-import astryxTheme from "../../../packages/themes/astryx/src/theme.css.ts?source"
-import shadcnTheme from "../../../packages/themes/shadcn/src/theme.css.ts?source"
+import avatarStyle from "../../../packages/components/src/avatar/avatar.component.style.ts?raw"
+import codeBlockStyle from "../../../packages/components/src/code-block/code-block.component.style.ts?raw"
+import buttonStyle from "../../../packages/components/src/button/button.component.style.ts?raw"
+import contract from "../../../packages/components/src/contract.token.ts?raw"
+import astryxTheme from "../../../packages/themes/astryx/src/astryx.theme.ts?raw"
+import shadcnTheme from "../../../packages/themes/shadcn/src/shadcn.theme.ts?raw"
 
 export interface Page {
   readonly id: string
@@ -38,7 +38,7 @@ export const pages: ReadonlyArray<Page> = [
     lead: "A native button with tones and sizes. Loading keeps it focusable and marks it busy.",
     kit: "Button",
     style: buttonStyle,
-    styleFile: "packages/components/src/button.css.ts"
+    styleFile: "packages/components/src/button/button.component.style.ts"
   },
   {
     id: "avatar",
@@ -47,7 +47,7 @@ export const pages: ReadonlyArray<Page> = [
     lead: "A picture with initials until it loads. The initials and their colour come from the name; the root carries data-status so styles can follow the load.",
     kit: "Avatar",
     style: avatarStyle,
-    styleFile: "packages/components/src/avatar.css.ts"
+    styleFile: "packages/components/src/avatar/avatar.component.style.ts"
   },
   {
     id: "code-block",
@@ -56,7 +56,7 @@ export const pages: ReadonlyArray<Page> = [
     lead: "Code with a title, copy button, line numbers and line marks, after shadcn's code-block. It has no ui-kit counterpart, so the design system owns its DOM; token colours come from the Syntax tokens.",
     kit: "CodeBlock",
     style: codeBlockStyle,
-    styleFile: "packages/components/src/code-block.css.ts"
+    styleFile: "packages/components/src/code-block/code-block.component.style.ts"
   },
   {
     id: "tokens",
@@ -74,7 +74,8 @@ export const install = `// main.ts
 import "@acme/theme-shadcn"
 
 // anywhere in a view
-import { Avatar, Button } from "@acme/components"
+import { Avatar } from "@acme/components/avatar"
+import { Button } from "@acme/components/button"
 
 h.div.attr("data-theme", "shadcn").attr("data-mode", "dark").children(
   Avatar(h, { name: "Ada Lovelace", src: user.photo }),

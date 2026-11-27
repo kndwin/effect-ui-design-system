@@ -16,12 +16,13 @@
   "jsPlugins": ["./tools/lint/plugin.ts"],
   "overrides": [
     {
-      "files": ["**/*.pure.ts"],
+      // data files: no side effects (see rule.pure.md)
+      "files": ["**/*.pure.ts", "**/*.component.style.ts", "**/*.token.ts", "**/*.theme.ts"],
       "rules": { "acme/pure": "error" }
     },
     {
       // Component styles may only use tokens: no raw colours, lengths or durations.
-      "files": ["packages/components/src/**/*.css.ts"],
+      "files": ["**/*.component.style.ts"],
       "rules": { "acme/tokens-only": "error" }
     }
   ]

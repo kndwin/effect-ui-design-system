@@ -1,141 +1,245 @@
-// The theme customizer. Every control is declared against the exported token refs
-// (Colors.accent, Radius.control, …), so what it can change is exactly the contract.
+// The theme builder. Every choice is read from the installed themes' token values: an accent is a
+// theme's Colors.accent or one of its Hues, neutrals / sizing / fonts are a theme's whole set, and
+// radius is a theme's Radius values (or none / Radius.full). Only Scale is a transform.
 // It produces (1) CSS variable overrides for the live preview and (2) a Theme.make file.
-import { Code, Colors, DS, Font, Radius, Size, Spacing, Text } from "@acme/components"
+import { Code, Colors, Font, Hues, Radius, Size, Spacing, Text } from "@acme/components/tokens"
+import { manifest } from "@acme/components/manifest"
 import type { Theme } from "@acme/ds/Theme"
+
+export type Mode = "light" | "dark"
+type Vars = Readonly<Record<string, string>>
 
 /** `var(--color-accent)` → `--color-accent` */
 const v = (ref: string) => ref.slice(4, -1)
+/** `Colors`, `var(--color-accent)` → `Colors.accent` */
 const label = (group: string, ref: string) => `${group}.${v(ref).split("-").slice(3).join("-")}`
+const refs = (group: object) => Object.values(group).filter((x): x is string => typeof x === "string")
 
-export type Mode = "light" | "dark"
+/** A theme's resolved variables in a mode. */
+export const varsOf = (theme: Theme, mode: Mode): Vars => ({
+  ...theme.vars.base,
+  ...(mode === "dark" ? (theme.vars.modes as Record<string, Vars>)["dark"] : undefined)
+})
 
-// ─── choices ──────────────────────────────────────────────────────────────
-
-/** Radix-style step-9 accents. Light accents get dark text. */
-export const accents = [
-  ["gray", "#8d8d8d"],
-  ["gold", "#978365"],
-  ["bronze", "#a18072"],
-  ["brown", "#ad7f58"],
-  ["yellow", "#ffe629", true],
-  ["amber", "#ffc53d", true],
-  ["orange", "#f76b15"],
-  ["tomato", "#e54d2e"],
-  ["red", "#e5484d"],
-  ["ruby", "#e54666"],
-  ["crimson", "#e93d82"],
-  ["pink", "#d6409f"],
-  ["plum", "#ab4aba"],
-  ["purple", "#8e4ec6"],
-  ["violet", "#6e56cf"],
-  ["iris", "#5b5bd6"],
-  ["indigo", "#3e63dd"],
-  ["blue", "#0090ff"],
-  ["cyan", "#00a2c7"],
-  ["teal", "#12a594"],
-  ["jade", "#29a383"],
-  ["green", "#30a46c"],
-  ["grass", "#46a758"],
-  ["lime", "#bdee63", true],
-  ["mint", "#86ead4", true],
-  ["sky", "#7ce2fe", true]
-] as const satisfies ReadonlyArray<readonly [string, string, boolean?]>
-
-/** Neutral families: [swatch, light: muted surface / border / muted text, dark: same] */
-export const grays = {
-  gray: ["#8d8d8d", ["#f0f0f0", "#d9d9d9", "#646464"], ["#222222", "#3a3a3a", "#b4b4b4"]],
-  mauve: ["#8e8c99", ["#f2eff3", "#dbd8e0", "#65636d"], ["#232225", "#3c393f", "#b5b2bc"]],
-  slate: ["#8b8d98", ["#f0f0f3", "#d9d9e0", "#60646c"], ["#212225", "#363a3f", "#b0b4ba"]],
-  sage: ["#868e8b", ["#eff1f0", "#d7dad9", "#5f6563"], ["#202221", "#373b39", "#adb5b2"]],
-  olive: ["#898e87", ["#eff1ef", "#d7dad7", "#60655f"], ["#212220", "#383a36", "#afb5ad"]],
-  sand: ["#8d8d86", ["#f1f0ef", "#dad9d6", "#63635e"], ["#222221", "#3b3a37", "#b5b3ad"]]
-} as const
-
-export const radii = {
-  none: { control: 0, container: 0, avatarSquare: 0 },
-  small: { control: 4, container: 8, avatarSquare: 4 },
-  medium: { control: 8, container: 12, avatarSquare: 8 },
-  large: { control: 12, container: 16, avatarSquare: 12 },
-  full: { control: 9999, container: 24, avatarSquare: 9999 }
-} as const
-
-export const scalings = [90, 95, 100, 105, 110] as const
-
-export const fonts = {
-  Geist: ["Geist", "ui-sans-serif", "system-ui", "sans-serif"],
-  Inter: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
-  Figtree: ["Figtree", "system-ui", "sans-serif"],
-  System: ["system-ui", "sans-serif"]
-} as const
-
-// ─── which tokens each control sets ───────────────────────────────────────
-
-export const sets = {
-  accent: [label("Colors", Colors.accent), label("Colors", Colors.ring), label("Colors", Colors.accentFg)],
-  gray: [
-    label("Colors", Colors.surfaceMuted),
-    label("Colors", Colors.border),
-    label("Colors", Colors.fgMuted),
-    label("Code", Code.surface),
-    label("Code", Code.border)
-  ],
-  radius: [label("Radius", Radius.control), label("Radius", Radius.container), label("Radius", Radius.avatarSquare)],
-  scaling: ["Spacing.*", "Size.*", "Text.*"],
-  font: [label("Font", Font.body)]
+export interface Option {
+  readonly id: string
+  readonly label: string
+  /** where the value comes from, e.g. `astryx · Hues.blue` */
+  readonly source: string
+  readonly swatch?: (mode: Mode) => string
+  readonly sample?: string
+  readonly set: (mode: Mode) => Vars
 }
+
+export interface Control {
+  readonly id: "accent" | "neutrals" | "radius" | "sizing" | "font" | "mono"
+  readonly title: string
+  readonly tokens: ReadonlyArray<string>
+  readonly options: ReadonlyArray<Option>
+}
+
+const radiusOf = (t: Theme) => varsOf(t, "light")
+const pick = (vars: Vars, group: object) => Object.fromEntries(refs(group).map((r) => [v(r), vars[v(r)] ?? ""]))
+
+export const controls = (themes: ReadonlyArray<Theme>): ReadonlyArray<Control> => {
+  const accent: Array<Option> = []
+  const seen = new Set<string>()
+  const add = (o: Option) => {
+    const key = o.swatch?.("light") ?? o.id
+    if (!seen.has(key)) {
+      seen.add(key)
+      accent.push(o)
+    }
+  }
+  for (const t of themes) {
+    add({
+      id: `${t.name}:accent`,
+      label: `${t.name}`,
+      source: `${t.name} · Colors.accent`,
+      swatch: (m) => varsOf(t, m)[v(Colors.accent)] ?? "",
+      set: (m) => {
+        const x = varsOf(t, m)
+        return {
+          [v(Colors.accent)]: x[v(Colors.accent)]!,
+          [v(Colors.accentFg)]: x[v(Colors.accentFg)]!,
+          [v(Colors.ring)]: x[v(Colors.ring)]!
+        }
+      }
+    })
+  }
+  for (const t of themes) {
+    for (const ref of refs(Hues).filter((r) => r !== Hues.onHue)) {
+      const name = label("Hues", ref).split(".")[1]!
+      add({
+        id: `${t.name}:${name}`,
+        label: name,
+        source: `${t.name} · Hues.${name}`,
+        swatch: (m) => varsOf(t, m)[v(ref)] ?? "",
+        set: (m) => {
+          const x = varsOf(t, m)
+          return {
+            [v(Colors.accent)]: x[v(ref)]!,
+            [v(Colors.accentFg)]: x[v(Hues.onHue)]!,
+            [v(Colors.ring)]: x[v(ref)]!
+          }
+        }
+      })
+    }
+  }
+  return [
+    {
+      id: "accent",
+      title: "Accent",
+      tokens: [label("Colors", Colors.accent), label("Colors", Colors.accentFg), label("Colors", Colors.ring)],
+      options: accent
+    },
+    {
+      id: "neutrals",
+      title: "Neutrals",
+      tokens: ["Colors.surface…border", "Code.*"],
+      options: themes.map((t) => ({
+        id: t.name,
+        label: t.name,
+        source: `${t.name} · Colors + Code`,
+        swatch: (m) => varsOf(t, m)[v(Colors.surfaceMuted)] ?? "",
+        set: (m) => {
+          const x = varsOf(t, m)
+          const {
+            [v(Colors.accent)]: _a,
+            [v(Colors.accentFg)]: _f,
+            [v(Colors.ring)]: _r,
+            [v(Colors.danger)]: _d,
+            [v(Colors.dangerFg)]: _df,
+            ...neutral
+          } = pick(x, Colors)
+          return { ...neutral, ...pick(x, Code) }
+        }
+      }))
+    },
+    {
+      id: "radius",
+      title: "Radius",
+      tokens: refs(Radius)
+        .filter((r) => r !== Radius.full)
+        .map((r) => label("Radius", r)),
+      options: [
+        {
+          id: "none",
+          label: "None",
+          source: "0",
+          sample: "0px",
+          set: () =>
+            Object.fromEntries(
+              refs(Radius)
+                .filter((r) => r !== Radius.full)
+                .map((r) => [v(r), "0px"])
+            )
+        },
+        ...themes.map((t) => ({
+          id: t.name,
+          label: t.name,
+          source: `${t.name} · Radius.*`,
+          sample: radiusOf(t)[v(Radius.control)] ?? "",
+          set: () => pick(radiusOf(t), Radius)
+        })),
+        {
+          id: "full",
+          label: "Full",
+          source: "Radius.full",
+          sample: radiusOf(themes[0]!)[v(Radius.full)] ?? "",
+          set: () => {
+            const full = radiusOf(themes[0]!)[v(Radius.full)] ?? "9999px"
+            return { [v(Radius.control)]: full, [v(Radius.avatarSquare)]: full, [v(Radius.container)]: "24px" }
+          }
+        }
+      ]
+    },
+    {
+      id: "sizing",
+      title: "Sizing",
+      tokens: ["Spacing.*", "Size.*", "Text.*"],
+      options: themes.map((t) => ({
+        id: t.name,
+        label: t.name,
+        source: `${t.name} · Spacing + Size + Text`,
+        sample: `${varsOf(t, "light")[v(Size.controlMd)]} controls`,
+        set: (m) => ({ ...pick(varsOf(t, m), Spacing), ...pick(varsOf(t, m), Size), ...pick(varsOf(t, m), Text) })
+      }))
+    },
+    {
+      id: "font",
+      title: "Body font",
+      tokens: [label("Font", Font.body)],
+      options: themes.map((t) => ({
+        id: t.name,
+        label: (varsOf(t, "light")[v(Font.body)] ?? "").split(",")[0]!.replaceAll('"', ""),
+        source: `${t.name} · Font.body`,
+        sample: varsOf(t, "light")[v(Font.body)] ?? "",
+        set: () => ({ [v(Font.body)]: varsOf(t, "light")[v(Font.body)]! })
+      }))
+    },
+    {
+      id: "mono",
+      title: "Code font",
+      tokens: [label("Font", Font.mono)],
+      options: themes.map((t) => ({
+        id: t.name,
+        label: (varsOf(t, "light")[v(Font.mono)] ?? "").split(",")[0]!.replaceAll('"', ""),
+        source: `${t.name} · Font.mono`,
+        sample: varsOf(t, "light")[v(Font.mono)] ?? "",
+        set: () => ({ [v(Font.mono)]: varsOf(t, "light")[v(Font.mono)]! })
+      }))
+    }
+  ]
+}
+
+export const scales = [90, 100, 110] as const
 
 export interface Choices {
   readonly accent: string | null
-  readonly gray: string | null
+  readonly neutrals: string | null
   readonly radius: string | null
-  readonly scaling: number
+  readonly sizing: string | null
   readonly font: string | null
+  readonly mono: string | null
+  readonly scale: number
 }
-export const initialChoices: Choices = { accent: null, gray: null, radius: null, scaling: 100, font: null }
+export const initialChoices: Choices = {
+  accent: null,
+  neutrals: null,
+  radius: null,
+  sizing: null,
+  font: null,
+  mono: null,
+  scale: 100
+}
+export const isCustomized = (c: Choices) =>
+  Object.entries(c).some(([k, value]) => (k === "scale" ? value !== 100 : value !== null))
 
-const quoteStack = (stack: ReadonlyArray<string>) =>
-  stack.map((f) => (/^[a-z-]+$/.test(f) ? f : JSON.stringify(f))).join(", ")
-
-const scale = (value: string, factor: number) => {
+const scaled = (value: string, factor: number) => {
   const m = value.match(/^(-?[\d.]+)(px|rem)$/)
   return m ? `${Math.round(Number(m[1]) * factor * 1000) / 1000}${m[2]}` : value
 }
 
 /** CSS variable overrides for one mode, layered over `theme`. */
-export const overrides = (choices: Choices, theme: Theme, mode: Mode): Record<string, string> => {
+export const overrides = (
+  choices: Choices,
+  themes: ReadonlyArray<Theme>,
+  theme: Theme,
+  mode: Mode
+): Record<string, string> => {
   const out: Record<string, string> = {}
-  const accent = accents.find(([name]) => name === choices.accent)
-  if (accent) {
-    out[v(Colors.accent)] = accent[1]
-    out[v(Colors.ring)] = accent[1]
-    out[v(Colors.accentFg)] = accent[2] === true ? "#1a1a1a" : "#ffffff"
+  for (const control of controls(themes)) {
+    const id = choices[control.id]
+    const option = control.options.find((o) => o.id === id)
+    if (option) Object.assign(out, option.set(mode))
   }
-  const gray = choices.gray ? grays[choices.gray as keyof typeof grays] : undefined
-  if (gray) {
-    const [muted, border, fgMuted] = gray[mode === "dark" ? 2 : 1]
-    out[v(Colors.surfaceMuted)] = muted
-    out[v(Colors.border)] = border
-    out[v(Colors.fgMuted)] = fgMuted
-    out[v(Code.surface)] = muted
-    out[v(Code.border)] = border
-  }
-  const radius = choices.radius ? radii[choices.radius as keyof typeof radii] : undefined
-  if (radius) {
-    out[v(Radius.control)] = `${radius.control}px`
-    out[v(Radius.container)] = `${radius.container}px`
-    out[v(Radius.avatarSquare)] = `${radius.avatarSquare}px`
-  }
-  if (choices.scaling !== 100) {
-    for (const group of [Spacing, Size, Text]) {
-      for (const ref of Object.values(group).filter((x): x is string => typeof x === "string")) {
-        const base = theme.vars.base[v(ref)]
-        if (base) out[v(ref)] = scale(base, choices.scaling / 100)
-      }
+  if (choices.scale !== 100) {
+    const current = { ...varsOf(theme, mode), ...out }
+    for (const ref of [...refs(Spacing), ...refs(Size), ...refs(Text)]) {
+      out[v(ref)] = scaled(current[v(ref)] ?? "", choices.scale / 100)
     }
   }
-  const font = choices.font ? fonts[choices.font as keyof typeof fonts] : undefined
-  if (font) out[v(Font.body)] = quoteStack(font)
   return out
 }
 
@@ -144,10 +248,7 @@ export const styleOf = (vars: Record<string, string>) =>
     .map(([k, value]) => `${k}:${value}`)
     .join(";")
 
-export const isCustomized = (c: Choices) =>
-  c.accent !== null || c.gray !== null || c.radius !== null || c.scaling !== 100 || c.font !== null
-
-// ─── Copy theme: a Theme.make file ────────────────────────────────────────
+// ─── Copy theme: a *.theme.ts file ────────────────────────────────────────
 
 const encode = (kind: string, css: string): string => {
   switch (kind) {
@@ -169,35 +270,27 @@ const encode = (kind: string, css: string): string => {
   }
 }
 const key = (k: string) => (/^[A-Za-z_$][\w$]*$/.test(k) ? k : JSON.stringify(k))
+const cssVar = (prefix: string, k: string) => `--${prefix}-${k.replaceAll(".", "_")}`
 
-const groups = (
-  vars: Record<string, string>,
-  only?: (group: string, k: string, value: string) => boolean,
-  indent = "    "
-) =>
-  Object.entries(DS.manifest.tokens)
+const groups = (vars: Vars, only?: (name: string, value: string) => boolean, indent = "    ") =>
+  Object.entries(manifest.tokens)
     .map(([group, t]) => {
       const entries = t.keys
-        .map((k) => [k, vars[`--${t.prefix}-${k.replaceAll(".", "_")}`] ?? ""] as const)
-        .filter(([k, value]) => (only ? only(group, k, value) : true))
+        .map((k) => [k, vars[cssVar(t.prefix, k)] ?? ""] as const)
+        .filter(([k, value]) => (only ? only(cssVar(t.prefix, k), value) : true))
         .map(([k, value]) => `${key(k)}: ${encode(t.kind, value)}`)
-      return entries.length ? `${indent}${group}: { ${entries.join(", ")} }` : ""
+      return entries.length > 0 ? `${indent}${group}: { ${entries.join(", ")} }` : ""
     })
     .filter(Boolean)
     .join(",\n")
 
-export const themeSource = (choices: Choices, theme: Theme): string => {
-  const light = { ...theme.vars.base, ...overrides(choices, theme, "light") }
-  const darkBase = { ...theme.vars.base, ...(theme.vars.modes as Record<string, Record<string, string>>)["dark"] }
-  const dark = { ...darkBase, ...overrides(choices, theme, "dark") }
-  const darkOnly = (group: string, k: string, value: string) => {
-    const t = DS.manifest.tokens[group as keyof typeof DS.manifest.tokens]!
-    return light[`--${t.prefix}-${k.replaceAll(".", "_")}`] !== value
-  }
-  return `import { Tokens } from "@acme/components/tokens"
-import { Theme } from "@acme/ds"
+export const themeSource = (choices: Choices, themes: ReadonlyArray<Theme>, theme: Theme): string => {
+  const light = { ...varsOf(theme, "light"), ...overrides(choices, themes, theme, "light") }
+  const dark = { ...varsOf(theme, "dark"), ...overrides(choices, themes, theme, "dark") }
+  return `// custom.theme.ts: generated by the acme/ui theme builder, starting from ${theme.name}.
+import { Tokens } from "@acme/components/tokens"
+import * as Theme from "@acme/ds/Theme"
 
-// Generated by the acme/ui customizer${isCustomized(choices) ? `, starting from ${theme.name}` : ` (${theme.name})`}.
 export const custom = Theme.make(Tokens, {
   name: "custom",
   values: {
@@ -205,7 +298,7 @@ ${groups(light)}
   },
   modes: {
     dark: {
-${groups(dark, darkOnly, "      ")}
+${groups(dark, (name, value) => light[name] !== value, "      ")}
     }
   }
 })

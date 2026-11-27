@@ -1,0 +1,12 @@
+id: no-reexports
+language: TypeScript
+severity: error
+message: No re-exports (barrels). Import from the file that defines the thing.
+files:
+  - "packages/**/src/**/*.ts"
+  - "apps/**/src/**/*.ts"
+rule:
+  kind: export_statement
+  has:
+    field: source
+    kind: string
