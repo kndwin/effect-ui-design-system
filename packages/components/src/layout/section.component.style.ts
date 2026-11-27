@@ -38,7 +38,7 @@ export const SectionStyle = Style.make(Section)({
       },
       { default: "none" }
     ),
-    /** a rule under the section */
+
     divided: Variant.flag({
       root: { borderBottomWidth: Stroke.border, borderBottomStyle: "solid", borderBottomColor: Colors.border }
     })

@@ -18,7 +18,7 @@ export const GridStyle = Style.make(Grid)({
         "3": cols(3),
         "4": cols(4),
         "5": cols(5),
-        // as many Size.column-wide columns as fit
+
         auto: { root: { gridTemplateColumns: `repeat(auto-fill, minmax(min(100%, ${Size.column}), 1fr))` } }
       },
       { default: "1" }
@@ -28,7 +28,7 @@ export const GridStyle = Style.make(Grid)({
       space((gap) => ({ gap })),
       { default: "0" }
     ),
-    // collapse to one column below the `narrow` breakpoint
+
     stack: Variant.flag({ root: { media: { narrow: { gridTemplateColumns: "minmax(0, 1fr)" } } } })
   }
 })

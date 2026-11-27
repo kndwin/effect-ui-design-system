@@ -1,14 +1,12 @@
-// A tiny highlighter for CodeBlock: TypeScript and shell, no dependency.
-// Each token gets data-token=<kind>; colours come from the Syntax tokens.
 const pattern = new RegExp(
   [
-    /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)/.source, // 1 comment
-    /("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*'|`(?:[^`\\]|\\.)*`)/.source, // 2 string
+    /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)/.source,
+    /("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*'|`(?:[^`\\]|\\.)*`)/.source,
     /\b(import|from|export|const|let|default|return|type|interface|as|new|typeof|readonly|extends|true|false|null|undefined)\b/
-      .source, // 3 keyword
-    /\b(\d+(?:\.\d+)?)\b/.source, // 4 number
-    /\b([A-Z][A-Za-z0-9]*)\b/.source, // 5 type / namespace
-    /\b([a-z_$][\w$]*)(?=\s*\()/.source // 6 call
+      .source,
+    /\b(\d+(?:\.\d+)?)\b/.source,
+    /\b([A-Z][A-Za-z0-9]*)\b/.source,
+    /\b([a-z_$][\w$]*)(?=\s*\()/.source
   ].join("|"),
   "g"
 )
@@ -17,10 +15,10 @@ export type Kind = (typeof kinds)[number] | "plain"
 
 const shell = new RegExp(
   [
-    /(#[^\n]*)/.source, // 1 comment
-    /("(?:[^"\\\n]|\\.)*"|'[^'\n]*')/.source, // 2 string
-    /(?:^|(?<=[;&|]\s*))\b(pnpm|npm|npx|git|cd|node|bun|yarn)\b/.source, // 3 command
-    /(\s--?[\w-]+)/.source // 4 flag
+    /(#[^\n]*)/.source,
+    /("(?:[^"\\\n]|\\.)*"|'[^'\n]*')/.source,
+    /(?:^|(?<=[;&|]\s*))\b(pnpm|npm|npx|git|cd|node|bun|yarn)\b/.source,
+    /(\s--?[\w-]+)/.source
   ].join("|"),
   "gm"
 )

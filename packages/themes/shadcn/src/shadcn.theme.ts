@@ -1,5 +1,3 @@
-// 🔒 shadcn/ui "neutral" (new-york), mapped onto the @acme/components contract.
-// The default theme: it also applies on :root.
 import { Tokens } from "@acme/components/tokens"
 import * as Theme from "@acme/ds/Theme"
 
@@ -8,18 +6,18 @@ export const shadcn = Theme.make(Tokens, {
   default: true,
   values: {
     Colors: {
-      surface: "oklch(1 0 0)", // --background
-      surfaceMuted: "oklch(0.97 0 0)", // --muted
-      fg: "oklch(0.145 0 0)", // --foreground
-      fgMuted: "oklch(0.556 0 0)", // --muted-foreground
-      border: "oklch(0.922 0 0)", // --border
-      accent: "oklch(0.205 0 0)", // --primary
-      accentFg: "oklch(0.985 0 0)", // --primary-foreground
-      danger: "oklch(0.577 0.245 27.325)", // --destructive
-      dangerFg: "oklch(1 0 0)", // text-white
-      ring: "oklch(0.708 0 0)" // --ring
+      surface: "oklch(1 0 0)",
+      surfaceMuted: "oklch(0.97 0 0)",
+      fg: "oklch(0.145 0 0)",
+      fgMuted: "oklch(0.556 0 0)",
+      border: "oklch(0.922 0 0)",
+      accent: "oklch(0.205 0 0)",
+      accentFg: "oklch(0.985 0 0)",
+      danger: "oklch(0.577 0.245 27.325)",
+      dangerFg: "oklch(1 0 0)",
+      ring: "oklch(0.708 0 0)"
     },
-    // --chart-1…5
+
     Code: {
       surface: "oklch(0.985 0 0)",
       fg: "oklch(0.145 0 0)",
@@ -56,9 +54,9 @@ export const shadcn = Theme.make(Tokens, {
       panel: 360,
       content: 820,
       column: 280
-    }, // h-8, h-9, size-6/8/10
-    Radius: { control: 8, avatarSquare: 8, container: 14, full: 9999 }, // rounded-md = --radius (0.625rem) − 2px
-    Stroke: { border: 1, focus: 3, focusOffset: 0 }, // focus-visible:ring-[3px]
+    },
+    Radius: { control: 8, avatarSquare: 8, container: 14, full: 9999 },
+    Stroke: { border: 1, focus: 3, focusOffset: 0 },
     Text: {
       xs: "0.75rem",
       sm: "0.875rem",
@@ -73,7 +71,7 @@ export const shadcn = Theme.make(Tokens, {
       mono: ["Geist Mono", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"]
     },
     Weight: { regular: 400, medium: 500, semibold: 600 },
-    Shadow: { control: "0 1px 2px 0 rgb(0 0 0 / 0.05)" }, // shadow-xs
+    Shadow: { control: "0 1px 2px 0 rgb(0 0 0 / 0.05)" },
     Motion: { fast: "150 millis" }
   },
   modes: {

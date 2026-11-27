@@ -1,7 +1,6 @@
 import { Schema, SchemaTransformation } from "effect"
 import * as Token from "./Token.pure.ts"
 
-/** number (→ px) | "<n>px" | "<n>rem" */
 export const Value = Schema.Union([
   Schema.Number,
   Schema.String.check(Schema.isPattern(/^-?\d*\.?\d+(px|rem)$/, { message: "expected <n>px or <n>rem" }))
@@ -17,10 +16,6 @@ export const Value = Schema.Union([
 
 export const make = Token.kind("Length", Value)
 
-/**
- * calc() over Length tokens, still typed as a Length:
- *   TokenLength.calc`100vh - ${Size.header}`
- */
 export const calc = (
   strings: TemplateStringsArray,
   ...tokens: ReadonlyArray<Token.Ref<"Length">>

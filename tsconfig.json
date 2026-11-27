@@ -1,14 +1,16 @@
 {
-  // One TypeScript 7 (tsgo) program for the whole repo: `pnpm check`.
-  // Each package keeps its own tsconfig.json for editors.
   "extends": "./tsconfig.base.json",
-  "compilerOptions": { "types": ["node"] },
+  "compilerOptions": { "types": ["node", "vite/client"] },
   "include": [
     "packages/*/src",
     "packages/*/test",
+    "packages/*/vitest.config.ts",
+    "packages/*/*.rule.ts",
     "packages/themes/*/src",
     "apps/*/src",
     "apps/*/vite.config.ts",
-    "tools"
+    "tools",
+    "*.rule.ts",
+    "oxlint.config.ts"
   ]
 }

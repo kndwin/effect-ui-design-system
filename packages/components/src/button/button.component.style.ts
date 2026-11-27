@@ -76,7 +76,7 @@ export const ButtonStyle = Style.make(Button)({
             states: { hover: { background: TokenColor.alpha(Colors.danger, 88) } }
           }
         },
-        // nav links, tabs, segmented options: quiet until hovered or pressed
+
         ghost: {
           root: {
             background: TokenColor.alpha(Colors.fg, 0),
@@ -92,7 +92,7 @@ export const ButtonStyle = Style.make(Button)({
       },
       { default: "neutral" }
     ),
-    /** full width, content at the start: for nav lists */
+
     fill: Variant.flag({ root: { width: "100%", justifyContent: "flex-start" } }),
     size: Variant.make(
       ControlSize,

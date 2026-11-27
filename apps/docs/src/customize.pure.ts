@@ -1,7 +1,3 @@
-// The theme builder. Every choice is read from the installed themes' token values: an accent is a
-// theme's Colors.accent or one of its Hues, neutrals / sizing / fonts are a theme's whole set, and
-// radius is a theme's Radius values (or none / Radius.full). Only Scale is a transform.
-// It produces (1) CSS variable overrides for the live preview and (2) a Theme.make file.
 import { Code, Colors, Font, Hues, Radius, Size, Spacing, Text } from "@acme/components/tokens"
 import { manifest } from "@acme/components/manifest"
 import type { Theme } from "@acme/ds/Theme"
@@ -9,13 +5,11 @@ import type { Theme } from "@acme/ds/Theme"
 export type Mode = "light" | "dark"
 type Vars = Readonly<Record<string, string>>
 
-/** `var(--color-accent)` → `--color-accent` */
 const v = (ref: string) => ref.slice(4, -1)
-/** `Colors`, `var(--color-accent)` → `Colors.accent` */
+
 const label = (group: string, ref: string) => `${group}.${v(ref).split("-").slice(3).join("-")}`
 const refs = (group: object) => Object.values(group).filter((x): x is string => typeof x === "string")
 
-/** A theme's resolved variables in a mode. */
 export const varsOf = (theme: Theme, mode: Mode): Vars => ({
   ...theme.vars.base,
   ...(mode === "dark" ? (theme.vars.modes as Record<string, Vars>)["dark"] : undefined)
@@ -24,7 +18,7 @@ export const varsOf = (theme: Theme, mode: Mode): Vars => ({
 export interface Option {
   readonly id: string
   readonly label: string
-  /** where the value comes from, e.g. `astryx · Hues.blue` */
+
   readonly source: string
   readonly swatch?: (mode: Mode) => string
   readonly sample?: string
@@ -221,7 +215,6 @@ const scaled = (value: string, factor: number) => {
   return m ? `${Math.round(Number(m[1]) * factor * 1000) / 1000}${m[2]}` : value
 }
 
-/** CSS variable overrides for one mode, layered over `theme`. */
 export const overrides = (
   choices: Choices,
   themes: ReadonlyArray<Theme>,
@@ -247,8 +240,6 @@ export const styleOf = (vars: Record<string, string>) =>
   Object.entries(vars)
     .map(([k, value]) => `${k}:${value}`)
     .join(";")
-
-// ─── Copy theme: a *.theme.ts file ────────────────────────────────────────
 
 const encode = (kind: string, css: string): string => {
   switch (kind) {

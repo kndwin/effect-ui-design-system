@@ -1,5 +1,3 @@
-// The docs, composed only from @acme/components: layout, Text, Swatch, Button, CodeBlock.
-// There is no docs stylesheet.
 import { Button } from "@acme/components/button"
 import { CodeBlock } from "@acme/components/code-block"
 import { Center } from "@acme/components/layout/center"
@@ -59,7 +57,7 @@ const Model = Schema.Struct({
 type Model = typeof Model.Type
 
 const currentTheme = (model: Model) => themes.find((t) => t.name === model.theme) ?? themes[0]!
-/** The customizer's CSS variable overrides, as an inline style. */
+
 const customStyle = (model: Model) =>
   Customize.styleOf(Customize.overrides(model.choices, themes, currentTheme(model), model.mode)) || undefined
 
@@ -82,7 +80,7 @@ export const Docs = Html.component({ name: "Docs", model: Model, message: Msg })
     Chose: ($, { choices }) => $.evolve({ choices }),
     ResetChoices: ($) => $.evolve({ choices: Customize.initialChoices })
   },
-  // The shell sits inside the same data-theme / data-mode as the examples, so it re-themes with them.
+
   view: (h, model) => {
     const page = pages.find((p) => p.id === model.page) ?? pages[0]!
     return Layout(h.div)
@@ -109,8 +107,6 @@ export const Docs = Html.component({ name: "Docs", model: Model, message: Msg })
       )
   }
 })
-
-// ─── pieces ────────────────────────────────────────────────────────────────
 
 const heading = (h: H, text: string) => Text(h.h2, { size: "xl", weight: "semibold" }).children(text)
 const code = (h: H, text: string) => Text(h.code, { mono: true, size: "xs" }).children(text)
@@ -206,8 +202,6 @@ const pager = (h: H, page: Page) => {
   )
 }
 
-// ─── theme builder ─────────────────────────────────────────────────────────
-
 const builder = (h: H, model: Model) => {
   const c = model.choices
   const base = currentTheme(model)
@@ -296,8 +290,6 @@ const builder = (h: H, model: Model) => {
     Button(h, { size: "sm", fill: true, onPress: Msg.ResetChoices(), children: "Reset" })
   )
 }
-
-// ─── pages ─────────────────────────────────────────────────────────────────
 
 const body = (h: H, model: Model, page: Page) => {
   switch (page.id) {
@@ -431,12 +423,9 @@ const tokens = (h: H) =>
     )
   )
 
-// ─── blocks ────────────────────────────────────────────────────────────────
-
 const exampleBlock = (h: H, example: Example, model: Model, initial: Tab) => {
   const tab = model.tabs[example.id] ?? initial
-  // A frame re-declares its theme's variables, so the builder's overrides go on it too.
-  // The Themes grid shows the stock themes.
+
   const frame = (theme: string, mode: string, labelled: boolean, style?: string) =>
     Section(h.div, { surface: "base", pad: "6", gap: "4" })
       .attr("data-theme", theme)

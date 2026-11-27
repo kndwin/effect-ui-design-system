@@ -1,4 +1,3 @@
-// A minimal adapter with no design system: `{ card: { color } }` becomes a recipe and a global rule.
 import type { Output } from "../../src/rules.pure.ts"
 
 export const compile = (value: unknown, exportName: string): Output | undefined => {

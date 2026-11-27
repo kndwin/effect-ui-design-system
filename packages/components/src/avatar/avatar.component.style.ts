@@ -18,7 +18,7 @@ export const AvatarStyle = Style.make(Avatar)({
       borderWidth: Stroke.border,
       borderStyle: "solid",
       borderColor: Colors.border,
-      // the hue is only for the initials: once the image is in, it would show as a ring
+
       states: { loaded: { background: Colors.surface } }
     },
     image: { width: "100%", height: "100%", objectFit: "cover" },
@@ -42,7 +42,7 @@ export const AvatarStyle = Style.make(Avatar)({
       },
       { default: "circle" }
     ),
-    // Only visible while the fallback shows; the image covers it once loaded.
+
     hue: Variant.make(Hue, {
       blue: { root: { background: Hues.blue } },
       green: { root: { background: Hues.green } },

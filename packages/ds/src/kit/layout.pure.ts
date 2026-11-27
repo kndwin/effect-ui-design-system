@@ -1,5 +1,3 @@
-// Descriptors for the components the design system owns outright: layout, Text, Swatch.
-// Each has a single `root` part; see kit/element.pure.ts for how they render.
 import { describe } from "./element.pure.ts"
 
 export const Stack = describe("Stack")

@@ -10,7 +10,6 @@ import {
 
 type Extra = { readonly class?: string | undefined }
 
-/** The app shell. Children: LayoutHeader, LayoutPanel (start / end), LayoutContent, LayoutFooter. */
 export const Layout = <E extends Classable>(element: E, options: Extra = {}): Classed<E> =>
   render(element, Style.classes(LayoutStyle, {}), options.class)
 

@@ -2,26 +2,20 @@ import { type Descriptor, type PartName, pseudoSelectors, type StateName } from 
 import { type Breakpoint, breakpoints, type Decl, type SlotRule } from "./Rule.pure.ts"
 import type { Variant } from "./Variant.pure.ts"
 
-/** Per-slot rules for a kit, with states narrowed to that part's states. */
 export type SlotStyles<K, Extra extends string = never> = {
   readonly [S in PartName<K> | Extra]?: SlotRule<StateName<K, S & string>>
 }
 
-/** A compiled style: what importers of a `.component.style.ts` file get after the build. */
 export interface Style<Name extends string, Slot extends string, P> {
-  readonly "~props"?: P // phantom
+  readonly "~props"?: P
   readonly kit: Name
-  /** one class function per slot (a vanilla-extract recipe today) */
+
   readonly slots: { readonly [S in Slot]: (props?: Readonly<Record<string, unknown>>) => string }
   readonly variants: Readonly<Record<string, { readonly values: ReadonlyArray<string>; readonly default: unknown }>>
 }
 
 export type Props<S> = S extends Style<any, any, infer P> ? P : never
 
-/**
- * What a `.component.style.ts` file declares. Plain data: the build (@acme/css-engine, via the Compile adapter)
- * turns it into class names and CSS. Until then it has no classes.
- */
 export interface Definition {
   readonly "~acme": "Style"
   readonly kit: Descriptor
@@ -36,13 +30,6 @@ export interface Definition {
 export const isDefinition = (u: unknown): u is Definition =>
   typeof u === "object" && u !== null && (u as { "~acme"?: unknown })["~acme"] === "Style"
 
-/**
- * Curried so the kit is fixed before the spec is checked:
- *   Style.make(Button)({ base, variants, compound })
- *   Style.make(Select, { extend: ["hint"] })({ … })   // wrapper slots go in the first call
- *
- * Returns plain data. Its type is the compiled Style, which is what importers see after the build.
- */
 export const make =
   <K extends Descriptor, const E extends string = never>(kit: K, options?: { readonly extend?: ReadonlyArray<E> }) =>
   <V extends Readonly<Record<string, string | boolean>> = {}>(spec: {
@@ -61,7 +48,6 @@ export const make =
     return definition as unknown as Style<K["name"], PartName<K> | E, { readonly [N in keyof V]?: V[N] | undefined }>
   }
 
-/** `states: { disabled, hover }` → `selectors: { "&[data-disabled]", "&:hover" }`, for the engine. */
 export const selectorsOf = (
   rule: SlotRule<string> | undefined,
   partStates: Readonly<Record<string, string>>
@@ -82,7 +68,6 @@ export const selectorsOf = (
   return { decl, selectors, media }
 }
 
-/** Runtime: one class string per slot for the given props. */
 export const classes = <Slot extends string, P>(
   style: Style<any, Slot, P>,
   props: NoInfer<P>

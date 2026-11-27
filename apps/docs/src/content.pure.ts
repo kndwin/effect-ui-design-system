@@ -1,5 +1,3 @@
-// Page metadata and the real source files the docs show. Everything shown as code
-// is imported with ?raw, so the docs can't drift from what's in the repo.
 import avatarStyle from "../../../packages/components/src/avatar/avatar.component.style.ts?raw"
 import codeBlockStyle from "../../../packages/components/src/code-block/code-block.component.style.ts?raw"
 import buttonStyle from "../../../packages/components/src/button/button.component.style.ts?raw"
@@ -12,7 +10,7 @@ export interface Page {
   readonly section: "Getting started" | "Components" | "Foundations"
   readonly title: string
   readonly lead: string
-  /** for component pages: the manifest entry and the component's style file */
+
   readonly kit?: string
   readonly style?: string
   readonly styleFile?: string

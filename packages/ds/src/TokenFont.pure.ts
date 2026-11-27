@@ -1,7 +1,6 @@
 import { Schema, SchemaTransformation } from "effect"
 import * as Token from "./Token.pure.ts"
 
-/** A font stack: ["Figtree", "system-ui", "sans-serif"] → `"Figtree", system-ui, sans-serif` */
 export const Value = Schema.Array(Schema.String)
   .check(Schema.isMinLength(1))
   .pipe(

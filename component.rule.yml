@@ -1,10 +1,7 @@
-id: component-exports-ui
+id: component/exports-ui
 language: TypeScript
 severity: error
-message: A *.component.ts file exports UI, an Html.component or a view function. Helpers go in *.pure.ts. See rule.component.md.
-files:
-  - "packages/**/src/**/*.component.ts"
-  - "apps/**/src/**/*.component.ts"
+message: A *.component.ts file exports UI, an Html.component or a view function. See component.rule.md.
 rule:
   kind: program
   not:

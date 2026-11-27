@@ -1,6 +1,3 @@
-// Typed description of a ui-kit component's DOM contract (parts → states, vars).
-// ui-kit documents these in comments only, so the design system owns this map.
-
 export const pseudoSelectors = {
   hover: ":hover",
   focusVisible: ":focus-visible",
@@ -21,11 +18,10 @@ export interface Descriptor<
   readonly name: Name
   readonly parts: Parts
   readonly pseudo: ReadonlyArray<P>
-  /** typed `var(--anchor-width)` refs, for `Select.vars.anchorWidth` */
+
   readonly vars: Vars
 }
 
-/** Identity alias so a kit file can declare `interface FooKit extends Kit.Type<typeof d> {}` */
 export type Type<T> = T
 
 export const describe = <
