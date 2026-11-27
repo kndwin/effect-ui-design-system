@@ -95,6 +95,41 @@ const componentPages: {
     kit: "Toast",
     lead: "Short notices in a corner stack. Mount one Toaster near the root, then send RequestedAdd to ui-kit's ToastProvider from any update inside it."
   },
+  tabs: {
+    title: "Tabs",
+    kit: "Tabs",
+    lead: "Panels behind a row of tabs. Arrow keys move between tabs; an underline slides to the active one using the variables ui-kit measures."
+  },
+  accordion: {
+    title: "Accordion",
+    kit: "Accordion",
+    lead: "Stacked sections that open one at a time, or several with multiple. Panels animate their height from ui-kit's measured variable."
+  },
+  collapsible: {
+    title: "Collapsible",
+    kit: "Collapsible",
+    lead: "One section that shows and hides, with the same height animation as Accordion."
+  },
+  separator: {
+    title: "Separator",
+    kit: "Separator",
+    lead: "A thin rule between groups, horizontal or vertical. Decorative separators are hidden from screen readers."
+  },
+  "scroll-area": {
+    title: "Scroll Area",
+    kit: "ScrollArea",
+    lead: "Native scrolling with a slim custom scrollbar that appears while you scroll or hover. The thumb is sized and placed by ui-kit."
+  },
+  toolbar: {
+    title: "Toolbar",
+    kit: "Toolbar",
+    lead: "A row of controls with one tab stop: arrow keys move between them. Buttons can show a pressed state."
+  },
+  "navigation-menu": {
+    title: "Navigation Menu",
+    kit: "NavigationMenu",
+    lead: "A labelled nav of links that marks the current page with aria-current. Arrow keys move between links."
+  },
   avatar: {
     title: "Avatar",
     kit: "Avatar",
