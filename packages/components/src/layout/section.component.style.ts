@@ -3,21 +3,13 @@ import * as Variant from "@acme/design-system/Variant"
 import { SectionParts } from "./layout.parts.constant.ts"
 import { Colors, Radius, Stroke } from "../contract.token.ts"
 import { Space, Surface } from "../scales.schema.ts"
-import { space } from "./space.pure.ts"
+import { composeSpaceVariants } from "./space.pure.ts"
 
 export const SectionStyle = Style.make(SectionParts)({
   base: { root: { display: "flex", flexDirection: "column", minWidth: 0, boxSizing: "border-box" } },
   variants: {
-    gap: Variant.make(
-      Space,
-      space((gap) => ({ gap })),
-      { default: "0" }
-    ),
-    pad: Variant.make(
-      Space,
-      space((padding) => ({ padding })),
-      { default: "0" }
-    ),
+    gap: Variant.make(Space, composeSpaceVariants({ property: "gap" }), { default: "0" }),
+    pad: Variant.make(Space, composeSpaceVariants({ property: "padding" }), { default: "0" }),
     surface: Variant.make(
       Surface,
       {

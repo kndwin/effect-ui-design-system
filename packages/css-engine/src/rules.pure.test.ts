@@ -6,7 +6,7 @@ describe("isAdapter", () => {
     // Arrange
     const candidates = [() => undefined, "compile", undefined]
     // Act
-    const results = candidates.map(isAdapter)
+    const results = candidates.map((value) => isAdapter({ value }))
     // Assert
     assert.deepStrictEqual(results, [true, false, false])
   })

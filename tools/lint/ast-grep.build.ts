@@ -1,9 +1,9 @@
-import { NodeRuntime, NodeServices } from "@effect/platform-node"
+import { BunRuntime, BunServices } from "@effect/platform-bun"
 import { Array, Console, Effect, Match, Path, Schema } from "effect"
 import { ChildProcess, ChildProcessSpawner } from "effect/process"
 import { findRuleFiles, repoRoot } from "./discover.build.ts"
 import { kinds } from "./kinds.constant.ts"
-import { inScope, ruleKindOf, scopeOf } from "./kinds.pure.ts"
+import { isInScope, getRuleKind, getRuleScope } from "./kinds.pure.ts"
 
 export interface Match {
   readonly ruleId: string
@@ -26,18 +26,18 @@ const Found = Schema.fromJsonString(
 const scanRule = Effect.fn("lint/ast-grep/scanRule")(function* (ruleFile: string, only?: ReadonlyArray<string>) {
   const path = yield* Path.Path
   const spawner = yield* ChildProcessSpawner.ChildProcessSpawner
-  const dir = scopeOf(ruleFile)
+  const dir = getRuleScope({ ruleFile: ruleFile })
   const targets = Match.value(only).pipe(
     Match.when(undefined, () => ["."]),
     Match.orElse((files) =>
       Array.map(
-        Array.filter(files, (f) => inScope(ruleFile, f)),
+        Array.filter(files, (f) => isInScope({ ruleFile: ruleFile, file: f })),
         (f) => path.relative(dir, f)
       )
     )
   )
   if (targets.length === 0) return []
-  const globs = Array.flatMap(kinds[ruleKindOf(ruleFile)] ?? [], (s) => ["--globs", `**/*${s}`])
+  const globs = Array.flatMap(kinds[getRuleKind({ ruleFile: ruleFile })] ?? [], (s) => ["--globs", `**/*${s}`])
   const output = yield* spawner.string(
     ChildProcess.make(
       path.join(repoRoot, "node_modules", ".bin", "ast-grep"),
@@ -64,7 +64,7 @@ const scanRule = Effect.fn("lint/ast-grep/scanRule")(function* (ruleFile: string
       line: m.range.start.line + 1,
       message: m.message
     })),
-    (m) => inScope(ruleFile, m.file)
+    (m) => isInScope({ ruleFile: ruleFile, file: m.file })
   )
 })
 
@@ -83,4 +83,4 @@ const main = Effect.gen(function* () {
   if (matches.length > 0) yield* Effect.sync(() => (process.exitCode = 1))
 })
 
-if (import.meta.main) NodeRuntime.runMain(main.pipe(Effect.provide(NodeServices.layer)))
+if (import.meta.main) BunRuntime.runMain(main.pipe(Effect.provide(BunServices.layer)))

@@ -1,4 +1,5 @@
 import { Match } from "effect"
+import type { GetHighlightTokensInput, HighlightToken, TokenKind } from "./code-block.schema.ts"
 const pattern = new RegExp(
   [
     /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)/.source,
@@ -12,7 +13,6 @@ const pattern = new RegExp(
   "g"
 )
 const kinds = ["comment", "string", "keyword", "number", "type", "call"] as const
-export type Kind = (typeof kinds)[number] | "plain"
 
 const shell = new RegExp(
   [
@@ -25,17 +25,18 @@ const shell = new RegExp(
 )
 const shellKinds = ["comment", "string", "keyword", "number"] as const
 
-export type Language = "ts" | "shell" | "plain"
-
-export const highlight = (code: string, language: Language = "ts"): ReadonlyArray<readonly [Kind, string]> => {
+export const getHighlightTokens = ({
+  code,
+  language = "ts"
+}: GetHighlightTokensInput): ReadonlyArray<HighlightToken> => {
   if (language === "plain") return [["plain", code]]
-  const out: Array<readonly [Kind, string]> = []
+  const out: Array<HighlightToken> = []
   let last = 0
   const re = Match.value(language === "shell").pipe(
     Match.when(true, () => shell),
     Match.orElse(() => pattern)
   )
-  const names: ReadonlyArray<Kind> = Match.value(language === "shell").pipe(
+  const names: ReadonlyArray<TokenKind> = Match.value(language === "shell").pipe(
     Match.when(true, () => shellKinds),
     Match.orElse(() => kinds)
   )

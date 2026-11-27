@@ -7,3 +7,15 @@ rule:
   has:
     field: source
     regex: ^["']vitest["']$
+---
+id: test-files/no-constant-tests
+language: TypeScript
+severity: error
+message: Constants and Schemas have no logic to test. Test the functions that use them, and don't import values from *.constant.ts or *.schema.ts. See +rule/test-files/test-files.md.
+rule:
+  kind: import_statement
+  not:
+    regex: ^import type
+  has:
+    field: source
+    regex: \.(constant|schema)\.ts["']$

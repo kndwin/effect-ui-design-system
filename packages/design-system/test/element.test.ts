@@ -1,5 +1,5 @@
 import { assert, describe, it } from "@effect/vitest"
-import { render, styled } from "./element.pure.ts"
+import { make, render } from "../src/element/element.make.ts"
 
 const element = {
   added: [] as Array<string | false | null | undefined>,
@@ -20,7 +20,7 @@ describe("render", () => {
   })
 })
 
-describe("styled", () => {
+describe("make", () => {
   it("applies a compiled style's root classes for the given props, then the caller's", () => {
     // Arrange
     const style = {
@@ -28,7 +28,7 @@ describe("styled", () => {
       variants: { pad: { values: ["sm", "lg"], default: "sm" } },
       slots: { root: (p?: Readonly<Record<string, unknown>>) => `Box_root Box_pad_${String(p?.["pad"] ?? "sm")}` }
     }
-    const Box = styled<"Box", { readonly pad?: "sm" | "lg" }>(style)
+    const Box = make<"Box", { readonly pad?: "sm" | "lg" }>(style)
     element.added.length = 0
     // Act
     const out = Box(element, { pad: "lg", class: "extra" })

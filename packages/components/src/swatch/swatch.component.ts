@@ -1,16 +1,16 @@
-import { type Classable, type Classed, styled, type StyledOptions } from "@acme/design-system/Element"
+import * as Element from "@acme/design-system/Element"
 import { SwatchStyle } from "./swatch.component.style.ts"
 
 interface Attrs {
   attr(name: string, value: string | undefined): Attrs
 }
 
-const Root = styled(SwatchStyle)
+const Root = Element.make(SwatchStyle)
 
-export const Swatch = <E extends Classable>(
+export const Swatch = <E extends Element.Classable>(
   element: E,
-  options: StyledOptions<typeof SwatchStyle> & { readonly color: string }
-): Classed<E> =>
+  options: Element.StyledOptions<typeof SwatchStyle> & { readonly color: string }
+): Element.Classed<E> =>
   (Root(element, options) as unknown as Attrs)
     .attr("style", `background:${options.color}`)
-    .attr("aria-hidden", "true") as Classed<E>
+    .attr("aria-hidden", "true") as Element.Classed<E>

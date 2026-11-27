@@ -3,7 +3,7 @@ import * as Variant from "@acme/design-system/Variant"
 import { GridParts, GridSpanParts } from "./layout.parts.constant.ts"
 import { Columns, Space, Span } from "../scales.schema.ts"
 import { Size } from "../contract.token.ts"
-import { space } from "./space.pure.ts"
+import { composeSpaceVariants } from "./space.pure.ts"
 
 const cols = (n: number) => ({ root: { gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` } })
 
@@ -23,11 +23,7 @@ export const GridStyle = Style.make(GridParts)({
       },
       { default: "1" }
     ),
-    gap: Variant.make(
-      Space,
-      space((gap) => ({ gap })),
-      { default: "0" }
-    ),
+    gap: Variant.make(Space, composeSpaceVariants({ property: "gap" }), { default: "0" }),
 
     stack: Variant.flag({ root: { media: { narrow: { gridTemplateColumns: "minmax(0, 1fr)" } } } })
   }

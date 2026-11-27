@@ -19,7 +19,7 @@
     "./swatch": "./src/swatch/swatch.component.ts"
   },
   "scripts": {
-    "test": "vitest run"
+    "test": "bun --bun x vitest run"
   },
   "dependencies": {
     "@acme/design-system": "workspace:*"

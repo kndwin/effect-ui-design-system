@@ -1,7 +1,7 @@
 import * as Effect from "effect/Effect"
 import * as Match from "effect/Match"
 import { Rule, RuleContext } from "effect-oxlint"
-import { report, rules } from "../../../../tools/lint/define.pure.ts"
+import * as RuleModule from "../../../../tools/lint/rule-module.make.ts"
 
 const raw = /#[0-9a-f]{3,8}\b|(?<![\w-])-?\d*\.?\d+(px|rem|em|ms|s)\b|\b(rgb|rgba|hsl|hsla|oklch)\(/i
 
@@ -13,7 +13,7 @@ const check = (node: unknown, text: unknown) => {
   return Match.value(found).pipe(
     Match.when(null, () => Effect.void),
     Match.orElse((m) =>
-      report(
+      RuleModule.report(
         node,
         `Raw value ${JSON.stringify(m[0])}: use a token. See +rule/component-style-files/component-style-files.md.`
       )
@@ -21,7 +21,7 @@ const check = (node: unknown, text: unknown) => {
   )
 }
 
-export default rules(import.meta.url, {
+export default RuleModule.make(import.meta.url, {
   "tokens-only": Rule.define({
     name: "tokens-only",
     meta: Rule.meta({

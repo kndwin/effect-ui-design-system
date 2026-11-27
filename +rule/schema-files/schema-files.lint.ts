@@ -1,7 +1,7 @@
 import * as Effect from "effect/Effect"
 import * as Match from "effect/Match"
 import { Rule, RuleContext } from "effect-oxlint"
-import { report, rules } from "../../tools/lint/define.pure.ts"
+import * as RuleModule from "../../tools/lint/rule-module.make.ts"
 
 const schemaRoots = new Set(["Schema", "UiSchema"])
 
@@ -14,9 +14,12 @@ const rootOf = (node: any): string | undefined => {
 }
 
 const allowedImport = (source: string) =>
-  source === "effect" || source === "@effect/ui" || (source.startsWith(".") && source.endsWith(".schema.ts"))
+  source === "effect" ||
+  source === "@effect/ui" ||
+  (source.startsWith(".") && source.endsWith(".schema.ts")) ||
+  /^@[\w-]+\/[\w-]+\/\w*Schema$/.test(source)
 
-export default rules(import.meta.url, {
+export default RuleModule.make(import.meta.url, {
   "only-schemas": Rule.define({
     name: "only-schemas",
     meta: Rule.meta({
@@ -35,7 +38,7 @@ export default rules(import.meta.url, {
           return Match.value(ok).pipe(
             Match.when(true, () => Effect.void),
             Match.orElse(() =>
-              report(
+              RuleModule.report(
                 node,
                 "Export only Schemas, built with Schema.* or UiSchema.*. See +rule/schema-files/schema-files.md."
               )
@@ -59,7 +62,7 @@ export default rules(import.meta.url, {
           Match.value(allowedImport(String(node.source?.value ?? ""))).pipe(
             Match.when(true, () => Effect.void),
             Match.orElse(() =>
-              report(
+              RuleModule.report(
                 node,
                 "Import only from effect, @effect/ui or another *.schema.ts. See +rule/schema-files/schema-files.md."
               )

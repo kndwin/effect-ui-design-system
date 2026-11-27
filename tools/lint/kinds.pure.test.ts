@@ -1,5 +1,14 @@
 import { assert, describe, it } from "@effect/vitest"
-import { docPath, inScope, isGoverned, kebabProblem, kindOf, ruleKindOf, scopeOf } from "./kinds.pure.ts"
+import {
+  getDocPath,
+  isInScope,
+  isGoverned,
+  getKebabProblem,
+  getFileKind,
+  getRuleKind,
+  getRuleScope,
+  getRuleSuffixes
+} from "./kinds.pure.ts"
 import { Match } from "effect"
 
 describe("kinds", () => {
@@ -8,7 +17,7 @@ describe("kinds", () => {
     const files = ["a.component.style.ts", "a.component.ts", "a.pure.test.ts", "a.pure.ts", "main.ts", "a.ts"]
     // Act
     const kinds = files.map((f) => {
-      const k = kindOf(f)
+      const k = getFileKind({ path: f })
       return Match.value(k).pipe(
         Match.when(undefined, () => undefined),
         Match.when({ name: Match.string }, (named) => named.name),
@@ -30,7 +39,7 @@ describe("kinds", () => {
     // Arrange
     const paths = ["packages/a/src/x.ts", "packages/themes/b/src/x.ts", "apps/docs/test/x.ts", "tools/lint/x.ts"]
     // Act
-    const governed = paths.map(isGoverned)
+    const governed = paths.map((path) => isGoverned({ path }))
     // Assert
     assert.deepStrictEqual(governed, [true, true, true, false])
   })
@@ -39,13 +48,13 @@ describe("kinds", () => {
     // Arrange
     const ruleFile = "/repo/packages/components/+rule/component-style-files/component-style-files.lint.ts"
     // Act
-    const kind = ruleKindOf(ruleFile)
-    const scope = scopeOf(ruleFile)
+    const kind = getRuleKind({ ruleFile: ruleFile })
+    const scope = getRuleScope({ ruleFile: ruleFile })
     // Assert
     assert.strictEqual(kind, "component-style-files")
     assert.strictEqual(scope, "/repo/packages/components")
     assert.strictEqual(
-      docPath(scope, kind),
+      getDocPath({ dir: scope, kind: kind }),
       "/repo/packages/components/+rule/component-style-files/component-style-files.md"
     )
   })
@@ -58,7 +67,7 @@ describe("kinds", () => {
       "/repo/packages/components/src/button/button.component.style.ts",
       "/repo/packages/components/src/button/button.component.ts",
       "/repo/packages/themes/x.component.style.ts"
-    ].map((f) => inScope(ruleFile, f))
+    ].map((f) => isInScope({ ruleFile: ruleFile, file: f }))
     // Assert
     assert.deepStrictEqual(results, [true, false, false])
   })
@@ -73,8 +82,17 @@ describe("kinds", () => {
       "tools/lint/Any.ts"
     ]
     // Act
-    const problems = paths.map(kebabProblem)
+    const problems = paths.map((path) => getKebabProblem({ path }))
     // Assert
     assert.deepStrictEqual(problems, [undefined, "Docs", undefined, "codeBlock", undefined])
+  })
+
+  it("lists the file suffixes a rule covers", () => {
+    // Arrange
+    const ruleFile = "/repo/+rule/make-files/make-files.yml"
+    // Act
+    const suffixes = getRuleSuffixes({ ruleFile })
+    // Assert
+    assert.deepStrictEqual(suffixes, [".make.ts"])
   })
 })

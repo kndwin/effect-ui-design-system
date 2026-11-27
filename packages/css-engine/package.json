@@ -4,12 +4,12 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./rules": "./src/rules.pure.ts",
+    "./rules": "./src/rules.schema.ts",
     "./runtime": "./src/runtime.pure.ts",
     "./vite": "./src/vite.build.ts"
   },
   "scripts": {
-    "test": "vitest run"
+    "test": "bun --bun x vitest run"
   },
   "dependencies": {
     "effect": "4.1.6"

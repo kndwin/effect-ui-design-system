@@ -17,4 +17,4 @@ export const Value = Schema.String.pipe(
   )
 ) as unknown as Schema.Codec<string, Duration.Input & string>
 
-export const make = Token.kind("Duration", Value)
+export const make = Token.composeTokenKind({ kind: "Duration", value: Value })

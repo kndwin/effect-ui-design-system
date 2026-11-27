@@ -3,17 +3,17 @@ import { dirname, parse } from "node:path"
 import * as Effect from "effect/Effect"
 import * as Match from "effect/Match"
 import { Rule, RuleContext } from "effect-oxlint"
-import { report, rules } from "../../tools/lint/define.pure.ts"
+import * as RuleModule from "../../tools/lint/rule-module.make.ts"
 import { allowed } from "../../tools/lint/kinds.constant.ts"
-import { docPath, isGoverned, kebabProblem, kindOf } from "../../tools/lint/kinds.pure.ts"
+import { getDocPath, isGoverned, getKebabProblem, getFileKind } from "../../tools/lint/kinds.pure.ts"
 
 const findDoc = (dir: string, kind: string): boolean => {
-  for (let d = dir; d !== parse(d).root; d = dirname(d)) if (existsSync(docPath(d, kind))) return true
+  for (let d = dir; d !== parse(d).root; d = dirname(d)) if (existsSync(getDocPath({ dir: d, kind: kind }))) return true
   return false
 }
 
 const check = (path: string): string | undefined => {
-  const kind = kindOf(path)
+  const kind = getFileKind({ path: path })
   if (kind === undefined) {
     return Match.value(path.endsWith("/index.ts")).pipe(
       Match.when(
@@ -42,7 +42,7 @@ const check = (path: string): string | undefined => {
   return undefined
 }
 
-export default rules(import.meta.url, {
+export default RuleModule.make(import.meta.url, {
   "known-kind": Rule.define({
     name: "known-kind",
     meta: Rule.meta({
@@ -51,7 +51,7 @@ export default rules(import.meta.url, {
     }),
     create: function* () {
       const ctx = yield* RuleContext
-      const problem = Match.value(isGoverned(ctx.filename)).pipe(
+      const problem = Match.value(isGoverned({ path: ctx.filename })).pipe(
         Match.when(true, () => check(ctx.filename)),
         Match.orElse(() => undefined)
       )
@@ -59,7 +59,7 @@ export default rules(import.meta.url, {
         Program: (node: unknown) =>
           Match.value(problem).pipe(
             Match.when(undefined, () => Effect.void),
-            Match.orElse((message) => report(node, message))
+            Match.orElse((message) => RuleModule.report(node, message))
           )
       }
     }
@@ -72,8 +72,8 @@ export default rules(import.meta.url, {
     }),
     create: function* () {
       const ctx = yield* RuleContext
-      const bad = Match.value(isGoverned(ctx.filename)).pipe(
-        Match.when(true, () => kebabProblem(ctx.filename)),
+      const bad = Match.value(isGoverned({ path: ctx.filename })).pipe(
+        Match.when(true, () => getKebabProblem({ path: ctx.filename })),
         Match.orElse(() => undefined)
       )
       return {
@@ -81,7 +81,7 @@ export default rules(import.meta.url, {
           Match.value(bad).pipe(
             Match.when(undefined, () => Effect.void),
             Match.orElse((segment) =>
-              report(
+              RuleModule.report(
                 node,
                 `"${segment}" isn't kebab-case: rename it, e.g. profile-card.component.ts. See +rule/allowed-file-kinds/allowed-file-kinds.md.`
               )

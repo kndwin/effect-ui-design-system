@@ -3,6 +3,7 @@ export const kinds: Readonly<Record<string, ReadonlyArray<string>>> = {
   "allowed-file-kinds": [".ts"],
   "no-comments": [".ts"],
   "no-ternary": [".ts"],
+  "types-from-schema": [".ts"],
   "pure-files": [".pure.ts", ".make.ts", ".schema.ts", ".constant.ts", ".component.style.ts", ".token.ts", ".theme.ts"],
   "make-files": [".make.ts"],
   "schema-files": [".schema.ts"],

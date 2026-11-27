@@ -2,7 +2,7 @@ import * as Style from "@acme/design-system/Style"
 import * as Variant from "@acme/design-system/Variant"
 import { StackParts, StackItemParts } from "./layout.parts.constant.ts"
 import { Align, Direction, Justify, Space } from "../scales.schema.ts"
-import { space } from "./space.pure.ts"
+import { composeSpaceVariants } from "./space.pure.ts"
 
 export const StackStyle = Style.make(StackParts)({
   base: { root: { display: "flex", minWidth: 0 } },
@@ -12,11 +12,7 @@ export const StackStyle = Style.make(StackParts)({
       { row: { root: { flexDirection: "row" } }, column: { root: { flexDirection: "column" } } },
       { default: "column" }
     ),
-    gap: Variant.make(
-      Space,
-      space((gap) => ({ gap })),
-      { default: "0" }
-    ),
+    gap: Variant.make(Space, composeSpaceVariants({ property: "gap" }), { default: "0" }),
     align: Variant.make(Align, {
       start: { root: { alignItems: "flex-start" } },
       center: { root: { alignItems: "center" } },

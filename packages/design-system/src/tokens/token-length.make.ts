@@ -18,7 +18,7 @@ export const Value = Schema.Union([
   )
 ) as unknown as Schema.Codec<string, number | `${number}px` | `${number}rem`>
 
-export const make = Token.kind("Length", Value)
+export const make = Token.composeTokenKind({ kind: "Length", value: Value })
 
 export const calc = (
   strings: TemplateStringsArray,

@@ -1,6 +1,7 @@
 import { Array, Hash, Match, String } from "effect"
+import type { GetInitialsInput } from "./avatar.schema.ts"
 
-export const initials = (name: string): string => {
+export const getInitials = ({ name }: GetInitialsInput): string => {
   const words = Array.filter(String.split(String.trim(name), /\s+/), String.isNonEmpty)
   const letters = Match.value(words.length > 1).pipe(
     Match.when(true, () => [words[0]!, words[words.length - 1]!]),
@@ -12,5 +13,5 @@ export const initials = (name: string): string => {
     .slice(0, 2)
 }
 
-export const pickByName = <A>(name: string, values: ReadonlyArray<A>): A =>
+export const getByName = <A>({ name, values }: { readonly name: string; readonly values: ReadonlyArray<A> }): A =>
   values[Math.abs(Hash.string(name)) % values.length]!

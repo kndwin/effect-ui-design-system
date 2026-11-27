@@ -13,9 +13,9 @@ import { astryx } from "@acme/theme-astryx"
 import { shadcn } from "@acme/theme-shadcn"
 import { Html } from "@effect/ui/html"
 import { Array, Match } from "effect"
-import { install, installCommand, type Page, pages, sources } from "./content.constant.ts"
+import { install, installCommand, pages, sources } from "./content.constant.ts"
 import { initialChoices, scales } from "./customize.constant.ts"
-import { type Choices, Mode, Model, Msg, type Tab } from "./docs.schema.ts"
+import { type Choices, Mode, Model, Msg, type Page, type Tab } from "./docs.schema.ts"
 import * as Customize from "./customize.pure.ts"
 import { type Example, examples } from "./registry.constant.ts"
 
@@ -25,7 +25,9 @@ type H = Html.H<typeof Msg.Type>
 const currentTheme = (model: Model) => themes.find((t) => t.name === model.theme) ?? themes[0]!
 
 const customStyle = (model: Model) =>
-  Customize.styleOf(Customize.overrides(model.choices, themes, currentTheme(model), model.mode)) || undefined
+  Customize.composeInlineStyle({
+    vars: Customize.getOverrides({ choices: model.choices, themes, theme: currentTheme(model), mode: model.mode })
+  }) || undefined
 
 export const Docs = Html.component({ name: "Docs", model: Model, message: Msg }).make({
   init: () => ({
@@ -142,7 +144,7 @@ const header = (h: H, model: Model) =>
           Match.orElse(() => "neutral" as const)
         ),
         onPress: Msg.ToggledPanel(),
-        children: Match.value(Customize.isCustomized(model.choices)).pipe(
+        children: Match.value(Customize.isCustomized({ choices: model.choices })).pipe(
           Match.when(true, () => `Theme: ${model.theme} •`),
           Match.orElse(() => `Theme: ${model.theme}`)
         )
@@ -227,7 +229,7 @@ const builder = (h: H, model: Model) => {
         )
       )
     ),
-    ...Customize.controls(themes).map((control) =>
+    ...Customize.getControls({ themes }).map((control) =>
       row(
         control.title,
         HStack(h.div, { gap: "2", wrap: true }).children(
@@ -244,7 +246,7 @@ const builder = (h: H, model: Model) => {
               onPress: choose({ [control.id]: o.id }),
               label: o.source,
               children: [
-                ...Match.value(o.swatch).pipe(
+                ...Match.value(o.getSwatch).pipe(
                   Match.when(undefined, () => []),
                   Match.orElse((swatch) => [Swatch(h.span, { color: swatch(model.mode), size: "sm", round: true })])
                 ),
@@ -397,7 +399,7 @@ const tokens = (h: H) =>
               Text(h.code, { mono: true, size: "xs", weight: "medium", truncate: true }).children(`${group}.${key}`),
               ...themes.flatMap((th) =>
                 Mode.literals.map((m) => {
-                  const value = Customize.varsOf(th, m)[name] ?? ""
+                  const value = Customize.getThemeVars({ theme: th, mode: m })[name] ?? ""
                   return HStack(h.div, { gap: "2" }).children(
                     Match.value(t.kind === "Color").pipe(
                       Match.when(true, () => Swatch(h.span, { color: value, size: "sm" })),

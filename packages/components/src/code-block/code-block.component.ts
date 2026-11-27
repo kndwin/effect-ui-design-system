@@ -5,29 +5,12 @@ import type { Html } from "@effect/ui/html"
 import { Html as H } from "@effect/ui/html"
 import type { Child } from "@effect/ui/View"
 import { Effect, Match, Schema } from "effect"
-import { highlight, type Language } from "./highlight.pure.ts"
+import type { CodeBlockOptions, LineMark } from "./code-block.schema.ts"
+import { getHighlightTokens } from "./highlight.pure.ts"
 
 import { CodeBlockStyle } from "./code-block.component.style.ts"
 
 export type CodeBlockProps = Style.Props<typeof CodeBlockStyle>
-
-export type LineMark = "added" | "removed" | "highlighted"
-
-export interface CodeBlockOptions {
-  readonly code: string
-
-  readonly title?: string | undefined
-  readonly language?: Language | undefined
-  readonly lineNumbers?: boolean | undefined
-  readonly startLine?: number | undefined
-
-  readonly marks?: Readonly<Record<number, LineMark>> | undefined
-  readonly wrap?: boolean | undefined
-
-  readonly copy?: boolean | undefined
-  readonly key?: string | undefined
-  readonly class?: string | undefined
-}
 
 const Msg = UiSchema.TaggedEnum({ PressedCopy: {}, Copied: {}, CopyFailed: {}, ClearedCopied: {} })
 
@@ -153,7 +136,7 @@ const Impl = H.component({
                   ...Match.value(line === "").pipe(
                     Match.when(true, () => [" "]),
                     Match.orElse(() =>
-                      highlight(line, p.language ?? "ts").map(([kind, text]) =>
+                      getHighlightTokens({ code: line, language: p.language ?? "ts" }).map(([kind, text]) =>
                         Match.value(kind === "plain").pipe(
                           Match.when(true, () => text),
                           Match.orElse(() => h.span.class(c.token).attr("data-token", kind).children(text))

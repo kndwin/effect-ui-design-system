@@ -1,14 +1,11 @@
 import type { Schema } from "effect"
 import { GroupTypeId } from "./token.constant.ts"
-
-export type Kind = "Color" | "Length" | "Duration" | "Shadow" | "Font" | "Weight"
+import type { GetCssVarNameInput, Key, Kind } from "./token.schema.ts"
 
 declare const RefKind: unique symbol
 export type Ref<K extends Kind = Kind, Expr extends string = string> = Expr & {
   readonly [RefKind]: K
 }
-
-export type Key = string | number
 
 export interface Meta<P extends string = string, K extends Kind = Kind, Keys extends Key = Key, Encoded = unknown> {
   readonly prefix: P
@@ -30,16 +27,17 @@ export type Input<G> = G extends { readonly [GroupTypeId]: Meta<any, any, infer 
   ? { readonly [X in Keys]: E }
   : never
 
-export const kind =
-  <K extends Kind, Encoded>(name: K, value: Schema.Codec<string, Encoded>) =>
+export const composeTokenKind =
+  <K extends Kind, Encoded>({ kind, value }: { readonly kind: K; readonly value: Schema.Codec<string, Encoded> }) =>
   <const P extends string, const Keys extends ReadonlyArray<Key>>(
     prefix: P,
     keys: Keys
   ): Group<P, K, Keys[number], Encoded> => {
     const refs: Record<string, string> = {}
-    for (const key of keys) refs[key] = `var(${cssVarName(prefix, key)})`
-    return Object.assign(refs, { [GroupTypeId]: { prefix, kind: name, keys, value } }) as any
+    for (const key of keys) refs[key] = `var(${getCssVarName({ prefix, key })})`
+    return Object.assign(refs, { [GroupTypeId]: { prefix, kind, keys, value } }) as any
   }
 
 type SafeKey<K extends Key> = `${K}` extends `${infer A}.${infer B}` ? `${A}_${SafeKey<B>}` : `${K}`
-export const cssVarName = (prefix: string, key: Key) => `--${prefix}-${String(key).replaceAll(".", "_")}`
+export const getCssVarName = ({ prefix, key }: GetCssVarNameInput): string =>
+  `--${prefix}-${String(key).replaceAll(".", "_")}`

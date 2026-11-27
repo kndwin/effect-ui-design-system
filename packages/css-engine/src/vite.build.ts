@@ -4,16 +4,12 @@ import { fileURLToPath } from "node:url"
 import { Cause, Context, Data, Effect, Exit, Layer, ManagedRuntime, Match, MutableHashMap, Option } from "effect"
 import { createServer, isRunnableDevEnvironment, type Plugin, type RunnableDevEnvironment } from "vite"
 import { compileFile, EvaluationError, ModuleLoader } from "./engine.build.ts"
-import { messageOf } from "./message.pure.ts"
-
-export interface Options {
-  readonly include: RegExp
-  readonly adapter: string
-}
+import { getMessage } from "./message.pure.ts"
+import type { Options } from "./vite.schema.ts"
 
 export class RunnerError extends Data.TaggedError("RunnerError")<{ readonly cause: unknown }> {
   override get message() {
-    return `css-engine: the ssr environment can't run modules: ${messageOf(this.cause)}`
+    return `css-engine: the ssr environment can't run modules: ${getMessage({ cause: this.cause })}`
   }
 }
 
@@ -78,7 +74,7 @@ export class SsrEnvironment extends Context.Service<SsrEnvironment, RunnableDevE
   "@acme/css-engine/SsrEnvironment"
 ) {}
 
-const layerOf = (root: string) => {
+export const layer = (root: string) => {
   const ssr = Layer.effect(SsrEnvironment, runnerOf(root))
   const loader = Layer.effect(
     ModuleLoader,
@@ -97,17 +93,24 @@ const cssPath = (root: string, id: string) => {
   )
 }
 
-const failure = (cause: Cause.Cause<unknown>) => messageOf(Cause.squash(cause))
+const failure = (cause: Cause.Cause<unknown>) => getMessage({ cause: Cause.squash(cause) })
 
-export const cssEngine = (options: Options): Plugin => {
+type Services = SsrEnvironment | ModuleLoader
+
+interface Host {
+  readonly run: <A, E>(effect: Effect.Effect<A, E, Services>) => Promise<Exit.Exit<A, E | RunnerError>>
+  readonly started: () => boolean
+  readonly configure: (root: string) => void
+  readonly dispose: () => Promise<void>
+}
+
+const pluginOf = (options: Options, host: Host): Plugin => {
   let root = process.cwd()
   let isBuild = false
-  let runtime: ManagedRuntime.ManagedRuntime<SsrEnvironment | ModuleLoader, RunnerError> | undefined
   const sheets = MutableHashMap.empty<string, string>()
   const dependents = MutableHashMap.empty<string, ReadonlySet<string>>()
 
-  const run = <A, E>(effect: Effect.Effect<A, E, SsrEnvironment | ModuleLoader>) =>
-    (runtime ??= ManagedRuntime.make(layerOf(root))).runPromiseExit(effect)
+  const run = host.run
 
   const compile = Effect.fn("css-engine/vite/compile")(function* (file: string) {
     const result = yield* compileFile(file, {
@@ -138,6 +141,7 @@ export const cssEngine = (options: Options): Plugin => {
     configResolved(config) {
       root = config.root
       isBuild = config.command === "build"
+      host.configure(root)
     },
     resolveId: (source) =>
       Match.value(source.endsWith(CSS)).pipe(
@@ -163,7 +167,7 @@ export const cssEngine = (options: Options): Plugin => {
     },
     async handleHotUpdate({ file, server, modules }) {
       const styles = MutableHashMap.get(dependents, file)
-      if (Option.isNone(styles) || !runtime) return
+      if (Option.isNone(styles) || !host.started()) return
       await run(invalidate)
       const affected = new Set(modules)
       for (const style of styles.value) {
@@ -178,9 +182,35 @@ export const cssEngine = (options: Options): Plugin => {
       return [...affected]
     },
     async buildEnd() {
+      await host.dispose()
+    }
+  }
+}
+
+export const cssEngine = (options: Options): Plugin => {
+  let root = process.cwd()
+  let runtime: ManagedRuntime.ManagedRuntime<Services, RunnerError> | undefined
+  return pluginOf(options, {
+    run: (effect) => (runtime ??= ManagedRuntime.make(layer(root))).runPromiseExit(effect),
+    started: () => runtime !== undefined,
+    configure: (next) => {
+      root = next
+    },
+    dispose: async () => {
       const closing = runtime
       runtime = undefined
       await closing?.dispose()
     }
-  }
+  })
 }
+
+export const plugin = Effect.fn("css-engine/vite/plugin")(function* (options: Options) {
+  const context = yield* Effect.context<Services>()
+  const run = Effect.runPromiseExitWith(context)
+  return pluginOf(options, {
+    run: (effect) => run(effect),
+    started: () => true,
+    configure: () => undefined,
+    dispose: () => Promise.resolve()
+  })
+})

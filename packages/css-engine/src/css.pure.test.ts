@@ -1,12 +1,12 @@
 import { assert, describe, it } from "@effect/vitest"
-import { declarations, globalRules, property, rules, value } from "./css.pure.ts"
+import { getDeclarations, getGlobalRules, getPropertyName, getPropertyValue, getRules } from "./css.pure.ts"
 
 describe("css", () => {
   it("kebab-cases properties and keeps custom properties", () => {
     // Arrange
     const names = ["backgroundColor", "WebkitAppearance", "--color-accent"]
     // Act
-    const css = names.map(property)
+    const css = names.map((name) => getPropertyName({ name }))
     // Assert
     assert.deepStrictEqual(css, ["background-color", "-webkit-appearance", "--color-accent"])
   })
@@ -20,7 +20,7 @@ describe("css", () => {
       ["lineHeight", 1.6]
     ] as const
     // Act
-    const out = inputs.map(([name, v]) => value(name, v))
+    const out = inputs.map(([name, v]) => getPropertyValue({ name, value: v }))
     // Assert
     assert.deepStrictEqual(out, ["4px", "0.5", "0", "1.6"])
   })
@@ -29,7 +29,7 @@ describe("css", () => {
     // Arrange
     const style = { vars: { "--x": "1" }, color: "red", selectors: { "&:hover": { color: "blue" } } }
     // Act
-    const text = declarations(style)
+    const text = getDeclarations({ style })
     // Assert
     assert.strictEqual(text, "--x:1;color:red")
   })
@@ -42,7 +42,7 @@ describe("css", () => {
       "@media": { "screen and (max-width: 860px)": { display: "block" } }
     }
     // Act
-    const css = rules(".a", style)
+    const css = getRules({ selector: ".a", style })
     // Assert
     assert.deepStrictEqual(css, [
       ".a{display:flex}",
@@ -55,7 +55,7 @@ describe("css", () => {
     // Arrange
     const rule = { kind: "global", selector: ":root", vars: { "--color-accent": "#000" } } as const
     // Act
-    const css = globalRules(rule)
+    const css = getGlobalRules({ rule })
     // Assert
     assert.deepStrictEqual(css, [":root{--color-accent:#000}"])
   })

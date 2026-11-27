@@ -1,16 +1,19 @@
 import { Array, Context, Data, Effect, Record } from "effect"
-import { type CompiledExport, moduleSource } from "./codegen.pure.ts"
-import { globalRules } from "./css.pure.ts"
-import { compileRecipe } from "./recipe.pure.ts"
-import { messageOf } from "./message.pure.ts"
-import { type Adapter, isAdapter, type Output } from "./rules.pure.ts"
+import { getModuleSource } from "./codegen.pure.ts"
+import type { CompiledExport } from "./codegen.schema.ts"
+import { getGlobalRules } from "./css.pure.ts"
+import { getCompiledRecipe } from "./recipe.pure.ts"
+import { getMessage } from "./message.pure.ts"
+import { type Adapter, isAdapter } from "./rules.pure.ts"
+import type { Output } from "./rules.schema.ts"
+import type { CompiledFile, CompileOptions } from "./engine.schema.ts"
 
 export class EvaluationError extends Data.TaggedError("EvaluationError")<{
   readonly file: string
   readonly cause: unknown
 }> {
   override get message() {
-    return `css-engine: couldn't evaluate ${this.file}: ${messageOf(this.cause)}`
+    return `css-engine: couldn't evaluate ${this.file}: ${getMessage({ cause: this.cause })}`
   }
 }
 
@@ -20,7 +23,7 @@ export class AdapterError extends Data.TaggedError("AdapterError")<{
   readonly cause: unknown
 }> {
   override get message() {
-    const reason = messageOf(this.cause)
+    const reason = getMessage({ cause: this.cause })
     return `css-engine: adapter ${this.adapter} failed on ${this.exportName}: ${reason}`
   }
 }
@@ -32,36 +35,25 @@ export class ModuleLoader extends Context.Service<
   }
 >()("@acme/css-engine/ModuleLoader") {}
 
-export interface CompileOptions {
-  readonly adapter: string
-  readonly scope: string
-  readonly debug: boolean
-  readonly cssImport: string
-  readonly runtimeImport: string
-}
-
-export interface CompiledFile {
-  readonly css: string
-  readonly code: string
-}
-
 const adapterOf = Effect.fn("css-engine/adapterOf")(function* (options: CompileOptions, file: string) {
   const loader = yield* ModuleLoader
   const mod = yield* loader.load(options.adapter, file)
-  if (isAdapter(mod.compile)) return mod.compile
+  if (isAdapter({ value: mod.composeOutput })) return mod.composeOutput as Adapter
   return yield* new AdapterError({
     adapter: options.adapter,
-    exportName: "compile",
-    cause: "it has no `compile` export"
+    exportName: "composeOutput",
+    cause: "it has no `composeOutput` export"
   })
 })
 
-const lower = (name: string, value: unknown, out: Output | undefined, options: CompileOptions) => {
+const getLowered = (name: string, value: unknown, out: Output | undefined, options: CompileOptions) => {
   if (out === undefined) return { css: [], exported: { name, value } satisfies CompiledExport }
-  const globals = (out.globals ?? []).flatMap(globalRules)
+  const globals = (out.globals ?? []).flatMap((rule) => getGlobalRules({ rule }))
   if (out.recipes === undefined)
     return { css: globals, exported: { name, value: out.runtime } satisfies CompiledExport }
-  const compiled = Record.map(out.recipes, (r) => compileRecipe(r, options.scope, options.debug))
+  const compiled = Record.map(out.recipes, (recipe) =>
+    getCompiledRecipe({ recipe, scope: options.scope, debug: options.debug })
+  )
   return {
     css: [...globals, ...Array.flatten(Record.collect(compiled, (_, c) => c.css))],
     exported: {
@@ -80,10 +72,10 @@ const compileExport = Effect.fn("css-engine/compileExport")(function* (
   value: unknown
 ) {
   const out = yield* Effect.try({
-    try: () => compile(value, name),
+    try: () => compile({ value, exportName: name }),
     catch: (cause) => new AdapterError({ adapter: options.adapter, exportName: name, cause })
   })
-  return lower(name, value, out, options)
+  return getLowered(name, value, out, options)
 })
 
 export const compileFile = Effect.fn("css-engine/compileFile")(function* (file: string, options: CompileOptions) {
@@ -95,9 +87,9 @@ export const compileFile = Effect.fn("css-engine/compileFile")(function* (file: 
   )
   return {
     css: Array.flatMap(lowered, (l) => l.css).join("\n"),
-    code: moduleSource(
-      Array.map(lowered, (l) => l.exported),
-      { css: options.cssImport, runtime: options.runtimeImport }
-    )
+    code: getModuleSource({
+      exports: Array.map(lowered, (l) => l.exported),
+      imports: { css: options.cssImport, runtime: options.runtimeImport }
+    })
   } satisfies CompiledFile
 })

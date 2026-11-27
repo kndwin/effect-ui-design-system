@@ -1,8 +1,8 @@
 import { Rule, RuleContext } from "effect-oxlint"
 import { assert, describe, it } from "@effect/vitest"
-import { rules } from "./define.pure.ts"
+import * as RuleModule from "./rule-module.make.ts"
 
-describe("rules", () => {
+describe("RuleModule.make", () => {
   it("keeps the module's url with its rules", () => {
     // Arrange
     const rule = Rule.define({
@@ -14,7 +14,7 @@ describe("rules", () => {
       }
     })
     // Act
-    const module = rules("file:///repo/+rule/x/x.lint.ts", { x: rule })
+    const module = RuleModule.make("file:///repo/+rule/x/x.lint.ts", { x: rule })
     // Assert
     assert.strictEqual(module.url, "file:///repo/+rule/x/x.lint.ts")
     assert.deepStrictEqual(Object.keys(module.rules), ["x"])

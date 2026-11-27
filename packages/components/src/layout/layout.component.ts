@@ -7,8 +7,8 @@ import {
   LayoutStyle
 } from "./layout.component.style.ts"
 
-export const Layout = Element.styled(LayoutStyle)
-export const LayoutHeader = Element.styled(LayoutHeaderStyle)
-export const LayoutPanel = Element.styled(LayoutPanelStyle)
-export const LayoutContent = Element.styled(LayoutContentStyle)
-export const LayoutFooter = Element.styled(LayoutFooterStyle)
+export const Layout = Element.make(LayoutStyle)
+export const LayoutHeader = Element.make(LayoutHeaderStyle)
+export const LayoutPanel = Element.make(LayoutPanelStyle)
+export const LayoutContent = Element.make(LayoutContentStyle)
+export const LayoutFooter = Element.make(LayoutFooterStyle)

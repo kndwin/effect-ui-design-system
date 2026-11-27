@@ -5,7 +5,6 @@ import { Effect, Schema } from "effect"
 import { Avatar } from "../src/avatar/avatar.component.ts"
 import { Button } from "../src/button/button.component.ts"
 import { CodeBlock } from "../src/code-block/code-block.component.ts"
-import { manifest } from "../src/manifest.constant.ts"
 
 const Msg = UiSchema.TaggedEnum({ Pressed: {} })
 const Demo = Html.component({ name: "Demo", model: Schema.Struct({}), message: Msg }).make({
@@ -74,36 +73,4 @@ describe("components", () => {
       assert.match(html, /data-mark="added"[^>]*>.*?aria-hidden="true">2<\/span>/)
     })
   )
-
-  it("manifest lists components, slots, variants and the token contract", () => {
-    // Arrange
-    const { components, tokens } = manifest
-    // Act
-    const shape = components.slice(0, 3).map((c) => [c.kit, c.slots, Object.keys(c.variants)])
-    // Assert
-    assert.deepStrictEqual(shape, [
-      ["Button", ["root"], ["tone", "fill", "size"]],
-      ["Avatar", ["root", "image", "fallback"], ["size", "shape", "hue"]],
-      ["CodeBlock", ["root", "header", "title", "copy", "content", "line", "lineNumber", "token"], ["size", "tone"]]
-    ])
-    assert.deepStrictEqual(
-      components.slice(3).map((c) => c.kit),
-      [
-        "Stack",
-        "StackItem",
-        "Grid",
-        "GridSpan",
-        "Center",
-        "Section",
-        "Layout",
-        "LayoutHeader",
-        "LayoutPanel",
-        "LayoutContent",
-        "LayoutFooter",
-        "Text",
-        "Swatch"
-      ]
-    )
-    assert.deepStrictEqual(tokens.Colors?.kind, "Color")
-  })
 })

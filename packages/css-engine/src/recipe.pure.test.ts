@@ -1,6 +1,6 @@
 import { assert, describe, it } from "@effect/vitest"
-import { compileRecipe } from "./recipe.pure.ts"
-import { recipe } from "./runtime.pure.ts"
+import { getCompiledRecipe } from "./recipe.pure.ts"
+import { composeRecipe } from "./runtime.pure.ts"
 
 const source = {
   kind: "recipe",
@@ -16,7 +16,7 @@ describe("compileRecipe", () => {
     // Arrange
     const scope = "card.ts"
     // Act
-    const { css, runtime } = compileRecipe(source, scope, true)
+    const { css, runtime } = getCompiledRecipe({ recipe: source, scope: scope, debug: true })
     // Assert
     assert.deepStrictEqual(css, [
       `.${runtime.base}{color:red}`,
@@ -28,9 +28,9 @@ describe("compileRecipe", () => {
 
   it("produces a runtime the browser recipe understands", () => {
     // Arrange
-    const { runtime } = compileRecipe(source, "card.ts", true)
+    const { runtime } = getCompiledRecipe({ recipe: source, scope: "card.ts", debug: true })
     // Act
-    const classes = recipe(runtime)({ size: "lg" }).split(" ")
+    const classes = composeRecipe({ runtime })({ size: "lg" }).split(" ")
     // Assert
     assert.deepStrictEqual(classes, [runtime.base, runtime.variants.size!.lg, runtime.compound[0]!.className])
   })

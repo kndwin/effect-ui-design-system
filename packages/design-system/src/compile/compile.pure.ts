@@ -2,6 +2,7 @@ import type { Output, Recipe, StyleRule } from "@acme/css-engine/rules"
 import { Array, Match, Predicate, Record, Result } from "effect"
 import { type Definition, isDefinition, selectorsOf } from "../style/style.make.ts"
 import type { Theme } from "../theme/theme.make.ts"
+import type { ComposeOutputInput } from "./compile.schema.ts"
 
 const isTheme = (u: unknown): u is Theme => Predicate.isObject(u) && (u as { "~acme"?: unknown })["~acme"] === "Theme"
 
@@ -55,7 +56,7 @@ const styleOutput = (exportName: string, def: Definition): Output => ({
   }
 })
 
-export const compile = (value: unknown, exportName: string): Output | undefined => {
+export const composeOutput = ({ value, exportName }: ComposeOutputInput): Output | undefined => {
   if (isDefinition(value)) return styleOutput(exportName, value)
   if (isTheme(value)) {
     return {

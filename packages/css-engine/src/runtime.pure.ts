@@ -1,26 +1,20 @@
 import { Array, Option, Predicate, Record } from "effect"
+import type { ComposeRecipeInput, RecipeProps } from "./runtime.schema.ts"
 
-export interface RecipeRuntime {
-  readonly base: string
-  readonly variants: Readonly<Record<string, Readonly<Record<string, string>>>>
-  readonly defaults: Readonly<Record<string, string>>
-  readonly compound: ReadonlyArray<{ readonly variants: Readonly<Record<string, string>>; readonly className: string }>
-}
-
-export const recipe =
-  (r: RecipeRuntime) =>
-  (props: Readonly<Record<string, unknown>> = {}): string => {
+export const composeRecipe =
+  ({ runtime }: ComposeRecipeInput) =>
+  (props: RecipeProps = {}): string => {
     const chosen: Readonly<Record<string, string>> = {
-      ...r.defaults,
+      ...runtime.defaults,
       ...Record.map(Record.filter(props, Predicate.isNotNullish), String)
     }
     const variantClasses = Array.getSomes(
-      Record.collect(r.variants, (name, values) =>
+      Record.collect(runtime.variants, (name, values) =>
         Option.flatMap(Record.get(chosen, name), (picked) => Record.get(values, picked))
       )
     )
-    const compoundClasses = r.compound
+    const compoundClasses = runtime.compound
       .filter((c) => Record.every(c.variants, (v, name) => chosen[name] === v))
       .map((c) => c.className)
-    return [r.base, ...variantClasses, ...compoundClasses].join(" ")
+    return [runtime.base, ...variantClasses, ...compoundClasses].join(" ")
   }

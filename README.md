@@ -12,6 +12,12 @@ Effect-based engine. Components are written against a **token contract** (names 
 `@effect/ui` isn't on npm yet. It's pinned as a git submodule at `vendor/effect-ui`
 (commit `9dc3482`) and linked with `link:`; the kit ships `.ts` source, so there's no build step.
 
+pnpm installs packages; everything runs on **Bun 1.4.5** (the Rust rewrite), pinned as a dev
+dependency. The docs app's entry, `apps/docs/docs.build.ts`, is one Effect program on
+`BunRuntime` with `dev`, `build` and `preview` commands; it owns the CSS engine's services for the
+whole run. Vitest runs under Bun with the `threads` pool and without its file-system module cache
+(the cache key doesn't cover the CSS engine's generated code).
+
 ```bash
 git submodule update --init
 pnpm install
@@ -29,7 +35,7 @@ packages/
     src/style/       style.make.ts        Style.make(Parts)({ base, variants, compound }); rule.constant.ts
     src/variant/     variant.make.ts      Variant.make(Schema, …), Variant.flag(…)
     src/kit/         kit.make.ts          Kit.make / Kit.single: the parts-and-states descriptor type
-    src/element/     element.pure.ts      Element.styled(Style): a component from a style, for any element
+    src/element/     element.make.ts      Element.make(Style): a component from a style, for any element
     src/manifest/    manifest.make.ts     tokens + components, as data
     src/compile/     compile.pure.ts      the adapter for @acme/css-engine
   components/      @acme/components
@@ -37,7 +43,7 @@ packages/
     src/scales.schema.ts    🔒 variant value lists (Schemas)
     src/<name>/<name>.parts.constant.ts    the ui-kit DOM contract: parts and states
     src/<name>/<name>.component.style.ts   how it looks (data)
-    src/<name>/<name>.component.ts         what it renders; wires ui-kit; or just Element.styled(Style)
+    src/<name>/<name>.component.ts         what it renders; wires ui-kit; or just Element.make(Style)
       button avatar code-block text swatch, layout/ (Stack, Grid, Center, Section, Layout…)
   themes/          @acme/theme-shadcn, @acme/theme-astryx   (<name>.theme.ts)
   css-engine/      @acme/css-engine: generic, Effect-based, no design-system knowledge
@@ -68,11 +74,13 @@ fails with the id its heading names (`→ component-style-files/tokens-only`).
 | `no-comments`           | root                  | no comments in any `.ts`, except `@ts-expect-error` and `// Arrange / Act / Assert` in tests |
 | `no-ternary`            | root                  | no `a ? b : c`: branch with `Match` from `effect`                                            |
 | `pure-files`            | root                  | data kinds have no effects; `*.pure.ts` exports only functions and has a `*.pure.test.ts`    |
+|                         |                       | exported pure functions take one Schema-typed object and are named get/compose/is/has/should |
+| `types-from-schema`     | root                  | data shapes are Schemas (`typeof X.Type`); only generic and function types stay plain        |
 | `schema-files`          | root                  | a `*.schema.ts` exports only Schemas, and imports only `effect`, `@effect/ui` and schemas    |
 | `constant-files`        | root                  | a `*.constant.ts` exports values, no functions                                               |
 | `make-files`            | root                  | a `*.make.ts` exports `make`                                                                 |
 | `test-files`            | root                  | tests import `@effect/vitest`, and every test is `// Arrange`, `// Act`, `// Assert`         |
-| `component-files`       | `packages/components` | a library component: `Html.component`, a view function or `Element.styled(Style)`            |
+| `component-files`       | `packages/components` | a library component: `Html.component`, a view function or `Element.make(Style)`              |
 | `component-files`       | `apps/docs`           | an app component: an `Html.component`; examples also export `title` and `order`              |
 | `component-style-files` | `packages/components` | only `Style.make(…)` exports, tokens only, `@acme/*` imports only                            |
 | `token-files`           | `packages/components` | the contract: only `Token*.make(…)` groups                                                   |
@@ -109,7 +117,7 @@ export const Tokens = { Colors /* … */ }
 export const astryx = Theme.make(Tokens, { name: "astryx", values: { Colors: { accent: "#1b1b1b" /* … */ } /* … */ } })
 
 // components/src/layout/center.component.ts: a styled element is one line
-export const Center = Element.styled(CenterStyle)
+export const Center = Element.make(CenterStyle)
 
 // components/src/button/button.component.style.ts: how it looks
 export const ButtonStyle = Style.make(ButtonParts)({

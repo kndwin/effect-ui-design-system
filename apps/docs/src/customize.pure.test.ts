@@ -1,15 +1,16 @@
 import { astryx } from "@acme/theme-astryx"
 import { shadcn } from "@acme/theme-shadcn"
 import { assert, describe, it } from "@effect/vitest"
-import { initialChoices } from "./customize.constant.ts"
-import { controls, isCustomized, overrides, varsOf } from "./customize.pure.ts"
+import { getControls, getOverrides, getThemeVars, isCustomized } from "./customize.pure.ts"
 
 const themes = [shadcn, astryx]
+
+const initialChoices = { accent: null, neutrals: null, radius: null, sizing: null, font: null, mono: null, scale: 100 }
 
 describe("theme builder", () => {
   it("offers each theme's accent as a choice", () => {
     // Arrange
-    const accent = controls(themes).find((c) => c.id === "accent")
+    const accent = getControls({ themes: themes }).find((c) => c.id === "accent")
     // Act
     const ids = accent?.options.map((o) => o.id) ?? []
     // Assert
@@ -21,16 +22,16 @@ describe("theme builder", () => {
     // Arrange
     const choices = { ...initialChoices, accent: "astryx:accent" }
     // Act
-    const vars = overrides(choices, themes, shadcn, "light")
+    const vars = getOverrides({ choices: choices, themes: themes, theme: shadcn, mode: "light" })
     // Assert
-    assert.strictEqual(vars["--color-accent"], varsOf(astryx, "light")["--color-accent"])
+    assert.strictEqual(vars["--color-accent"], getThemeVars({ theme: astryx, mode: "light" })["--color-accent"])
   })
 
   it("scales length tokens", () => {
     // Arrange
     const choices = { ...initialChoices, scale: 110 }
     // Act
-    const vars = overrides(choices, themes, shadcn, "light")
+    const vars = getOverrides({ choices: choices, themes: themes, theme: shadcn, mode: "light" })
     // Assert
     assert.strictEqual(vars["--spacing-4"], "17.6px")
   })
@@ -39,7 +40,7 @@ describe("theme builder", () => {
     // Arrange
     const choices = initialChoices
     // Act
-    const customized = isCustomized(choices)
+    const customized = isCustomized({ choices: choices })
     // Assert
     assert.strictEqual(customized, false)
   })
