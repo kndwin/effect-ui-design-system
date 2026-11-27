@@ -4,9 +4,10 @@ import { UiSchema } from "@effect/ui"
 import { Text } from "@acme/components/text"
 import { HStack, VStack } from "@acme/components/layout/stack"
 import { Html } from "@effect/ui/html"
-import { Schema } from "effect"
+import { Match, Schema } from "effect"
 
 export const title = "One component tree, any theme"
+export const order = 1
 
 const Msg = UiSchema.TaggedEnum({ ToggledFollow: {} })
 
@@ -22,10 +23,16 @@ export default Html.component({ name: "ProfileCard", model: Schema.Boolean, mess
       ),
       HStack(h.div, { gap: "3", wrap: true, justify: "center" }).children(
         Button(h, {
-          tone: following ? "neutral" : "primary",
+          tone: Match.value(following).pipe(
+            Match.when(true, () => "neutral" as const),
+            Match.orElse(() => "primary" as const)
+          ),
           size: "sm",
           onPress: Msg.ToggledFollow(),
-          children: following ? "Following" : "Follow"
+          children: Match.value(following).pipe(
+            Match.when(true, () => "Following"),
+            Match.orElse(() => "Follow")
+          )
         }),
         Button(h, { tone: "danger", size: "sm", children: "Block" })
       )

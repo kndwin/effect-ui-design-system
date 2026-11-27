@@ -1,5 +1,6 @@
 import { dirname, relative, sep } from "node:path"
 import { type FileKind, fileKinds, kinds } from "./kinds.constant.ts"
+import { Match } from "effect"
 
 const skipped = /(^|\/)(node_modules|vendor|dist|\.git)\//
 
@@ -10,7 +11,12 @@ export const isGoverned = (path: string): boolean =>
 
 export const kindOf = (path: string): FileKind | undefined => {
   const file = posix(path).split("/").at(-1) ?? ""
-  return fileKinds.find((k) => ("name" in k ? file === k.name : file.endsWith(k.suffix)))
+  return fileKinds.find((k) =>
+    Match.value<FileKind>(k).pipe(
+      Match.when({ name: Match.string }, (named) => file === named.name),
+      Match.orElse((suffixed) => file.endsWith(suffixed.suffix))
+    )
+  )
 }
 
 export const ruleKindOf = (ruleFile: string): string => posix(dirname(ruleFile)).split("/").at(-1) ?? ""
@@ -33,7 +39,9 @@ export const kebabProblem = (path: string): string | undefined => {
   const segments = within.split("/")
   const file = segments.at(-1) ?? ""
   const kind = kindOf(file)
-  const stem = kind === undefined || "name" in kind ? file.replace(/\.ts$/, "") : file.slice(0, -kind.suffix.length)
-  const bad = [...segments.slice(0, -1), ...stem.split(".")].find((s) => !kebab.test(s))
-  return bad === undefined ? undefined : bad
+  const stem = Match.value(kind).pipe(
+    Match.when({ suffix: Match.string }, (suffixed) => file.slice(0, -suffixed.suffix.length)),
+    Match.orElse(() => file.replace(/\.ts$/, ""))
+  )
+  return [...segments.slice(0, -1), ...stem.split(".")].find((s) => !kebab.test(s))
 }

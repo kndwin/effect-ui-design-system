@@ -1,5 +1,5 @@
 import type { Output, Recipe, StyleRule } from "@acme/css-engine/rules"
-import { Array, Predicate, Record, Result } from "effect"
+import { Array, Match, Predicate, Record, Result } from "effect"
 import { type Definition, isDefinition, selectorsOf } from "../style/style.make.ts"
 import type { Theme } from "../theme/theme.make.ts"
 
@@ -9,8 +9,14 @@ const toRule = (rule: unknown, partStates: Readonly<Record<string, string>>): St
   const { decl, selectors, media } = selectorsOf(rule as never, partStates)
   return {
     ...decl,
-    ...(Record.isEmptyRecord(selectors) ? {} : { selectors: selectors as Record<string, StyleRule> }),
-    ...(Record.isEmptyRecord(media) ? {} : { "@media": media as Record<string, StyleRule> })
+    ...Match.value(Record.isEmptyRecord(selectors)).pipe(
+      Match.when(true, () => ({})),
+      Match.orElse(() => ({ selectors: selectors as Record<string, StyleRule> }))
+    ),
+    ...Match.value(Record.isEmptyRecord(media)).pipe(
+      Match.when(true, () => ({})),
+      Match.orElse(() => ({ "@media": media as Record<string, StyleRule> }))
+    )
   }
 }
 
@@ -26,10 +32,16 @@ const recipeOf = (exportName: string, def: Definition, slot: string): Recipe => 
       )
     ),
     defaultVariants: Record.filterMap(def.variants, (v) =>
-      v.default === undefined ? Result.failVoid : Result.succeed(String(v.default))
+      Match.value(v.default === undefined).pipe(
+        Match.when(true, () => Result.failVoid),
+        Match.orElse(() => Result.succeed(String(v.default)))
+      )
     ),
     compoundVariants: Array.flatMap(def.compound, (c) =>
-      c[slot] ? [{ variants: c.when, style: toRule(c[slot], states) }] : []
+      Match.value(c[slot]).pipe(
+        Match.when(true, () => [{ variants: c.when, style: toRule(c[slot], states) }]),
+        Match.orElse(() => [])
+      )
     )
   }
 }

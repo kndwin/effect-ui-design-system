@@ -1,0 +1,6 @@
+id: no-ternary/use-match
+language: TypeScript
+severity: error
+message: No ternaries. Branch with Match from effect. See +rule/no-ternary/no-ternary.md.
+rule:
+  kind: ternary_expression

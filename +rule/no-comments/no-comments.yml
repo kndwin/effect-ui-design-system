@@ -1,0 +1,10 @@
+id: no-comments/any-comment
+language: TypeScript
+severity: error
+message: No comments. Name things clearly, or write it in a rule .md. See +rule/no-comments/no-comments.md.
+rule:
+  kind: comment
+  not:
+    any:
+      - regex: "^//\\s*@ts-expect-error"
+      - regex: "^// (Arrange|Act|Assert)$"

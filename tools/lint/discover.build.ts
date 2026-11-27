@@ -1,5 +1,5 @@
 import { join } from "node:path"
-import { Array, Effect, FileSystem, HashSet, Path } from "effect"
+import { Array, Effect, FileSystem, HashSet, Match, Path } from "effect"
 
 const skip = HashSet.make("node_modules", "vendor", "dist", ".git", "__rule_tests__")
 
@@ -14,7 +14,11 @@ const ruleDirs = (dir: string): Effect.Effect<ReadonlyArray<string>, never, File
     const entries = yield* fs.readDirectoryEntries(dir).pipe(Effect.orElseSucceed(() => []))
     const nested = yield* Effect.forEach(
       Array.filter(entries, (e) => e.type === "Directory" && !HashSet.has(skip, e.name)),
-      (e) => (e.name === "+rule" ? Effect.succeed([path.join(dir, e.name)]) : ruleDirs(path.join(dir, e.name)))
+      (e) =>
+        Match.value(e.name === "+rule").pipe(
+          Match.when(true, () => Effect.succeed([path.join(dir, e.name)])),
+          Match.orElse(() => ruleDirs(path.join(dir, e.name)))
+        )
     )
     return Array.flatten(nested)
   })

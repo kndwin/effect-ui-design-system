@@ -1,3 +1,4 @@
+import { Match } from "effect"
 const pattern = new RegExp(
   [
     /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)/.source,
@@ -30,8 +31,14 @@ export const highlight = (code: string, language: Language = "ts"): ReadonlyArra
   if (language === "plain") return [["plain", code]]
   const out: Array<readonly [Kind, string]> = []
   let last = 0
-  const re = language === "shell" ? shell : pattern
-  const names: ReadonlyArray<Kind> = language === "shell" ? shellKinds : kinds
+  const re = Match.value(language === "shell").pipe(
+    Match.when(true, () => shell),
+    Match.orElse(() => pattern)
+  )
+  const names: ReadonlyArray<Kind> = Match.value(language === "shell").pipe(
+    Match.when(true, () => shellKinds),
+    Match.orElse(() => kinds)
+  )
   for (const m of code.matchAll(re)) {
     if (m[0] === "") continue
     if (m.index > last) out.push(["plain", code.slice(last, m.index)])

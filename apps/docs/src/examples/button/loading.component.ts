@@ -2,7 +2,7 @@ import { Button } from "@acme/components/button"
 import { UiSchema } from "@effect/ui"
 import { HStack } from "@acme/components/layout/stack"
 import { Html } from "@effect/ui/html"
-import { Schema } from "effect"
+import { Match, Schema } from "effect"
 
 export const title = "Loading and disabled"
 export const order = 3
@@ -18,7 +18,10 @@ export default Html.component({ name: "ButtonLoading", model: Schema.Boolean, me
         tone: "primary",
         loading: saving,
         onPress: Msg.PressedSave(),
-        children: saving ? "Saving…" : "Save"
+        children: Match.value(saving).pipe(
+          Match.when(true, () => "Saving…"),
+          Match.orElse(() => "Save")
+        )
       }),
       Button(h, { onPress: Msg.PressedReset(), children: "Reset" }),
       Button(h, { disabled: true, children: "Disabled" })

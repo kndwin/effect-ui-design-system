@@ -2,6 +2,7 @@ import { Array, Context, Data, Effect, Record } from "effect"
 import { type CompiledExport, moduleSource } from "./codegen.pure.ts"
 import { globalRules } from "./css.pure.ts"
 import { compileRecipe } from "./recipe.pure.ts"
+import { messageOf } from "./message.pure.ts"
 import { type Adapter, isAdapter, type Output } from "./rules.pure.ts"
 
 export class EvaluationError extends Data.TaggedError("EvaluationError")<{
@@ -9,7 +10,7 @@ export class EvaluationError extends Data.TaggedError("EvaluationError")<{
   readonly cause: unknown
 }> {
   override get message() {
-    return `css-engine: couldn't evaluate ${this.file}: ${this.cause instanceof Error ? this.cause.message : String(this.cause)}`
+    return `css-engine: couldn't evaluate ${this.file}: ${messageOf(this.cause)}`
   }
 }
 
@@ -19,7 +20,7 @@ export class AdapterError extends Data.TaggedError("AdapterError")<{
   readonly cause: unknown
 }> {
   override get message() {
-    const reason = this.cause instanceof Error ? this.cause.message : String(this.cause)
+    const reason = messageOf(this.cause)
     return `css-engine: adapter ${this.adapter} failed on ${this.exportName}: ${reason}`
   }
 }
@@ -44,24 +45,16 @@ export interface CompiledFile {
   readonly code: string
 }
 
-const adapterOf = (options: CompileOptions, file: string) =>
-  Effect.gen(function* () {
-    const loader = yield* ModuleLoader
-    const mod = yield* loader.load(options.adapter, file)
-    return isAdapter(mod.compile)
-      ? mod.compile
-      : yield* new AdapterError({
-          adapter: options.adapter,
-          exportName: "compile",
-          cause: "it has no `compile` export"
-        })
+const adapterOf = Effect.fn("css-engine/adapterOf")(function* (options: CompileOptions, file: string) {
+  const loader = yield* ModuleLoader
+  const mod = yield* loader.load(options.adapter, file)
+  if (isAdapter(mod.compile)) return mod.compile
+  return yield* new AdapterError({
+    adapter: options.adapter,
+    exportName: "compile",
+    cause: "it has no `compile` export"
   })
-
-const run = (compile: Adapter, options: CompileOptions, name: string, value: unknown) =>
-  Effect.try({
-    try: () => compile(value, name),
-    catch: (cause) => new AdapterError({ adapter: options.adapter, exportName: name, cause })
-  })
+})
 
 const lower = (name: string, value: unknown, out: Output | undefined, options: CompileOptions) => {
   if (out === undefined) return { css: [], exported: { name, value } satisfies CompiledExport }
@@ -80,12 +73,25 @@ const lower = (name: string, value: unknown, out: Output | undefined, options: C
   }
 }
 
+const compileExport = Effect.fn("css-engine/compileExport")(function* (
+  compile: Adapter,
+  options: CompileOptions,
+  name: string,
+  value: unknown
+) {
+  const out = yield* Effect.try({
+    try: () => compile(value, name),
+    catch: (cause) => new AdapterError({ adapter: options.adapter, exportName: name, cause })
+  })
+  return lower(name, value, out, options)
+})
+
 export const compileFile = Effect.fn("css-engine/compileFile")(function* (file: string, options: CompileOptions) {
   const loader = yield* ModuleLoader
   const mod = yield* loader.load(file)
   const compile = yield* adapterOf(options, file)
   const lowered = yield* Effect.forEach(Record.toEntries(mod), ([name, value]) =>
-    run(compile, options, name, value).pipe(Effect.map((out) => lower(name, value, out, options)))
+    compileExport(compile, options, name, value)
   )
   return {
     css: Array.flatMap(lowered, (l) => l.css).join("\n"),

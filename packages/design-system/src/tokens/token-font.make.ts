@@ -1,4 +1,4 @@
-import { Schema, SchemaTransformation } from "effect"
+import { Match, Schema, SchemaTransformation } from "effect"
 import * as Token from "./token.pure.ts"
 
 export const Value = Schema.Array(Schema.String)
@@ -7,7 +7,15 @@ export const Value = Schema.Array(Schema.String)
     Schema.decodeTo(
       Schema.String,
       SchemaTransformation.transform<string, ReadonlyArray<string>>({
-        decode: (stack) => stack.map((f) => (/^[a-z-]+$/.test(f) ? f : JSON.stringify(f))).join(", "),
+        decode: (stack) =>
+          stack
+            .map((f) =>
+              Match.value(/^[a-z-]+$/.test(f)).pipe(
+                Match.when(true, () => f),
+                Match.orElse(() => JSON.stringify(f))
+              )
+            )
+            .join(", "),
         encode: (s) => s.split(", ")
       })
     )

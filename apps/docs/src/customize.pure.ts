@@ -14,7 +14,10 @@ const refs = (group: object): ReadonlyArray<string> => Array.filter(Record.value
 
 export const varsOf = (theme: Theme, mode: Mode): Vars => ({
   ...theme.vars.base,
-  ...(mode === "dark" ? (theme.vars.modes as Record<string, Vars>)["dark"] : undefined)
+  ...Match.value(mode === "dark").pipe(
+    Match.when(true, () => (theme.vars.modes as Record<string, Vars>)["dark"]),
+    Match.orElse(() => undefined)
+  )
 })
 
 export interface Option {
@@ -185,17 +188,28 @@ export const controls = (themes: ReadonlyArray<Theme>): ReadonlyArray<Control> =
 }
 
 export const isCustomized = (c: Choices) =>
-  Record.some(c, (value, k) => (k === "scale" ? value !== 100 : value !== null))
+  Record.some(c, (value, k) =>
+    Match.value(k === "scale").pipe(
+      Match.when(true, () => value !== 100),
+      Match.orElse(() => value !== null)
+    )
+  )
 
 const scaled = (value: string, factor: number) => {
   const m = value.match(/^(-?[\d.]+)(px|rem)$/)
-  return m ? `${Math.round(Number(m[1]) * factor * 1000) / 1000}${m[2]}` : value
+  return Match.value(m).pipe(
+    Match.when(null, () => value),
+    Match.orElse(([, n, unit]) => `${Math.round(Number(n) * factor * 1000) / 1000}${unit}`)
+  )
 }
 
 export const overrides = (choices: Choices, themes: ReadonlyArray<Theme>, theme: Theme, mode: Mode): Vars => {
   const chosen = Array.reduce(controls(themes), {} as Vars, (out, control) => {
     const option = control.options.find((o) => o.id === choices[control.id])
-    return option ? { ...out, ...option.set(mode) } : out
+    return Match.value(option).pipe(
+      Match.when(undefined, () => out),
+      Match.orElse((picked) => ({ ...out, ...picked.set(mode) }))
+    )
   })
   if (choices.scale === 100) return chosen
   const current = { ...varsOf(theme, mode), ...chosen }
@@ -219,10 +233,23 @@ const encode = (kind: string, css: string): string =>
   Match.value(kind).pipe(
     Match.when("Length", () => {
       const px = css.match(/^(-?[\d.]+)px$/)
-      return px ? px[1]! : JSON.stringify(css)
+      return Match.value(px).pipe(
+        Match.when(null, () => JSON.stringify(css)),
+        Match.orElse(([, n]) => n!)
+      )
     }),
     Match.when("Weight", () => css),
-    Match.when("Duration", () => JSON.stringify(`${Number.parseFloat(css) * (css.endsWith("ms") ? 1 : 1000)} millis`)),
+    Match.when("Duration", () =>
+      JSON.stringify(
+        `${
+          Number.parseFloat(css) *
+          Match.value(css.endsWith("ms")).pipe(
+            Match.when(true, () => 1),
+            Match.orElse(() => 1000)
+          )
+        } millis`
+      )
+    ),
     Match.when(
       "Font",
       () =>
@@ -233,16 +260,28 @@ const encode = (kind: string, css: string): string =>
     ),
     Match.orElse(() => JSON.stringify(css))
   )
-const key = (k: string) => (/^[A-Za-z_$][\w$]*$/.test(k) ? k : JSON.stringify(k))
+const key = (k: string) =>
+  Match.value(/^[A-Za-z_$][\w$]*$/.test(k)).pipe(
+    Match.when(true, () => k),
+    Match.orElse(() => JSON.stringify(k))
+  )
 
 const groups = (vars: Vars, only?: (name: string, value: string) => boolean, indent = "    ") =>
   Record.toEntries(manifest.tokens)
     .map(([group, t]) => {
       const entries = t.keys
         .map((k) => [k, vars[cssVarName(t.prefix, k)] ?? ""] as const)
-        .filter(([k, value]) => (only ? only(cssVarName(t.prefix, k), value) : true))
+        .filter(([k, value]) =>
+          Match.value(only).pipe(
+            Match.when(undefined, () => true),
+            Match.orElse((keep) => keep(cssVarName(t.prefix, k), value))
+          )
+        )
         .map(([k, value]) => `${key(k)}: ${encode(t.kind, value)}`)
-      return entries.length > 0 ? `${indent}${group}: { ${entries.join(", ")} }` : ""
+      return Match.value(entries.length > 0).pipe(
+        Match.when(true, () => `${indent}${group}: { ${entries.join(", ")} }`),
+        Match.orElse(() => "")
+      )
     })
     .filter(Boolean)
     .join(",\n")
