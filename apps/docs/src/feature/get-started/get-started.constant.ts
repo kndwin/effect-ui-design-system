@@ -1,25 +1,21 @@
-export const cloneCommand = `git clone --recurse-submodules https://github.com/kndwin/weft
-cd weft
-pnpm install
-pnpm docs`
+const weft = "https://pkg.pr.new/kndwin/effect-ui-design-system/@weft"
+const effectUi = "https://pkg.pr.new/Effect-TS/ui/@effect"
+const effectUiCommit = "9dc3482"
 
 export const appPackage = `{
   "name": "my-app",
   "private": true,
   "type": "module",
-  "scripts": { "dev": "vite", "build": "vite build" },
-  "dependencies": {
-    "@weft/design-system": "workspace:*",
-    "@effect/ui": "link:../../vendor/effect-ui/packages/ui",
-    "@effect/ui-kit": "link:../../vendor/effect-ui/packages/ui-kit",
-    "effect": "4.1.6"
-  },
-  "devDependencies": {
-    "@weft/cli": "workspace:*",
-    "@weft/css-engine": "workspace:*",
-    "vite": "8.3.8"
-  }
+  "scripts": { "dev": "vite", "build": "vite build" }
 }`
+
+export const installCommand = `pnpm add effect@4.1.6 \\
+  ${effectUi}/ui@${effectUiCommit} \\
+  ${effectUi}/ui-kit@${effectUiCommit} \\
+  ${weft}/design-system@main
+pnpm add -D vite@8 typescript \\
+  ${weft}/css-engine@main \\
+  ${weft}/cli@main`
 
 export const viteConfig = `import { makePlugin } from "@weft/css-engine/vite"
 import { fileURLToPath } from "node:url"
@@ -36,10 +32,17 @@ export default defineConfig({
 })`
 
 export const tsconfig = `{
-  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "target": "ES2023",
     "module": "Preserve",
     "moduleResolution": "Bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
+    "strict": true,
+    "exactOptionalPropertyTypes": true,
+    "skipLibCheck": true,
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "types": ["vite/client"],
     "paths": { "@/*": ["./src/*"] }
   },
@@ -58,24 +61,25 @@ export const uiTree = `src/components/ui/
   button.parts.constant.ts    ui-kit parts and states it styles
   text.ts  stack.ts  layout.ts  …`
 
-export const copyTheme = `cp ../../packages/themes/shadcn/src/shadcn.theme.ts src/brand.theme.ts`
+export const themeCommand = "pnpm weft theme shadcn --name brand"
 
-export const themeFile = `import { Tokens } from "@/components/ui/tokens"
+export const themeFile = `import { Tokens } from "./components/ui/tokens.ts"
 import * as Theme from "@weft/design-system/Theme"
+import { Layer } from "effect"
 
 export const brand = Theme.make(Tokens, {
   name: "brand",
   default: true,
-  values: {
-    Colors: {
+  layer: Layer.mergeAll(
+    Layer.succeed(Tokens.Colors, {
       accent: "oklch(0.49 0.22 293)",
       accentFg: "oklch(0.99 0 0)",
       // …every other colour
-    },
+    }),
     // …Spacing, Size, Radius, Font and the rest of the contract
-  },
+  ),
   modes: {
-    dark: { Colors: { /* only what changes in dark */ } }
+    dark: Layer.succeed(Tokens.Colors, { /* the colours in dark */ })
   }
 })`
 
@@ -111,4 +115,12 @@ export const App = Html.component({ name: "App", model: Schema.Number, message: 
     )
 })`
 
-export const devCommand = "pnpm --filter my-app dev"
+export const indexFile = `<!doctype html>
+<html lang="en">
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>`
+
+export const devCommand = "pnpm dev"

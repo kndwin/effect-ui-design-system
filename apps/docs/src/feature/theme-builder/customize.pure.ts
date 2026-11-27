@@ -1,9 +1,10 @@
-import { Colors, Font, Hues, Radius, Size, Spacing, Text } from "@weft/components/tokens"
+import { Colors, Font, Hues, Radius, Size, Spacing, Text, Tokens } from "@weft/components/tokens"
+import { mapVarsToThemeSource } from "@weft/design-system/ThemeSource"
 import type { ThemeData } from "@weft/design-system/ThemeSchema"
 import { Array, Match, Order, Predicate, Record } from "effect"
 import { getThemeVars } from "../../platform/theme/theme.pure.ts"
 import type { Mode, Vars } from "../../platform/theme/theme.schema.ts"
-import type { GetControlsInput, GetOverridesInput } from "./theme-builder.schema.ts"
+import type { GetControlsInput, GetCustomThemeSourceInput, GetOverridesInput } from "./theme-builder.schema.ts"
 export interface ControlOption {
   readonly id: string
   readonly label: string
@@ -168,4 +169,19 @@ export const getOverrides = ({ choices, themes, theme, mode }: GetOverridesInput
       ])
     )
   }
+}
+
+export const getCustomThemeSource = ({ choices, themes, theme }: GetCustomThemeSourceInput): string => {
+  const getVars = (mode: Mode) => ({
+    ...getThemeVars({ theme, mode }),
+    ...getOverrides({ choices: { ...choices, custom: true }, themes, theme, mode })
+  })
+  return mapVarsToThemeSource({
+    tokens: Tokens,
+    name: "custom",
+    isDefault: true,
+    vars: getVars("light"),
+    modes: { dark: getVars("dark") },
+    tokensImport: "./components/ui/tokens.ts"
+  })
 }

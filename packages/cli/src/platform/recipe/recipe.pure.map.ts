@@ -1,5 +1,5 @@
 import { Array, Match } from "effect"
-import type { MapPathToRecipeFileInput, MapSourceToImportsInput } from "./add.schema.ts"
+import type { MapPathToRecipeFileInput, MapSourceToImportsInput } from "./recipe.schema.ts"
 
 const relativeImport = /(from\s+)"(\.{1,2}\/[^"]+)"/g
 

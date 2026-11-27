@@ -10,3 +10,13 @@ export const ThemeDataSchema = Schema.Struct({
   vars: Schema.Struct({ base: VarsSchema, modes: Schema.Record(Schema.String, VarsSchema) })
 })
 export type ThemeData = typeof ThemeDataSchema.Type
+
+export const MapVarsToThemeSourceInputSchema = Schema.Struct({
+  tokens: Schema.Record(Schema.String, Schema.Any),
+  name: Schema.String,
+  isDefault: Schema.Boolean,
+  vars: VarsSchema,
+  modes: Schema.Record(Schema.String, VarsSchema),
+  tokensImport: Schema.String
+})
+export type MapVarsToThemeSourceInput = typeof MapVarsToThemeSourceInputSchema.Type

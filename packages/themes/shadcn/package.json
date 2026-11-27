@@ -1,7 +1,16 @@
 {
   "name": "@weft/theme-shadcn",
   "version": "0.0.0",
-  "private": true,
+  "description": "A shadcn-style Weft theme, light and dark. weft theme shadcn copies it into your app.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kndwin/effect-ui-design-system.git",
+    "directory": "packages/themes/shadcn"
+  },
+  "files": [
+    "src",
+    "!src/**/*.test.ts"
+  ],
   "type": "module",
   "exports": {
     ".": "./src/shadcn.theme.ts"

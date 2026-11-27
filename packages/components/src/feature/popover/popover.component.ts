@@ -1,4 +1,6 @@
 import { Button } from "../../platform/button/button.component.ts"
+import type { ToneSchema } from "../../platform/scale/scales.schema.ts"
+import type * as Style from "@weft/design-system/Style"
 import { getStyleClasses } from "@weft/design-system/StyleClasses"
 import { Popover as KitPopover } from "@effect/ui-kit/Popover"
 import type { Html } from "@effect/ui/html"
@@ -6,12 +8,16 @@ import type { Child, Input } from "@effect/ui/View"
 import { Match } from "effect"
 import { PopoverStyle } from "./popover.component.style.ts"
 
+export type PopoverProps = Style.Props<typeof PopoverStyle>
+
 export const Popover = <Msg>(
   h: Html.H<Msg>,
-  options: {
+  options: PopoverProps & {
     readonly open: boolean
     readonly onOpenChange: (event: { readonly open: boolean }) => NoInfer<Msg> | undefined
     readonly trigger: string
+    readonly tone?: typeof ToneSchema.Type | undefined
+    readonly size?: "sm" | "md" | undefined
     readonly title?: string | undefined
     readonly description?: string | undefined
     readonly children?: ReadonlyArray<Input<Msg, unknown>> | undefined
@@ -19,7 +25,7 @@ export const Popover = <Msg>(
     readonly key?: string | undefined
   }
 ): Child<Msg> => {
-  const classes = getStyleClasses({ style: PopoverStyle, props: {} })
+  const classes = getStyleClasses({ style: PopoverStyle, props: options })
   return KitPopover(h, {
     ...Match.value(options.key).pipe(
       Match.when(undefined, () => ({})),
@@ -33,7 +39,12 @@ export const Popover = <Msg>(
     },
     view: (popover) =>
       h.span.children(
-        Button(h, { element: popover.trigger({ element: h.button }), children: options.trigger }),
+        Button(h, {
+          element: popover.trigger({ element: h.button }),
+          tone: options.tone,
+          size: options.size,
+          children: options.trigger
+        }),
         popover.portal(h.dialog)?.children(
           popover.positioner(h.div.class(classes.positioner)).children(
             popover.popup(h.div.class(classes.popup)).children(

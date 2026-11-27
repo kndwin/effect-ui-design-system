@@ -20,7 +20,8 @@ export class RunnerError extends Data.TaggedError("RunnerError")<{ readonly caus
 }
 
 const CSS = ".weft.css"
-const runtimeImport = fileURLToPath(new URL("../../feature/recipe/runtime.pure.ts", import.meta.url))
+const runtimeExtension = import.meta.url.slice(import.meta.url.lastIndexOf("."))
+const runtimeImport = fileURLToPath(new URL(`../../feature/recipe/runtime.pure${runtimeExtension}`, import.meta.url))
 
 const runnerOf = (root: string, alias: AliasOptions) =>
   Effect.acquireRelease(

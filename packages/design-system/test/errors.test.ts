@@ -1,5 +1,5 @@
 import { assert, describe, it } from "@effect/vitest"
-import { Effect } from "effect"
+import { Effect, Layer } from "effect"
 import * as Kit from "../src/platform/kit/kit.make.ts"
 import * as Manifest from "../src/platform/manifest/manifest.make.ts"
 import * as Style from "../src/feature/style/style.make.ts"
@@ -16,9 +16,9 @@ describe("typed errors", () => {
   it.effect("Theme.make fails with InvalidTokensError naming each bad path", () =>
     Effect.gen(function* () {
       // Arrange
-      const values = { Colors: { accent: "purple", fg: "#000" } }
+      const layer = Layer.succeed(Colors, { accent: "purple", fg: "#000" })
       // Act
-      const error = yield* failure<Theme.InvalidTokensError>(() => Theme.make({ Colors }, { name: "bad", values }))
+      const error = yield* failure<Theme.InvalidTokensError>(() => Theme.make({ Colors }, { name: "bad", layer }))
       // Assert
       assert.instanceOf(error, Theme.InvalidTokensError)
       assert.strictEqual(error.theme, "bad")

@@ -5,14 +5,15 @@ import { Text } from "@weft/components/text"
 import type { Html } from "@effect/ui/html"
 import type { Input } from "@effect/ui/View"
 import {
-  appFile,
   addCommand,
+  appFile,
   appPackage,
-  cloneCommand,
-  copyTheme,
   devCommand,
+  indexFile,
+  installCommand,
   listCommand,
   mainFile,
+  themeCommand,
   themeFile,
   tsconfig,
   uiTree,
@@ -35,33 +36,31 @@ const Note = <Msg>(h: Html.H<Msg>, text: string) => Text(h.p, { size: "sm", tone
 export const GetStartedPage = <Msg>(h: Html.H<Msg>) => [
   Section(h.div, { surface: "muted", pad: "4" }).children(
     Text(h.p, { size: "sm" }).children(
-      "Weft components are recipes. You copy their source into your app and own it, like shadcn. Your app depends on @weft/design-system only for token kinds, Theme, Style and the build step. Weft and @effect/ui aren't on npm yet, so for now build your app inside the Weft workspace."
+      "Weft components are recipes. You copy their source into your app and own it, like shadcn. Your app depends on @weft/design-system only for token kinds, Theme, Style and the build step. Weft isn't on npm yet: every commit to main is published to pkg.pr.new, and @effect/ui comes from its own pkg.pr.new snapshots."
     )
   ),
-  Step(h, 1, "Get the workspace", [
-    Note(h, "Clone with the effect-ui submodule, install, and start these docs to check everything runs."),
-    CodeBlock(h, { code: cloneCommand, language: "shell", key: "clone" })
-  ]),
-  Step(h, 2, "Add your app", [
+  Step(h, 1, "Create your app", [
+    Note(h, "Start from an empty folder with this package.json."),
+    CodeBlock(h, { code: appPackage, title: "package.json", language: "plain", key: "package" }),
     Note(
       h,
-      "Create apps/my-app with this package.json, then run pnpm install again so the workspace links it. There's no @weft/components or theme package in it: @weft/cli copies the components in, and you write the theme."
+      "Install Effect, @effect/ui and Weft. @weft/css-engine compiles styles at build time, and @weft/cli copies components into your app."
     ),
-    CodeBlock(h, { code: appPackage, title: "apps/my-app/package.json", language: "plain", key: "package" }),
+    CodeBlock(h, { code: installCommand, language: "shell", key: "install" })
+  ]),
+  Step(h, 2, "Configure TypeScript and Vite", [
     Note(h, "Point @/ at src so components import as @/components/ui/button."),
-    CodeBlock(h, { code: tsconfig, title: "apps/my-app/tsconfig.json", language: "plain", key: "tsconfig" })
-  ]),
-  Step(h, 3, "Compile styles at build time", [
+    CodeBlock(h, { code: tsconfig, title: "tsconfig.json", language: "plain", key: "tsconfig" }),
     Note(
       h,
-      "The CSS engine evaluates every *.component.style.ts and *.theme.ts during the build and replaces them with class names and static CSS. It uses the same @/ alias, and nothing is styled at runtime."
+      "The CSS engine evaluates every *.component.style.ts and *.theme.ts during the build and replaces them with class names and static CSS. Nothing is styled at runtime."
     ),
-    CodeBlock(h, { code: viteConfig, title: "apps/my-app/vite.config.ts", key: "vite" })
+    CodeBlock(h, { code: viteConfig, title: "vite.config.ts", key: "vite" })
   ]),
-  Step(h, 4, "Add components", [
+  Step(h, 3, "Add components", [
     Note(
       h,
-      "Run weft add from apps/my-app with the components you need. It copies each one into src/components/ui, along with everything it imports: the token contract, shared scales, ui-kit parts and any other component it uses. Imports are rewritten to point at your copies."
+      "weft add copies each component into src/components/ui, along with everything it imports: the token contract, shared scales, ui-kit parts and any other component it uses. Imports are rewritten to point at your copies."
     ),
     CodeBlock(h, { code: addCommand, language: "shell", key: "add" }),
     CodeBlock(h, { code: uiTree, language: "plain", key: "tree" }),
@@ -71,28 +70,26 @@ export const GetStartedPage = <Msg>(h: Html.H<Msg>) => [
     ),
     CodeBlock(h, { code: listCommand, language: "shell", key: "list" })
   ]),
-  Step(h, 5, "Create your theme", [
+  Step(h, 4, "Create your theme", [
     Note(
       h,
-      "A theme fills in every token of your contract, and modes override part of it. Start from a copy of a shipped theme rather than an empty file."
+      "A theme fills in every token of your contract, and modes override part of it. weft theme starts yours from a copy of a shipped one (shadcn or astryx), named and wired to your contract."
     ),
-    CodeBlock(h, { code: copyTheme, language: "shell", key: "copy-theme" }),
+    CodeBlock(h, { code: themeCommand, language: "shell", key: "theme-command" }),
     Note(
       h,
-      "Import Tokens from your contract and give the theme your own name and values. default: true applies it to the whole page. To try values first, pick custom in the theme panel. The compiler and the build both fail on a missing token or a bad value."
+      "Each token group is provided with Layer.succeed, and dark mode is a layer of the groups it changes. Change the values to make it yours, or build one in the theme panel and copy it from Theming. The compiler and the build both fail on a missing token or a bad value."
     ),
-    CodeBlock(h, { code: themeFile, title: "apps/my-app/src/brand.theme.ts", key: "theme" })
+    CodeBlock(h, { code: themeFile, title: "src/brand.theme.ts", key: "theme" })
   ]),
-  Step(h, 6, "Mount and render", [
-    Note(
-      h,
-      "Importing the theme adds its CSS variables. Add an index.html with a #root element and a module script for src/main.ts."
-    ),
-    CodeBlock(h, { code: mainFile, title: "apps/my-app/src/main.ts", key: "main" }),
-    CodeBlock(h, { code: appFile, title: "apps/my-app/src/app.component.ts", lineNumbers: true, key: "app" }),
+  Step(h, 5, "Mount and render", [
+    Note(h, "Importing the theme adds its CSS variables."),
+    CodeBlock(h, { code: indexFile, title: "index.html", language: "plain", key: "index" }),
+    CodeBlock(h, { code: mainFile, title: "src/main.ts", key: "main" }),
+    CodeBlock(h, { code: appFile, title: "src/app.component.ts", lineNumbers: true, key: "app" }),
     CodeBlock(h, { code: devCommand, language: "shell", key: "dev" })
   ]),
-  Step(h, 7, "Make it yours", [
+  Step(h, 6, "Make it yours", [
     Note(
       h,
       'The components are your code now. Change a style file and the CSS rebuilds; add a variant, a part or a token as you need. Add data-mode="dark" to any element to switch the mode below it. Theming covers the contract in depth, and Templates show whole pages built from these components.'

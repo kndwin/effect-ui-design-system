@@ -1,7 +1,17 @@
 {
   "name": "@weft/design-system",
   "version": "0.0.0",
-  "private": true,
+  "description": "Token kinds, Theme, Variant and Style for Weft, a themeable design system for @effect/ui-kit.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kndwin/effect-ui-design-system.git",
+    "directory": "packages/design-system"
+  },
+  "files": [
+    "dist",
+    "src",
+    "!src/**/*.test.ts"
+  ],
   "type": "module",
   "exports": {
     "./Token": "./src/platform/token/token.pure.ts",
@@ -13,6 +23,7 @@
     "./TokenWeight": "./src/platform/token/token-weight.make.ts",
     "./Theme": "./src/feature/theme/theme.make.ts",
     "./ThemeSchema": "./src/feature/theme/theme.schema.ts",
+    "./ThemeSource": "./src/feature/theme/theme-source.pure.map.ts",
     "./Style": "./src/feature/style/style.make.ts",
     "./StyleClasses": "./src/feature/style/style.pure.ts",
     "./Rule": "./src/feature/style/rule.constant.ts",
@@ -22,8 +33,31 @@
     "./Manifest": "./src/platform/manifest/manifest.make.ts",
     "./Compile": "./src/platform/compile/compile.pure.ts"
   },
+  "publishConfig": {
+    "exports": {
+      "./Token": "./dist/platform/token/token.pure.js",
+      "./TokenColor": "./dist/platform/token/token-color.make.js",
+      "./TokenLength": "./dist/platform/token/token-length.make.js",
+      "./TokenDuration": "./dist/platform/token/token-duration.make.js",
+      "./TokenFont": "./dist/platform/token/token-font.make.js",
+      "./TokenShadow": "./dist/platform/token/token-shadow.make.js",
+      "./TokenWeight": "./dist/platform/token/token-weight.make.js",
+      "./Theme": "./dist/feature/theme/theme.make.js",
+      "./ThemeSchema": "./dist/feature/theme/theme.schema.js",
+      "./ThemeSource": "./dist/feature/theme/theme-source.pure.map.js",
+      "./Style": "./dist/feature/style/style.make.js",
+      "./StyleClasses": "./dist/feature/style/style.pure.js",
+      "./Rule": "./dist/feature/style/rule.constant.js",
+      "./Variant": "./dist/platform/variant/variant.make.js",
+      "./Kit": "./dist/platform/kit/kit.make.js",
+      "./Element": "./dist/feature/style/element.make.js",
+      "./Manifest": "./dist/platform/manifest/manifest.make.js",
+      "./Compile": "./dist/platform/compile/compile.pure.js"
+    }
+  },
   "scripts": {
-    "test": "bun --bun x vitest run"
+    "test": "bun --bun x vitest run",
+    "build": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
     "@weft/css-engine": "workspace:*",

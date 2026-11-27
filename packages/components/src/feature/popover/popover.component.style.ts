@@ -1,5 +1,7 @@
 import * as Style from "@weft/design-system/Style"
 import * as TokenColor from "@weft/design-system/TokenColor"
+import * as TokenLength from "@weft/design-system/TokenLength"
+import * as Variant from "@weft/design-system/Variant"
 import {
   Colors,
   Font,
@@ -24,6 +26,8 @@ export const PopoverStyle = Style.make(PopoverParts)({
       gap: Spacing[2],
       width: Size.column,
       maxWidth: "100%",
+      maxHeight: TokenLength.makeCalc`100vh - ${Size.header} - ${Spacing[6]}`,
+      overflowY: "auto",
       padding: Spacing[4],
       fontFamily: Font.body,
       fontSize: Text.sm,
@@ -46,5 +50,8 @@ export const PopoverStyle = Style.make(PopoverParts)({
     title: { margin: 0, fontSize: Text.sm, fontWeight: Weight.semibold },
     description: { margin: 0, color: Colors.fgMuted, lineHeight: 1.5 },
     body: { display: "flex", flexDirection: "column", gap: Spacing[2] }
+  },
+  variants: {
+    wide: Variant.makeFlag({ popup: { width: Size.panel } })
   }
 })

@@ -5,6 +5,7 @@ import * as Variant from "@weft/design-system/Variant"
 import { AvatarParts as AvatarKit } from "../src/feature/avatar/avatar.parts.constant.ts"
 import { ButtonParts as ButtonKit } from "../src/platform/button/button.parts.constant.ts"
 import { UiSchema } from "@effect/ui"
+import { Layer } from "effect"
 import type { Html } from "@effect/ui/html"
 import { Avatar } from "../src/feature/avatar/avatar.component.ts"
 import { Button } from "../src/platform/button/button.component.ts"
@@ -53,4 +54,7 @@ Style.make(ButtonKit)({ base: { root: { paddingInline: "12px" } } })
 Style.make(ButtonKit)({ base: { root: { height: TokenColor.make("x", ["a"]).a } } })
 
 // @ts-expect-error
-Theme.make(Tokens, { name: "partial", values: { Colors: {} } })
+Theme.make(Tokens, { name: "partial", layer: Layer.succeed(Tokens.Colors, {} as typeof Tokens.Colors.Service) })
+
+// @ts-expect-error
+Layer.succeed(Tokens.Colors, { accent: "#000" })

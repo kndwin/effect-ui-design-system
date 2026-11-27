@@ -305,13 +305,13 @@ export const pages: ReadonlyArray<Page> = [
     id: "get-started",
     section: "Getting started",
     title: "Get started",
-    lead: "From an empty folder to a Weft app you own: copy the token contract and the components you need into your app, write your own theme, and render."
+    lead: "From an empty folder to a Weft app you own: install from pkg.pr.new, copy in the components you need with weft add, start your theme with weft theme, and render."
   },
   {
     id: "theming",
     section: "Getting started",
     title: "Theming",
-    lead: "A theme is a package that fills in every token of the contract, with optional modes layered on top. It is checked by the compiler, and bad values fail the build."
+    lead: "A theme fills in every token of the contract with Effect layers: one Layer.succeed per token group, and modes as layers on top. The compiler checks that every group is provided, and bad values fail the build."
   },
   ...Array.sort(
     ComponentIdSchema.literals.map(getComponentPage),

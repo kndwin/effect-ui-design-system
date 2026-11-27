@@ -12,7 +12,7 @@ export type AppModel = typeof AppModelSchema.Type
 export const AppMessageSchema = UiSchema.TaggedEnum({
   ChangedRoute: { route: AppRoute },
   PressedMode: {},
-  PressedPanel: {},
+  ChangedPanel: { open: Schema.Boolean },
   PickedTheme: { theme: Schema.String },
   PickedMode: { mode: ModeSchema },
   Chose: { choices: ChoicesSchema },
