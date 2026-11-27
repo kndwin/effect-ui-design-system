@@ -15,7 +15,7 @@ export const IntroductionPage = <Msg>(h: Html.H<Msg>) => [
   VStack(h.section, { gap: "3" }).children(
     Heading(h, "Why Weft"),
     Text(h.p).children(
-      "ui-kit gives you headless components: behaviour, focus and ARIA, with no look of their own. Weft is the thread woven through them. Every component is styled against a token contract, and a theme fills that contract in, so swapping the theme restyles everything without touching a component."
+      "ui-kit gives you headless components: behaviour, focus and ARIA, with no look of their own. Weft is the thread woven through them. Every component is styled against a token contract, and a theme fills that contract in, so swapping the theme restyles everything without touching a component. As with shadcn, you copy the components into your app and they become yours."
     ),
     Text(h.p).children(
       "Styles are plain TypeScript checked by the compiler, and compiled to static CSS at build time by Weft's own Effect CSS engine. There's no runtime styling and no class-name soup in your views."
@@ -35,11 +35,16 @@ export const IntroductionPage = <Msg>(h: Html.H<Msg>) => [
       Card(
         h,
         "@weft/design-system",
-        "Token kinds, Theme, Variant and Style. Knows ui-kit's parts and data attributes.",
+        "Token kinds, Theme, Variant and Style. The one package your app depends on.",
         true
       ),
-      Card(h, "@weft/components", "The token contract (names only) and the components styled against it.", true),
-      Card(h, "@weft/theme-*", "Values for every token, plus modes. shadcn and astryx ship here.", true)
+      Card(
+        h,
+        "@weft/components",
+        "The source you copy from: the token contract and every component styled against it.",
+        true
+      ),
+      Card(h, "@weft/theme-*", "Reference themes, shadcn and astryx. Copy one to start your own.", true)
     ),
     Text(h.p, { size: "sm", tone: "muted" }).children("Ready to build? Get started walks through a first app.")
   )

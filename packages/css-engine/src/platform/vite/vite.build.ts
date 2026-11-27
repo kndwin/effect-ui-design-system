@@ -2,7 +2,13 @@ import { existsSync } from "node:fs"
 import { join, relative } from "node:path"
 import { fileURLToPath } from "node:url"
 import { Cause, Context, Data, Effect, Exit, Layer, ManagedRuntime, Match, MutableHashMap, Option } from "effect"
-import { createServer, isRunnableDevEnvironment, type Plugin, type RunnableDevEnvironment } from "vite"
+import {
+  type AliasOptions,
+  createServer,
+  isRunnableDevEnvironment,
+  type Plugin,
+  type RunnableDevEnvironment
+} from "vite"
 import { compileFile, EvaluationError, ModuleLoader } from "../engine/engine.build.ts"
 import { mapCauseToMessage } from "../message/message.pure.map.ts"
 import type { Options } from "./vite.schema.ts"
@@ -16,7 +22,7 @@ export class RunnerError extends Data.TaggedError("RunnerError")<{ readonly caus
 const CSS = ".weft.css"
 const runtimeImport = fileURLToPath(new URL("../../feature/recipe/runtime.pure.ts", import.meta.url))
 
-const runnerOf = (root: string) =>
+const runnerOf = (root: string, alias: AliasOptions) =>
   Effect.acquireRelease(
     Effect.tryPromise({
       try: () =>
@@ -25,6 +31,7 @@ const runnerOf = (root: string) =>
           configFile: false,
           logLevel: "silent",
           appType: "custom",
+          resolve: { alias },
           server: { middlewareMode: true, hmr: false, watch: null },
           optimizeDeps: { noDiscovery: true, include: [] }
         }),
@@ -74,8 +81,8 @@ export class SsrEnvironment extends Context.Service<SsrEnvironment, RunnableDevE
   "@weft/css-engine/SsrEnvironment"
 ) {}
 
-export const makeLayer = (root: string) => {
-  const ssr = Layer.effect(SsrEnvironment, runnerOf(root))
+export const makeLayer = (root: string, alias: AliasOptions = []) => {
+  const ssr = Layer.effect(SsrEnvironment, runnerOf(root, alias))
   const loader = Layer.effect(
     ModuleLoader,
     Effect.gen(function* () {
@@ -100,7 +107,7 @@ type Services = SsrEnvironment | ModuleLoader
 interface Host {
   readonly run: <A, E>(effect: Effect.Effect<A, E, Services>) => Promise<Exit.Exit<A, E | RunnerError>>
   readonly started: () => boolean
-  readonly configure: (root: string) => void
+  readonly configure: (root: string, alias: AliasOptions) => void
   readonly dispose: () => Promise<void>
 }
 
@@ -141,7 +148,7 @@ const pluginOf = (options: Options, host: Host): Plugin => {
     configResolved(config) {
       root = config.root
       isBuild = config.command === "build"
-      host.configure(root)
+      host.configure(root, config.resolve.alias)
     },
     resolveId: (source) =>
       Match.value(source.endsWith(CSS)).pipe(
@@ -189,12 +196,14 @@ const pluginOf = (options: Options, host: Host): Plugin => {
 
 export const makePlugin = (options: Options): Plugin => {
   let root = process.cwd()
+  let alias: AliasOptions = []
   let runtime: ManagedRuntime.ManagedRuntime<Services, RunnerError> | undefined
   return pluginOf(options, {
-    run: (effect) => (runtime ??= ManagedRuntime.make(makeLayer(root))).runPromiseExit(effect),
+    run: (effect) => (runtime ??= ManagedRuntime.make(makeLayer(root, alias))).runPromiseExit(effect),
     started: () => runtime !== undefined,
-    configure: (next) => {
-      root = next
+    configure: (nextRoot, nextAlias) => {
+      root = nextRoot
+      alias = nextAlias
     },
     dispose: async () => {
       const closing = runtime

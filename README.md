@@ -15,6 +15,10 @@ behaviour and accessibility. Weft is the thread through it: typed tokens → Sch
 per-part styles, compiled to static CSS. Components are written against a **token contract** (names and
 kinds only); **themes** fill the contract in. Swap the theme, keep the components.
 
+Like shadcn, the components are recipes: `weft add button dialog` copies them, and everything they import,
+into your app's `src/components/ui`, and you own them from there. You write your own theme against the
+same contract. See [Get started](https://weft-docs.kndwin.workers.dev/get-started).
+
 - **44 components**, every ui-kit component with something to style: forms (Field, Number Field, OTP Field,
   Checkbox Group, Select, Combobox, Autocomplete, Date Picker, Calendar, File Drop, Slider, …), overlays
   (Dialog, Drawer, Popover, Tooltip, Preview Card, Menu, Context Menu, Menubar, Toast), structure (Tabs,
@@ -90,6 +94,8 @@ packages/
     src/feature/<name>/      one folder per component family (field, select, date, menu, …):
                              parts.constant, component.style, component (+ define/update/view/command)
   themes/          @weft/theme-shadcn, @weft/theme-astryx   (<name>.theme.ts)
+  cli/             @weft/cli: `weft add <component…>` copies components into an app
+    src/feature/add/         follows a component's relative imports, flattens names, rewrites imports
   css-engine/      @weft/css-engine: generic, Effect-based, no design-system knowledge
     src/platform/            rules (the adapter contract), css, hash, message, engine, vite
     src/feature/             recipe (+ the browser runtime), codegen

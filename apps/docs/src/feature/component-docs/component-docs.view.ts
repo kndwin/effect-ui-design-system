@@ -46,7 +46,9 @@ export const ComponentDocsPage = <Msg>(h: Html.H<Msg>, page: Page, look: Look) =
     Match.orElse((style) =>
       VStack(h.section, { gap: "3" }).children(
         Heading(h, "Styles"),
-        Text(h.p).children("The whole component's look is this file. It only references the token contract."),
+        Text(h.p).children(
+          "The whole component's look is this file. It only references the token contract. Run weft add to copy it into your app and own it; Get started shows how."
+        ),
         CodeBlock(h, { code: style, title: page.styleFile, lineNumbers: true, key: `style-${page.id}` })
       )
     )

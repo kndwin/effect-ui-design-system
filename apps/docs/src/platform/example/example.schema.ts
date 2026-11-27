@@ -14,5 +14,8 @@ export const ExampleModelSchema = Schema.Struct({})
 export const MapSourceToExampleMetaInputSchema = Schema.Struct({ source: Schema.String, file: Schema.String })
 export type MapSourceToExampleMetaInput = typeof MapSourceToExampleMetaInputSchema.Type
 
+export const MapSourceToRecipeInputSchema = Schema.Struct({ source: Schema.String })
+export type MapSourceToRecipeInput = typeof MapSourceToRecipeInputSchema.Type
+
 export const ExampleMetaSchema = Schema.Struct({ title: Schema.String, order: Schema.Number })
 export type ExampleMeta = typeof ExampleMetaSchema.Type
