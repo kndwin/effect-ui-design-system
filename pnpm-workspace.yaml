@@ -7,3 +7,4 @@ allowBuilds:
   esbuild: false
   bun: true
   "@ast-grep/cli": false
+  workerd: false

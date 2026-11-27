@@ -25,6 +25,20 @@ pnpm docs    # live examples + their source, theme switcher, theme builder
 pnpm ci      # oxfmt → oxlint + ast-grep → tsc (TypeScript 7) → every package's tests → rule tests → docs build
 ```
 
+### Deploying the docs
+
+`apps/docs/alchemy.run.ts` is an [Alchemy](https://alchemy.run/cloudflare/) stack: a Cloudflare
+`Website.StaticSite` that runs the docs build and serves `dist/` with single-page-app fallback.
+State lives in Alchemy's Cloudflare state store, so CI needs no local state.
+
+Pushing a `v*` tag runs `.github/workflows/deploy-docs.yml`: `pnpm ci`, then
+`alchemy deploy --stage prod`. It needs two repository secrets, `CLOUDFLARE_API_TOKEN` and
+`CLOUDFLARE_ACCOUNT_ID`. To deploy by hand:
+
+```bash
+cd apps/docs && bun alchemy deploy --stage prod
+```
+
 ## Packages
 
 Every package with real code, and the docs app, has the same `src/` layout
