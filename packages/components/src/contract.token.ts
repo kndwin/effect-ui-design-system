@@ -1,9 +1,9 @@
-import * as TokenColor from "@acme/ds/TokenColor"
-import * as TokenDuration from "@acme/ds/TokenDuration"
-import * as TokenFont from "@acme/ds/TokenFont"
-import * as TokenLength from "@acme/ds/TokenLength"
-import * as TokenShadow from "@acme/ds/TokenShadow"
-import * as TokenWeight from "@acme/ds/TokenWeight"
+import * as TokenColor from "@acme/design-system/TokenColor"
+import * as TokenDuration from "@acme/design-system/TokenDuration"
+import * as TokenFont from "@acme/design-system/TokenFont"
+import * as TokenLength from "@acme/design-system/TokenLength"
+import * as TokenShadow from "@acme/design-system/TokenShadow"
+import * as TokenWeight from "@acme/design-system/TokenWeight"
 
 export const Colors = TokenColor.make("color", [
   "surface",

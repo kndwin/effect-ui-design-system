@@ -1,4 +1,4 @@
-import type { Decl } from "@acme/ds/Rule"
+import type { Decl } from "@acme/design-system/Rule"
 import { Spacing } from "../contract.token.ts"
 
 type Length = NonNullable<Decl["gap"]>

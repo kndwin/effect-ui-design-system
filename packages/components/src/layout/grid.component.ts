@@ -1,5 +1,5 @@
-import { type Classable, type Classed, render } from "@acme/ds/kit/element"
-import * as Style from "@acme/ds/Style"
+import { type Classable, type Classed, render } from "@acme/design-system/Element"
+import * as Style from "@acme/design-system/Style"
 import { GridSpanStyle, GridStyle } from "./grid.component.style.ts"
 
 export type GridProps = Style.Props<typeof GridStyle> & { readonly class?: string | undefined }

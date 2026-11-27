@@ -12,7 +12,7 @@ const scoped = (rule: AnyRule, ruleFile: string): AnyRule => ({
 })
 
 const modules = await Promise.all(
-  findRuleFiles("ts").map(async (file) => ({ file, module: (await import(file)).default as RuleModule }))
+  findRuleFiles("lint.ts").map(async (file) => ({ file, module: (await import(file)).default as RuleModule }))
 )
 
 export const ruleIds = modules.flatMap(({ file, module }) =>

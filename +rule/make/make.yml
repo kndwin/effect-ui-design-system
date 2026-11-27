@@ -1,0 +1,16 @@
+id: make/exports-make
+language: TypeScript
+severity: error
+message: A *.make.ts file exports a `make`. See +rule/make/make.md.
+rule:
+  kind: program
+  not:
+    has:
+      kind: export_statement
+      has:
+        kind: lexical_declaration
+        has:
+          kind: variable_declarator
+          has:
+            field: name
+            regex: ^make$

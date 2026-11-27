@@ -1,13 +1,19 @@
-import * as Style from "@acme/ds/Style"
-import * as TokenLength from "@acme/ds/TokenLength"
-import * as Variant from "@acme/ds/Variant"
-import { Layout, LayoutContent, LayoutFooter, LayoutHeader, LayoutPanel } from "@acme/ds/kit/layout"
+import * as Style from "@acme/design-system/Style"
+import * as TokenLength from "@acme/design-system/TokenLength"
+import * as Variant from "@acme/design-system/Variant"
+import {
+  LayoutParts,
+  LayoutContentParts,
+  LayoutFooterParts,
+  LayoutHeaderParts,
+  LayoutPanelParts
+} from "./layout.parts.pure.ts"
 import { Colors, Font, Size, Spacing, Stroke, Text } from "../contract.token.ts"
 import { Side } from "../scales.pure.ts"
 
 const rule = { borderStyle: "solid", borderColor: Colors.border, borderWidth: 0 } as const
 
-export const LayoutStyle = Style.make(Layout)({
+export const LayoutStyle = Style.make(LayoutParts)({
   base: {
     root: {
       display: "grid",
@@ -31,7 +37,7 @@ export const LayoutStyle = Style.make(Layout)({
   }
 })
 
-export const LayoutHeaderStyle = Style.make(LayoutHeader)({
+export const LayoutHeaderStyle = Style.make(LayoutHeaderParts)({
   base: {
     root: {
       ...rule,
@@ -53,7 +59,7 @@ export const LayoutHeaderStyle = Style.make(LayoutHeader)({
   }
 })
 
-export const LayoutPanelStyle = Style.make(LayoutPanel)({
+export const LayoutPanelStyle = Style.make(LayoutPanelParts)({
   base: {
     root: {
       ...rule,
@@ -87,7 +93,7 @@ export const LayoutPanelStyle = Style.make(LayoutPanel)({
   }
 })
 
-export const LayoutContentStyle = Style.make(LayoutContent)({
+export const LayoutContentStyle = Style.make(LayoutContentParts)({
   base: {
     root: {
       gridArea: "content",
@@ -101,7 +107,7 @@ export const LayoutContentStyle = Style.make(LayoutContent)({
   }
 })
 
-export const LayoutFooterStyle = Style.make(LayoutFooter)({
+export const LayoutFooterStyle = Style.make(LayoutFooterParts)({
   base: {
     root: {
       ...rule,

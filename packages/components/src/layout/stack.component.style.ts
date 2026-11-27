@@ -1,10 +1,10 @@
-import * as Style from "@acme/ds/Style"
-import * as Variant from "@acme/ds/Variant"
-import { Stack, StackItem } from "@acme/ds/kit/layout"
+import * as Style from "@acme/design-system/Style"
+import * as Variant from "@acme/design-system/Variant"
+import { StackParts, StackItemParts } from "./layout.parts.pure.ts"
 import { Align, Direction, Justify, Space } from "../scales.pure.ts"
 import { space } from "./space.pure.ts"
 
-export const StackStyle = Style.make(Stack)({
+export const StackStyle = Style.make(StackParts)({
   base: { root: { display: "flex", minWidth: 0 } },
   variants: {
     direction: Variant.make(
@@ -34,7 +34,7 @@ export const StackStyle = Style.make(Stack)({
   }
 })
 
-export const StackItemStyle = Style.make(StackItem)({
+export const StackItemStyle = Style.make(StackItemParts)({
   base: { root: { minWidth: 0 } },
   variants: {
     grow: Variant.flag({ root: { flexGrow: 1 } }),

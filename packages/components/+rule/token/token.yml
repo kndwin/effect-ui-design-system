@@ -1,0 +1,27 @@
+id: token/exports
+language: TypeScript
+severity: error
+message: A token file only exports Token*.make(prefix, keys) groups and the contract object. See +rule/token/token.md.
+rule:
+  kind: lexical_declaration
+  inside:
+    kind: export_statement
+  has:
+    kind: variable_declarator
+    has:
+      field: value
+      not:
+        any:
+          - pattern: $TOKEN.make($$$)
+          - kind: object
+---
+id: token/imports
+language: TypeScript
+severity: error
+message: Token files import only @acme/* modules. See +rule/token/token.md.
+rule:
+  kind: import_statement
+  has:
+    field: source
+    not:
+      regex: ^["'](@acme/|\.)

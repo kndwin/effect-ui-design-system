@@ -1,7 +1,7 @@
-import * as Style from "@acme/ds/Style"
-import * as TokenColor from "@acme/ds/TokenColor"
-import * as Variant from "@acme/ds/Variant"
-import { CodeBlock } from "@acme/ds/kit/code-block"
+import * as Style from "@acme/design-system/Style"
+import * as TokenColor from "@acme/design-system/TokenColor"
+import * as Variant from "@acme/design-system/Variant"
+import { CodeBlockParts } from "./code-block.parts.pure.ts"
 import { CodeTone, ControlSize } from "../scales.pure.ts"
 import {
   Code,
@@ -17,7 +17,7 @@ import {
   Weight
 } from "../contract.token.ts"
 
-export const CodeBlockStyle = Style.make(CodeBlock)({
+export const CodeBlockStyle = Style.make(CodeBlockParts)({
   base: {
     root: {
       position: "relative",

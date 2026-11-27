@@ -1,0 +1,15 @@
+id: component/exports-ui
+language: TypeScript
+severity: error
+message: A *.component.ts file exports UI, an Html.component or a view function. See +rule/component/component.md.
+rule:
+  kind: program
+  not:
+    has:
+      stopBy: end
+      any:
+        - pattern: $HTML.component({ $$$ })
+        - kind: export_statement
+          has:
+            stopBy: end
+            kind: arrow_function

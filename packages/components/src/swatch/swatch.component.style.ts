@@ -1,10 +1,10 @@
-import * as Style from "@acme/ds/Style"
-import * as Variant from "@acme/ds/Variant"
-import { Swatch } from "@acme/ds/kit/layout"
+import * as Style from "@acme/design-system/Style"
+import * as Variant from "@acme/design-system/Variant"
+import { SwatchParts } from "./swatch.parts.pure.ts"
 import { Colors, Radius, Spacing, Stroke } from "../contract.token.ts"
 import { ControlSize } from "../scales.pure.ts"
 
-export const SwatchStyle = Style.make(Swatch)({
+export const SwatchStyle = Style.make(SwatchParts)({
   base: {
     root: {
       display: "inline-block",

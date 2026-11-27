@@ -22,7 +22,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@acme/ds": "workspace:*"
+    "@acme/design-system": "workspace:*"
   },
   "devDependencies": {
     "@acme/css-engine": "workspace:*",
