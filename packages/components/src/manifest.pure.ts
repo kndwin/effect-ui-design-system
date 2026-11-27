@@ -1,4 +1,3 @@
-// The library's manifest: token contract + every component's slots and variants.
 import * as Manifest from "@acme/ds/Manifest"
 import { AvatarStyle } from "./avatar/avatar.component.style.ts"
 import { ButtonStyle } from "./button/button.component.style.ts"

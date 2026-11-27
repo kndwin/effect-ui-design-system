@@ -1,5 +1,3 @@
-// The engine: turns adapter output into CSS. Runs at build time, inside the compiler.
-// This (and vite.build.ts) is the only code that touches vanilla-extract.
 import { globalStyle, type StyleRule as VeStyleRule } from "@vanilla-extract/css"
 import { recipe } from "@vanilla-extract/recipes"
 import type { Adapter, GlobalRule, Recipe } from "./rules.pure.ts"
@@ -18,7 +16,6 @@ const writeRecipe = (r: Recipe) =>
     r.debugId
   )
 
-/** Compiles every export of a module through the adapter. Exports it ignores pass through. */
 export const register = (mod: Readonly<Record<string, unknown>>, compile: Adapter): Record<string, unknown> =>
   Object.fromEntries(
     Object.entries(mod).map(([name, value]) => {

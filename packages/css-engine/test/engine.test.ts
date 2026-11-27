@@ -1,4 +1,3 @@
-// The engine on its own: a fixture module + a fixture adapter, no design system involved.
 import { describe, expect, it } from "vitest"
 import { Card, untouched } from "./fixtures/card.style.fixture.ts"
 

@@ -1,6 +1,3 @@
-// The design system's adapter for @acme/css-engine: turns what Style.make and Theme.make return
-// into the engine's plain rules. Pure: the engine does the writing.
-//   cssEngine({ include: /\.(component\.style|theme)\.ts$/, adapter: "@acme/ds/Compile" })
 import type { Output, Recipe, StyleRule } from "@acme/css-engine/rules"
 import { type Definition, isDefinition, selectorsOf } from "./Style.pure.ts"
 import type { Theme } from "./Theme.pure.ts"
@@ -53,7 +50,6 @@ const styleOutput = (exportName: string, def: Definition): Output => {
   }
 }
 
-/** The adapter: Style definitions become recipes, themes become global rules. */
 export const compile = (value: unknown, exportName: string): Output | undefined => {
   if (isDefinition(value)) return styleOutput(exportName, value)
   if (isTheme(value)) {

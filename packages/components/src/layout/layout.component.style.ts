@@ -1,5 +1,3 @@
-// The app shell: Layout with a header, an optional panel on either side, content and a footer.
-// Below the `narrow` breakpoint everything stacks.
 import * as Style from "@acme/ds/Style"
 import * as TokenLength from "@acme/ds/TokenLength"
 import * as Variant from "@acme/ds/Variant"

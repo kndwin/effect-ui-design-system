@@ -1,37 +1,25 @@
 import { Exit, Schema, SchemaIssue } from "effect"
 import { type AnyGroup, cssVarName, GroupTypeId, type Input } from "./Token.pure.ts"
 
-/** The token contract a component library publishes: `{ Colors, Spacing, … }` */
 export type Contract = Readonly<Record<string, AnyGroup>>
 
-/** What a theme writes: every key of every group in the contract. */
 export type Values<T extends Contract> = { readonly [G in keyof T]: Input<T[G]> }
-/** What a mode writes: any subset, layered over the theme's base values. */
+
 export type ModeValues<T extends Contract> = { readonly [G in keyof T]?: Partial<Input<T[G]>> }
 
-/** Plain data: the decoded values, and the selectors the build writes them to. */
 export interface Theme<Name extends string = string, Mode extends string = string> {
   readonly "~acme": "Theme"
   readonly name: Name
-  /** selector → CSS variables; @acme/css-engine writes each as a global rule */
+
   readonly rules: ReadonlyArray<{ readonly selector: string; readonly vars: Readonly<Record<string, string>> }>
   readonly modes: ReadonlyArray<Mode>
-  /** CSS variable → decoded value, for the base and for each mode */
+
   readonly vars: {
     readonly base: Readonly<Record<string, string>>
     readonly modes: Readonly<Record<Mode, Readonly<Record<string, string>>>>
   }
 }
 
-/**
- * Decodes every value through its kind's Schema. The build writes:
- *
- *   [data-theme="astryx"]                    { base vars }
- *   [data-theme="astryx"][data-mode="dark"]  { dark overrides }
- *
- * With `default: true` the base also goes on `:root` and modes on `:root[data-mode=…]`.
- * A bad value throws at build time naming the theme, mode and path.
- */
 export const make = <const T extends Contract, const Name extends string, const Mode extends string = never>(
   tokens: T,
   options: {

@@ -1,3 +1,0 @@
-# ast-grep: structural rules for file kinds. Run with `pnpm lint` (or `ast-grep scan`).
-ruleDirs:
-  - tools/ast-grep/rules

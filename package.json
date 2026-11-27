@@ -4,13 +4,14 @@
   "type": "module",
   "scripts": {
     "check": "tsc -p tsconfig.json",
-    "lint": "oxlint --disable-nested-config && ast-grep scan",
+    "lint": "oxlint --disable-nested-config -c oxlint.config.ts && node tools/lint/ast-grep.build.ts",
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
     "test": "pnpm --filter @acme/css-engine --filter @acme/components test",
     "docs": "pnpm --filter docs dev",
     "build": "pnpm --filter docs build",
-    "ci": "pnpm fmt:check && pnpm lint && pnpm check && pnpm test && pnpm build"
+    "ci": "pnpm fmt:check && pnpm lint && pnpm check && pnpm test && pnpm test:rules && pnpm build",
+    "test:rules": "vitest run --config tools/lint/vitest.config.ts"
   },
   "dependencies": {
     "@effect/ui": "link:vendor/effect-ui/packages/ui",
@@ -24,7 +25,8 @@
     "oxfmt": "^0.80.0",
     "oxlint": "^1.95.0",
     "typescript": "7.0.2",
-    "vite": "8.3.8"
+    "vite": "8.3.8",
+    "vitest": "5.1.1"
   },
   "packageManager": "pnpm@11.20.0"
 }

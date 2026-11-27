@@ -6,7 +6,6 @@ import { Schema } from "effect"
 export const title = "Image, with initials until it loads"
 export const order = 3
 
-// A stand-in photo, inlined so the example works offline.
 const photo =
   "data:image/svg+xml," +
   encodeURIComponent(
@@ -19,7 +18,7 @@ export default Html.component({ name: "AvatarImage", model: Schema.Null, message
   view: (h) =>
     HStack(h.div, { gap: "3", wrap: true, justify: "center" }).children(
       Avatar(h, { name: "Ada Lovelace", src: photo, size: "lg", key: "loaded" }),
-      // A broken source falls back to initials; the root says data-status="error".
+
       Avatar(h, { name: "Grace Hopper", src: "/missing.png", size: "lg", key: "broken" })
     )
 })

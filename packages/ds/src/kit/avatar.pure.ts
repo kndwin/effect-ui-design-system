@@ -1,6 +1,3 @@
-// The ONE place that knows ui-kit Avatar's DOM contract. ui-kit's Avatar sets no
-// data attributes; the design system adds `data-status` on the root so styles
-// can react to the image's load state.
 import { Avatar as KitAvatar } from "@effect/ui-kit/Avatar"
 import type { Html } from "@effect/ui/html"
 import type { Child } from "@effect/ui/View"
@@ -22,10 +19,9 @@ export interface AvatarKit extends Kit.Type<typeof AvatarDescriptor> {}
 export const Avatar: AvatarKit = AvatarDescriptor
 
 export interface AvatarOptions {
-  /** Required: used for the image's alt text and the fallback initials. */
   readonly name: string
   readonly src?: string | undefined
-  /** ms before the initials show, so a fast image doesn't flash them */
+
   readonly fallbackDelay?: number | undefined
   readonly key?: string | undefined
   readonly class?: string | undefined
@@ -40,7 +36,6 @@ export const initials = (name: string): string => {
     .slice(0, 2)
 }
 
-/** Stable pick from a list of values by name, e.g. the fallback's hue. */
 export const pickByName = <A>(name: string, values: ReadonlyArray<A>): A => {
   let hash = 0
   for (const ch of name) hash = (hash * 31 + ch.charCodeAt(0)) | 0

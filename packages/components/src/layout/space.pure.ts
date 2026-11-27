@@ -1,4 +1,3 @@
-// One variant value per Spacing step, for gap / padding style variants.
 import type { Decl } from "@acme/ds/Rule"
 import { Spacing } from "../contract.token.ts"
 

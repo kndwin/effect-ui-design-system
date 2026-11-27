@@ -1,6 +1,3 @@
-// CodeBlock has no ui-kit counterpart: the design system owns this DOM.
-// Anatomy follows shadcn's code-block: root › header (title, copy) › content › line › (lineNumber, token).
-// Per-line marks and per-token kinds are data attributes, so they style through `states`.
 import { Button as KitButton } from "@effect/ui-kit/Button"
 import { Command, UiSchema } from "@effect/ui"
 import type { Html } from "@effect/ui/html"
@@ -43,21 +40,19 @@ export type LineMark = "added" | "removed" | "highlighted"
 
 export interface CodeBlockOptions {
   readonly code: string
-  /** a filename or label; without one, the copy button floats over the code */
+
   readonly title?: string | undefined
   readonly language?: Language | undefined
   readonly lineNumbers?: boolean | undefined
   readonly startLine?: number | undefined
-  /** line number → mark, e.g. { 3: "highlighted", 7: "added" } */
+
   readonly marks?: Readonly<Record<number, LineMark>> | undefined
   readonly wrap?: boolean | undefined
-  /** show the copy button (default true) */
+
   readonly copy?: boolean | undefined
   readonly key?: string | undefined
   readonly class?: string | undefined
 }
-
-// ─── the stateful part: copy → "Copied" for 2s ─────────────────────────────
 
 const Msg = UiSchema.TaggedEnum({ PressedCopy: {}, Copied: {}, CopyFailed: {}, ClearedCopied: {} })
 
@@ -148,7 +143,7 @@ const Impl = H.component({
             })
           )
         ),
-      // announced, not shown
+
       h.span
         .attr("aria-live", "polite")
         .attr("style", "position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)")

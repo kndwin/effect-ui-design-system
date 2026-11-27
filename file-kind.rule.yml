@@ -1,0 +1,9 @@
+id: file-kind/no-reexports
+language: TypeScript
+severity: error
+message: No re-exports or barrels. Import from the file that defines the thing. See file-kind.rule.md.
+rule:
+  kind: export_statement
+  has:
+    field: source
+    kind: string

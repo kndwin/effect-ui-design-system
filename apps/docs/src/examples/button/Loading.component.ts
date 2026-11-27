@@ -9,7 +9,6 @@ export const order = 3
 
 const Msg = UiSchema.TaggedEnum({ PressedSave: {}, PressedReset: {} })
 
-// `loading` keeps the button focusable (aria-disabled + aria-busy), so focus doesn't jump away.
 export default Html.component({ name: "ButtonLoading", model: Schema.Boolean, message: Msg }).make({
   init: () => false,
   update: { PressedSave: () => true, PressedReset: () => false },

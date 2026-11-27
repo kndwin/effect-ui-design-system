@@ -1,5 +1,3 @@
-// A component library's manifest: its token contract and its styles, as plain data
-// (for docs, the CLAUDE.md section, and checks). Also rejects two groups sharing a prefix.
 import type { Style } from "./Style.pure.ts"
 import type { Contract } from "./Theme.pure.ts"
 import { GroupTypeId } from "./Token.pure.ts"

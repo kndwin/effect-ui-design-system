@@ -1,0 +1,6 @@
+id: pure/no-component
+language: TypeScript
+severity: error
+message: Html.component isn't data. Move it to a *.component.ts file. See pure.rule.md.
+rule:
+  pattern: $HTML.component({ $$$ })

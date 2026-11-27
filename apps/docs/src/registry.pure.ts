@@ -1,14 +1,12 @@
-// Every file under examples/<component>/ is both a live example and its own source listing.
 import type { Html } from "@effect/ui/html"
 import type { Child } from "@effect/ui/View"
 
-/** An example is any Html.component that takes no props; the docs embed it with a key. */
 type Embeddable = <Msg>(h: Html.H<Msg>, options: { readonly key: string }) => Child<Msg>
 
 interface ExampleModule {
   readonly default: Embeddable
   readonly title?: string
-  /** position on the page; lower first */
+
   readonly order?: number
 }
 
@@ -24,7 +22,7 @@ export interface Example {
   readonly page: string
   readonly title: string
   readonly order: number
-  /** e.g. examples/button/Tones.ts */
+
   readonly file: string
   readonly component: ExampleModule["default"]
   readonly source: string

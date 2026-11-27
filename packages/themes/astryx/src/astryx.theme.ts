@@ -1,5 +1,3 @@
-// 🔒 An Astryx-inspired theme (values from astryx.atmeta.com/docs/tokens, "Neutral"):
-// near-black accent, Figtree, 14px base, 12px control corners, translucent borders.
 import { Tokens } from "@acme/components/tokens"
 import * as Theme from "@acme/ds/Theme"
 
@@ -18,7 +16,7 @@ export const astryx = Theme.make(Tokens, {
       dangerFg: "#ffffff",
       ring: "#1b1b1b"
     },
-    // data-viz categorical: blue, green, orange, red
+
     Code: {
       surface: "#f1f1f1",
       fg: "#000000",

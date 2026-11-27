@@ -1,5 +1,3 @@
-// 🔒 The token CONTRACT: names and kinds only. Themes (*.theme.ts) supply the values,
-// and Theme.make won't compile unless a theme fills in every key here.
 import * as TokenColor from "@acme/ds/TokenColor"
 import * as TokenDuration from "@acme/ds/TokenDuration"
 import * as TokenFont from "@acme/ds/TokenFont"
@@ -19,7 +17,7 @@ export const Colors = TokenColor.make("color", [
   "dangerFg",
   "ring"
 ])
-/** CodeBlock surface and line marks */
+
 export const Code = TokenColor.make("code", [
   "surface",
   "fg",
@@ -29,9 +27,9 @@ export const Code = TokenColor.make("code", [
   "lineAdded",
   "lineRemoved"
 ])
-/** CodeBlock token colours */
+
 export const Syntax = TokenColor.make("syntax", ["comment", "string", "keyword", "number", "type", "call"])
-/** Avatar fallback backgrounds; text on them uses Colors.onHue */
+
 export const Hues = TokenColor.make("hue", ["blue", "green", "amber", "rose", "onHue"])
 export const Spacing = TokenLength.make("spacing", [1, 2, 3, 4, 6, 8, 12])
 export const Size = TokenLength.make("size", [
@@ -54,7 +52,6 @@ export const Weight = TokenWeight.make("weight", ["regular", "medium", "semibold
 export const Shadow = TokenShadow.make("shadow", ["control"])
 export const Motion = TokenDuration.make("motion", ["fast"])
 
-/** The whole contract, as one object: what a theme must fill in. */
 export const Tokens = {
   Colors,
   Code,

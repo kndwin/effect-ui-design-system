@@ -7,7 +7,6 @@ import { AvatarStyle } from "./avatar.component.style.ts"
 
 export type AvatarProps = Style.Props<typeof AvatarStyle>
 
-/** `Avatar(h, { name, src, size, shape })`. The fallback's hue comes from the name unless given. */
 export const Avatar = <Msg>(h: Html.H<Msg>, options: AvatarOptions & AvatarProps): Child<Msg> =>
   renderAvatar(
     h,

@@ -4,7 +4,6 @@ import { SwatchStyle } from "./swatch.component.style.ts"
 
 export type SwatchProps = Style.Props<typeof SwatchStyle> & { readonly class?: string | undefined }
 
-/** A colour chip. The colour is data (any CSS colour), not a style. */
 export const Swatch = <E extends Classable>(
   element: E,
   options: SwatchProps & { readonly color: string }
