@@ -39,6 +39,7 @@ export const SortableListStyle = Style.make(SortableListParts)({
         dropAfter: { borderBottomColor: Colors.accent, borderBottomWidth: Stroke.focus }
       }
     },
+    label: { flexGrow: 1, minWidth: 0 },
     handle: {
       display: "inline-flex",
       alignItems: "center",

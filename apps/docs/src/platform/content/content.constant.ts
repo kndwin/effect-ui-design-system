@@ -324,6 +324,18 @@ export const pages: ReadonlyArray<Page> = [
     lead: "Stat tiles, goal meters, a tabbed activity feed and a range picker: the shape of most analytics overviews."
   },
   {
+    id: "inbox",
+    section: "Templates",
+    title: "Inbox",
+    lead: "A searchable message list with an unread filter beside a reading pane: open a message to mark it read, archive it, or reply."
+  },
+  {
+    id: "kanban",
+    section: "Templates",
+    title: "Kanban board",
+    lead: "Lanes of Sortable Lists. Drag a card's handle or use the keyboard to reorder it, and its Move menu to send it to another lane."
+  },
+  {
     id: "login",
     section: "Templates",
     title: "Login",

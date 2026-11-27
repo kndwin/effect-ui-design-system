@@ -11,6 +11,7 @@ const SortableListDescriptor = Kit.make({
         dropAfter: "[data-drop-position=after]"
       }
     },
+    label: { states: {} },
     handle: { states: { moving: "[data-moving]", disabled: "[data-disabled]" } },
     status: { states: {} }
   },

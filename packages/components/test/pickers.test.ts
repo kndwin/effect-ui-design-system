@@ -106,7 +106,8 @@ const Pickers = Html.component({ name: "Pickers", model: Schema.Struct({}), mess
           { id: "a", label: "Alpha" },
           { id: "b", label: "Beta" }
         ],
-        onReorder: changed
+        onReorder: changed,
+        onTrailing: (item) => h.button.attr("aria-label", `More for ${item.label}`).children("…")
       }),
       VirtualList(h, {
         key: "virtual",
@@ -205,6 +206,7 @@ describe("pickers and lists", () => {
       // Assert
       assert.match(html, /aria-label="Reorder Alpha"/)
       assert.match(html, /aria-label="Reorder Beta"/)
+      assert.match(html, /Alpha<\/span><button aria-label="More for Alpha">/)
       assert.match(html, />Row 9</)
       assert.notMatch(html, />Row 10</)
     })
