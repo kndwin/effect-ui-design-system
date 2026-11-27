@@ -111,6 +111,7 @@ export default Html.component({
                   key: `lane-${lane}`,
                   label: laneTitle,
                   items: model[lane],
+                  stacked: true,
                   onReorder: ({ from, to }) => Msg.Reordered({ lane, from, to }),
                   onTrailing: (card) =>
                     Menu(h, {
