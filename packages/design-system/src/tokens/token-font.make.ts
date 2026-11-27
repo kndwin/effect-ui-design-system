@@ -21,4 +21,4 @@ export const Value = Schema.Array(Schema.String)
     )
   ) as unknown as Schema.Codec<string, ReadonlyArray<string>>
 
-export const make = Token.kind("Font", Value)
+export const make = Token.composeTokenKind({ kind: "Font", value: Value })

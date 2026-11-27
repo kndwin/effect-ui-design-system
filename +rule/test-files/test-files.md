@@ -23,6 +23,11 @@ it("doubles", () => {
   the package's `test/` folder.
 - One behaviour per test. If the Act step does two things, split the test.
 
+- Constants and Schemas are never tested: they hold no logic. A test imports values from
+  `*.pure.ts`, `*.make.ts` and components, never from a `*.constant.ts` or `*.schema.ts`
+  (`import type` is fine). Write the data a test needs inline, and test the functions that use
+  constants and Schemas instead.
+
 ## ✅
 
 ```ts good
@@ -92,5 +97,21 @@ it("adds", () => {
   // Arrange
   // Assert
   assert.strictEqual(sum, 2)
+})
+```
+
+## ❌ tests a constant → test-files/no-constant-tests
+
+```ts bad
+import { assert, it } from "@effect/vitest"
+import { breakpoints } from "./rule.constant.ts"
+
+it("defines narrow", () => {
+  // Arrange
+  const name = "narrow"
+  // Act
+  const query = breakpoints[name]
+  // Assert
+  assert.isString(query)
 })
 ```

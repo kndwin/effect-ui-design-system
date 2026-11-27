@@ -3,7 +3,7 @@ import * as Kit from "../kit/kit.make.ts"
 import * as Style from "../style/style.make.ts"
 import * as Theme from "../theme/theme.make.ts"
 import * as TokenColor from "../tokens/token-color.make.ts"
-import { compile } from "./compile.pure.ts"
+import { composeOutput } from "./compile.pure.ts"
 
 const Colors = TokenColor.make("color", ["accent"])
 const Parts = Kit.single("Card", { open: "[data-open]" })
@@ -13,7 +13,7 @@ describe("compile (the css-engine adapter)", () => {
     // Arrange
     const CardStyle = Style.make(Parts)({ base: { root: { color: Colors.accent, states: { open: { opacity: 1 } } } } })
     // Act
-    const out = compile(CardStyle, "CardStyle")
+    const out = composeOutput({ value: CardStyle, exportName: "CardStyle" })
     // Assert
     assert.strictEqual(out?.recipesAt, "slots")
     assert.strictEqual(out?.recipes?.root?.debugId, "Card_root")
@@ -27,7 +27,7 @@ describe("compile (the css-engine adapter)", () => {
     // Arrange
     const theme = Theme.make({ Colors }, { name: "t", values: { Colors: { accent: "#000" } } })
     // Act
-    const out = compile(theme, "t")
+    const out = composeOutput({ value: theme, exportName: "t" })
     // Assert
     assert.deepStrictEqual(out?.globals, [
       { kind: "global", selector: '[data-theme="t"]', vars: { "--color-accent": "#000" } }
@@ -38,7 +38,7 @@ describe("compile (the css-engine adapter)", () => {
     // Arrange
     const value = 42
     // Act
-    const out = compile(value, "answer")
+    const out = composeOutput({ value: value, exportName: "answer" })
     // Assert
     assert.isUndefined(out)
   })

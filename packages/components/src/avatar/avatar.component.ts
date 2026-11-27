@@ -4,22 +4,17 @@ import type { Html } from "@effect/ui/html"
 import type { Child } from "@effect/ui/View"
 import { Hue } from "../scales.schema.ts"
 import { AvatarStyle } from "./avatar.component.style.ts"
-import { initials, pickByName } from "./avatar.pure.ts"
+import type { AvatarOptions } from "./avatar.schema.ts"
+import { getByName, getInitials } from "./avatar.pure.ts"
 import { Match } from "effect"
 
 export type AvatarProps = Style.Props<typeof AvatarStyle>
 
-export interface AvatarOptions {
-  readonly name: string
-  readonly src?: string | undefined
-
-  readonly fallbackDelay?: number | undefined
-  readonly key?: string | undefined
-  readonly class?: string | undefined
-}
-
 export const Avatar = <Msg>(h: Html.H<Msg>, options: AvatarOptions & AvatarProps): Child<Msg> => {
-  const classes = Style.classes(AvatarStyle, { ...options, hue: options.hue ?? pickByName(options.name, Hue.literals) })
+  const classes = Style.classes(AvatarStyle, {
+    ...options,
+    hue: options.hue ?? getByName({ name: options.name, values: Hue.literals })
+  })
   return KitAvatar(h, {
     ...Match.value(options.key === undefined).pipe(
       Match.when(true, () => ({})),
@@ -33,7 +28,7 @@ export const Avatar = <Msg>(h: Html.H<Msg>, options: AvatarOptions & AvatarProps
           avatar.image(h.img.class(classes.image).attr("alt", options.name)),
           avatar
             .fallback(h.span.class(classes.fallback).attr("aria-label", options.name))
-            ?.children(initials(options.name))
+            ?.children(getInitials({ name: options.name }))
         )
   })
 }

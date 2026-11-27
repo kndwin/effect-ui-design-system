@@ -1,6 +1,6 @@
-import type { Output } from "../../src/rules.pure.ts"
+import type { ComposeOutputInput, Output } from "../../src/rules.schema.ts"
 
-export const compile = (value: unknown, exportName: string): Output | undefined => {
+export const composeOutput = ({ value, exportName }: ComposeOutputInput): Output | undefined => {
   if (typeof value !== "object" || value === null || !("card" in value)) return undefined
   const { color } = (value as { card: { color: string } }).card
   return {

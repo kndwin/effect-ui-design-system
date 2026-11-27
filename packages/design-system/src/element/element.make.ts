@@ -11,7 +11,7 @@ export type StyledOptions<S> = Props<S> & { readonly class?: string | undefined 
 export const render = <E extends Classable>(element: E, slots: { readonly root: string }, extra?: string): Classed<E> =>
   element.class(slots.root, extra) as Classed<E>
 
-export const styled =
+export const make =
   <Name extends string, P>(style: Style<Name, "root", P>) =>
   <E extends Classable>(
     element: E,

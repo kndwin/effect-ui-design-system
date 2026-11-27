@@ -4,17 +4,7 @@ import buttonStyle from "../../../packages/components/src/button/button.componen
 import contract from "../../../packages/components/src/contract.token.ts?raw"
 import astryxTheme from "../../../packages/themes/astryx/src/astryx.theme.ts?raw"
 import shadcnTheme from "../../../packages/themes/shadcn/src/shadcn.theme.ts?raw"
-
-export interface Page {
-  readonly id: string
-  readonly section: "Getting started" | "Components" | "Foundations"
-  readonly title: string
-  readonly lead: string
-
-  readonly kit?: string
-  readonly style?: string
-  readonly styleFile?: string
-}
+import type { Page } from "./docs.schema.ts"
 
 export const pages: ReadonlyArray<Page> = [
   {

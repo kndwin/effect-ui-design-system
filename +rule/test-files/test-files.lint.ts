@@ -1,7 +1,7 @@
 import * as Effect from "effect/Effect"
 import * as Match from "effect/Match"
 import { Rule, RuleContext } from "effect-oxlint"
-import { report, rules } from "../../tools/lint/define.pure.ts"
+import * as RuleModule from "../../tools/lint/rule-module.make.ts"
 
 const order = ["Arrange", "Act", "Assert"]
 
@@ -11,7 +11,7 @@ const isTestCall = (callee: any): boolean =>
 
 const span = (node: any): readonly [number, number] => node.range ?? [node.start, node.end]
 
-export default rules(import.meta.url, {
+export default RuleModule.make(import.meta.url, {
   "arrange-act-assert": Rule.define({
     name: "arrange-act-assert",
     meta: Rule.meta({
@@ -32,7 +32,7 @@ export default rules(import.meta.url, {
           return Match.value(marks.join(",") === order.join(",")).pipe(
             Match.when(true, () => Effect.void),
             Match.orElse(() =>
-              report(
+              RuleModule.report(
                 node,
                 "A test is three steps: // Arrange, // Act, // Assert, in that order. See +rule/test-files/test-files.md."
               )

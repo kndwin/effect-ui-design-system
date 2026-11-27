@@ -7,7 +7,7 @@ export const Value = Schema.String.check(
   })
 )
 
-export const make = Token.kind("Color", Value)
+export const make = Token.composeTokenKind({ kind: "Color", value: Value })
 
 export const alpha = <E extends string>(
   color: Token.Ref<"Color", E>,

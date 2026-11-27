@@ -1,13 +1,11 @@
+import type { PartSpec } from "./kit.schema.ts"
+
 export const pseudoSelectors = {
   hover: ":hover",
   focusVisible: ":focus-visible",
   active: ":active"
 } as const
 export type Pseudo = keyof typeof pseudoSelectors
-
-export interface PartSpec {
-  readonly states: Readonly<Record<string, string>>
-}
 
 export interface Descriptor<
   Name extends string = string,

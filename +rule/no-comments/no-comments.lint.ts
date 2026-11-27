@@ -1,6 +1,6 @@
 import * as Effect from "effect/Effect"
 import { Rule, RuleContext } from "effect-oxlint"
-import { report, rules } from "../../tools/lint/define.pure.ts"
+import * as RuleModule from "../../tools/lint/rule-module.make.ts"
 
 const typeAssertion = /^\s*@ts-expect-error\b/
 const arrangeActAssert = /^ (Arrange|Act|Assert)$/
@@ -8,7 +8,7 @@ const arrangeActAssert = /^ (Arrange|Act|Assert)$/
 const allowed = (filename: string) => (comment: { value: string }) =>
   typeAssertion.test(comment.value) || (filename.endsWith(".test.ts") && arrangeActAssert.test(comment.value))
 
-export default rules(import.meta.url, {
+export default RuleModule.make(import.meta.url, {
   "any-comment": Rule.define({
     name: "any-comment",
     meta: Rule.meta({ type: "problem", description: "No comments in source. See +rule/no-comments/no-comments.md." }),
@@ -20,7 +20,7 @@ export default rules(import.meta.url, {
           Effect.forEach(
             ctx.sourceCode.getAllComments().filter((c: { value: string }) => !ok(c)),
             () =>
-              report(
+              RuleModule.report(
                 node,
                 "No comments: name things clearly, or write it in a rule .md. See +rule/no-comments/no-comments.md."
               ),

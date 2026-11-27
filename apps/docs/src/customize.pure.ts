@@ -1,112 +1,109 @@
 import { Code, Colors, Font, Hues, Radius, Size, Spacing, Text } from "@acme/components/tokens"
-import type { Theme } from "@acme/design-system/Theme"
+import type { ThemeData } from "@acme/design-system/ThemeSchema"
 import { Array, Match, Predicate, Record } from "effect"
-import type { Choices, Mode } from "./docs.schema.ts"
+import type {
+  ComposeInlineStyleInput,
+  GetControlsInput,
+  GetOverridesInput,
+  GetThemeVarsInput,
+  IsCustomizedInput,
+  Mode,
+  Vars
+} from "./docs.schema.ts"
 
-type Vars = Readonly<Record<string, string>>
+export interface ControlOption {
+  readonly id: string
+  readonly label: string
+  readonly source: string
+  readonly sample?: string
+  readonly getSwatch?: (mode: Mode) => string
+  readonly getVars: (mode: Mode) => Vars
+}
 
-const v = (ref: string) => ref.slice(4, -1)
+const getVarName = (ref: string) => ref.slice(4, -1)
 
-const label = (group: string, ref: string) => `${group}.${v(ref).split("-").slice(3).join("-")}`
-const refs = (group: object): ReadonlyArray<string> => Array.filter(Record.values(group), Predicate.isString)
+const getTokenName = (ref: string) => getVarName(ref).split("-").slice(3).join("-")
 
-export const varsOf = (theme: Theme, mode: Mode): Vars => ({
+const getRefs = (group: object): ReadonlyArray<string> => Array.filter(Record.values(group), Predicate.isString)
+
+export const getThemeVars = ({ theme, mode }: GetThemeVarsInput): Vars => ({
   ...theme.vars.base,
-  ...Match.value(mode === "dark").pipe(
-    Match.when(true, () => (theme.vars.modes as Record<string, Vars>)["dark"]),
+  ...Match.value(mode).pipe(
+    Match.when("dark", () => theme.vars.modes["dark"]),
     Match.orElse(() => undefined)
   )
 })
 
-export interface Option {
-  readonly id: string
-  readonly label: string
+const getLightVars = (theme: ThemeData) => getThemeVars({ theme, mode: "light" })
 
-  readonly source: string
-  readonly swatch?: (mode: Mode) => string
-  readonly sample?: string
-  readonly set: (mode: Mode) => Vars
-}
+const getGroupVars = (vars: Vars, group: object): Vars =>
+  Record.fromEntries(Array.map(getRefs(group), (ref) => [getVarName(ref), vars[getVarName(ref)] ?? ""]))
 
-export interface Control {
-  readonly id: "accent" | "neutrals" | "radius" | "sizing" | "font" | "mono"
-  readonly title: string
-  readonly options: ReadonlyArray<Option>
-}
+const getSwatchKey = (option: ControlOption) => option.getSwatch?.("light") ?? option.id
 
-const radiusOf = (t: Theme) => varsOf(t, "light")
-const pick = (vars: Vars, group: object) => Record.fromEntries(Array.map(refs(group), (r) => [v(r), vars[v(r)] ?? ""]))
+const getFontLabel = (theme: ThemeData, ref: string) =>
+  (getLightVars(theme)[getVarName(ref)] ?? "").split(",")[0]!.replaceAll('"', "")
 
-const swatchKey = (o: Option) => o.swatch?.("light") ?? o.id
+const composeAccentVars = (vars: Vars, accent: string, accentFg: string): Vars => ({
+  [getVarName(Colors.accent)]: vars[getVarName(accent)]!,
+  [getVarName(Colors.accentFg)]: vars[getVarName(accentFg)]!,
+  [getVarName(Colors.ring)]: vars[getVarName(accent)]!
+})
 
-export const controls = (themes: ReadonlyArray<Theme>): ReadonlyArray<Control> => {
-  const themeAccents = Array.map(themes, (t): Option => ({
-    id: `${t.name}:accent`,
-    label: `${t.name}`,
-    source: `${t.name} · Colors.accent`,
-    swatch: (m) => varsOf(t, m)[v(Colors.accent)] ?? "",
-    set: (m) => {
-      const x = varsOf(t, m)
-      return {
-        [v(Colors.accent)]: x[v(Colors.accent)]!,
-        [v(Colors.accentFg)]: x[v(Colors.accentFg)]!,
-        [v(Colors.ring)]: x[v(Colors.ring)]!
-      }
-    }
+export const getControls = ({ themes }: GetControlsInput) => {
+  const themeAccents = Array.map(themes, (theme): ControlOption => ({
+    id: `${theme.name}:accent`,
+    label: theme.name,
+    source: `${theme.name} · Colors.accent`,
+    getSwatch: (mode) => getThemeVars({ theme, mode })[getVarName(Colors.accent)] ?? "",
+    getVars: (mode) => composeAccentVars(getThemeVars({ theme, mode }), Colors.accent, Colors.accentFg)
   }))
-  const hueAccents = Array.flatMap(themes, (t) =>
+  const hueAccents = Array.flatMap(themes, (theme) =>
     Array.map(
-      Array.filter(refs(Hues), (r) => r !== Hues.onHue),
-      (ref): Option => {
-        const name = label("Hues", ref).split(".")[1]!
+      Array.filter(getRefs(Hues), (ref) => ref !== Hues.onHue),
+      (ref): ControlOption => {
+        const hue = getTokenName(ref)
         return {
-          id: `${t.name}:${name}`,
-          label: name,
-          source: `${t.name} · Hues.${name}`,
-          swatch: (m) => varsOf(t, m)[v(ref)] ?? "",
-          set: (m) => {
-            const x = varsOf(t, m)
-            return {
-              [v(Colors.accent)]: x[v(ref)]!,
-              [v(Colors.accentFg)]: x[v(Hues.onHue)]!,
-              [v(Colors.ring)]: x[v(ref)]!
-            }
-          }
+          id: `${theme.name}:${hue}`,
+          label: hue,
+          source: `${theme.name} · Hues.${hue}`,
+          getSwatch: (mode) => getThemeVars({ theme, mode })[getVarName(ref)] ?? "",
+          getVars: (mode) => composeAccentVars(getThemeVars({ theme, mode }), ref, Hues.onHue)
         }
       }
     )
   )
-  const accent = Array.dedupeWith([...themeAccents, ...hueAccents], (a, b) => swatchKey(a) === swatchKey(b))
+  const fullRadius = getLightVars(themes[0]!)[getVarName(Radius.full)] ?? "9999px"
   return [
     {
-      id: "accent",
+      id: "accent" as const,
       title: "Accent",
-      options: accent
+      options: Array.dedupeWith([...themeAccents, ...hueAccents], (a, b) => getSwatchKey(a) === getSwatchKey(b))
     },
     {
-      id: "neutrals",
+      id: "neutrals" as const,
       title: "Neutrals",
-      options: themes.map((t) => ({
-        id: t.name,
-        label: t.name,
-        source: `${t.name} · Colors + Code`,
-        swatch: (m) => varsOf(t, m)[v(Colors.surfaceMuted)] ?? "",
-        set: (m) => {
-          const x = varsOf(t, m)
+      options: Array.map(themes, (theme): ControlOption => ({
+        id: theme.name,
+        label: theme.name,
+        source: `${theme.name} · Colors + Code`,
+        getSwatch: (mode) => getThemeVars({ theme, mode })[getVarName(Colors.surfaceMuted)] ?? "",
+        getVars: (mode) => {
+          const vars = getThemeVars({ theme, mode })
           const {
-            [v(Colors.accent)]: _a,
-            [v(Colors.accentFg)]: _f,
-            [v(Colors.ring)]: _r,
-            [v(Colors.danger)]: _d,
-            [v(Colors.dangerFg)]: _df,
-            ...neutral
-          } = pick(x, Colors)
-          return { ...neutral, ...pick(x, Code) }
+            [getVarName(Colors.accent)]: _accent,
+            [getVarName(Colors.accentFg)]: _accentFg,
+            [getVarName(Colors.ring)]: _ring,
+            [getVarName(Colors.danger)]: _danger,
+            [getVarName(Colors.dangerFg)]: _dangerFg,
+            ...neutrals
+          } = getGroupVars(vars, Colors)
+          return { ...neutrals, ...getGroupVars(vars, Code) }
         }
       }))
     },
     {
-      id: "radius",
+      id: "radius" as const,
       title: "Radius",
       options: [
         {
@@ -114,106 +111,108 @@ export const controls = (themes: ReadonlyArray<Theme>): ReadonlyArray<Control> =
           label: "None",
           source: "0",
           sample: "0px",
-          set: () =>
-            Object.fromEntries(
-              refs(Radius)
-                .filter((r) => r !== Radius.full)
-                .map((r) => [v(r), "0px"])
+          getVars: () =>
+            Record.fromEntries(
+              Array.map(
+                Array.filter(getRefs(Radius), (ref) => ref !== Radius.full),
+                (ref) => [getVarName(ref), "0px"]
+              )
             )
         },
-        ...themes.map((t) => ({
-          id: t.name,
-          label: t.name,
-          source: `${t.name} · Radius.*`,
-          sample: radiusOf(t)[v(Radius.control)] ?? "",
-          set: () => pick(radiusOf(t), Radius)
+        ...Array.map(themes, (theme): ControlOption => ({
+          id: theme.name,
+          label: theme.name,
+          source: `${theme.name} · Radius.*`,
+          sample: getLightVars(theme)[getVarName(Radius.control)] ?? "",
+          getVars: () => getGroupVars(getLightVars(theme), Radius)
         })),
         {
           id: "full",
           label: "Full",
           source: "Radius.full",
-          sample: radiusOf(themes[0]!)[v(Radius.full)] ?? "",
-          set: () => {
-            const full = radiusOf(themes[0]!)[v(Radius.full)] ?? "9999px"
-            return { [v(Radius.control)]: full, [v(Radius.avatarSquare)]: full, [v(Radius.container)]: "24px" }
-          }
+          sample: fullRadius,
+          getVars: () => ({
+            [getVarName(Radius.control)]: fullRadius,
+            [getVarName(Radius.avatarSquare)]: fullRadius,
+            [getVarName(Radius.container)]: "24px"
+          })
         }
-      ]
+      ] satisfies ReadonlyArray<ControlOption>
     },
     {
-      id: "sizing",
+      id: "sizing" as const,
       title: "Sizing",
-      options: themes.map((t) => ({
-        id: t.name,
-        label: t.name,
-        source: `${t.name} · Spacing + Size + Text`,
-        sample: `${varsOf(t, "light")[v(Size.controlMd)]} controls`,
-        set: (m) => ({ ...pick(varsOf(t, m), Spacing), ...pick(varsOf(t, m), Size), ...pick(varsOf(t, m), Text) })
+      options: Array.map(themes, (theme): ControlOption => ({
+        id: theme.name,
+        label: theme.name,
+        source: `${theme.name} · Spacing + Size + Text`,
+        sample: `${getLightVars(theme)[getVarName(Size.controlMd)]} controls`,
+        getVars: (mode) => {
+          const vars = getThemeVars({ theme, mode })
+          return { ...getGroupVars(vars, Spacing), ...getGroupVars(vars, Size), ...getGroupVars(vars, Text) }
+        }
       }))
     },
     {
-      id: "font",
+      id: "font" as const,
       title: "Body font",
-      options: themes.map((t) => ({
-        id: t.name,
-        label: (varsOf(t, "light")[v(Font.body)] ?? "").split(",")[0]!.replaceAll('"', ""),
-        source: `${t.name} · Font.body`,
-        sample: varsOf(t, "light")[v(Font.body)] ?? "",
-        set: () => ({ [v(Font.body)]: varsOf(t, "light")[v(Font.body)]! })
+      options: Array.map(themes, (theme): ControlOption => ({
+        id: theme.name,
+        label: getFontLabel(theme, Font.body),
+        source: `${theme.name} · Font.body`,
+        sample: getLightVars(theme)[getVarName(Font.body)] ?? "",
+        getVars: () => ({ [getVarName(Font.body)]: getLightVars(theme)[getVarName(Font.body)]! })
       }))
     },
     {
-      id: "mono",
+      id: "mono" as const,
       title: "Code font",
-      options: themes.map((t) => ({
-        id: t.name,
-        label: (varsOf(t, "light")[v(Font.mono)] ?? "").split(",")[0]!.replaceAll('"', ""),
-        source: `${t.name} · Font.mono`,
-        sample: varsOf(t, "light")[v(Font.mono)] ?? "",
-        set: () => ({ [v(Font.mono)]: varsOf(t, "light")[v(Font.mono)]! })
+      options: Array.map(themes, (theme): ControlOption => ({
+        id: theme.name,
+        label: getFontLabel(theme, Font.mono),
+        source: `${theme.name} · Font.mono`,
+        sample: getLightVars(theme)[getVarName(Font.mono)] ?? "",
+        getVars: () => ({ [getVarName(Font.mono)]: getLightVars(theme)[getVarName(Font.mono)]! })
       }))
     }
   ]
 }
 
-export const isCustomized = (c: Choices) =>
-  Record.some(c, (value, k) =>
-    Match.value(k === "scale").pipe(
-      Match.when(true, () => value !== 100),
+export const isCustomized = ({ choices }: IsCustomizedInput): boolean =>
+  Record.some(choices, (value, key) =>
+    Match.value(key).pipe(
+      Match.when("scale", () => value !== 100),
       Match.orElse(() => value !== null)
     )
   )
 
-const scaled = (value: string, factor: number) => {
-  const m = value.match(/^(-?[\d.]+)(px|rem)$/)
-  return Match.value(m).pipe(
+const getScaledLength = (value: string, factor: number) =>
+  Match.value(value.match(/^(-?[\d.]+)(px|rem)$/)).pipe(
     Match.when(null, () => value),
-    Match.orElse(([, n, unit]) => `${Math.round(Number(n) * factor * 1000) / 1000}${unit}`)
+    Match.orElse(([, amount, unit]) => `${Math.round(Number(amount) * factor * 1000) / 1000}${unit}`)
   )
-}
 
-export const overrides = (choices: Choices, themes: ReadonlyArray<Theme>, theme: Theme, mode: Mode): Vars => {
-  const chosen = Array.reduce(controls(themes), {} as Vars, (out, control) => {
-    const option = control.options.find((o) => o.id === choices[control.id])
-    return Match.value(option).pipe(
-      Match.when(undefined, () => out),
-      Match.orElse((picked) => ({ ...out, ...picked.set(mode) }))
+export const getOverrides = ({ choices, themes, theme, mode }: GetOverridesInput): Vars => {
+  const chosen = Array.reduce(getControls({ themes }), {} as Vars, (vars, control) =>
+    Match.value(control.options.find((option: ControlOption) => option.id === choices[control.id])).pipe(
+      Match.when(undefined, () => vars),
+      Match.orElse((option) => ({ ...vars, ...option.getVars(mode) }))
     )
-  })
+  )
   if (choices.scale === 100) return chosen
-  const current = { ...varsOf(theme, mode), ...chosen }
+  const current = { ...getThemeVars({ theme, mode }), ...chosen }
   return {
     ...chosen,
     ...Record.fromEntries(
-      Array.map([...refs(Spacing), ...refs(Size), ...refs(Text)], (ref) => [
-        v(ref),
-        scaled(current[v(ref)] ?? "", choices.scale / 100)
+      Array.map([...getRefs(Spacing), ...getRefs(Size), ...getRefs(Text)], (ref) => [
+        getVarName(ref),
+        getScaledLength(current[getVarName(ref)] ?? "", choices.scale / 100)
       ])
     )
   }
 }
 
-export const styleOf = (vars: Vars) =>
+export const composeInlineStyle = ({ vars }: ComposeInlineStyleInput): string =>
   Record.toEntries(vars)
-    .map(([k, value]) => `${k}:${value}`)
+    .map(([name, value]) => `${name}:${value}`)
     .join(";")

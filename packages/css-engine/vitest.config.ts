@@ -3,5 +3,5 @@ import { cssEngine } from "./src/vite.build.ts"
 
 export default defineConfig({
   plugins: [cssEngine({ include: /\.style\.fixture\.ts$/, adapter: "./adapter.fixture.ts" })],
-  test: { include: ["test/**/*.test.ts", "src/**/*.test.ts"] }
+  test: { pool: "threads", fsModuleCache: false, include: ["test/**/*.test.ts", "src/**/*.test.ts"] }
 })

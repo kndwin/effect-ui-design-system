@@ -4,9 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "test": "vitest run"
+    "dev": "bun docs.build.ts dev",
+    "build": "NODE_ENV=production bun docs.build.ts build",
+    "preview": "bun docs.build.ts preview",
+    "test": "bun --bun x vitest run"
   },
   "dependencies": {
     "@acme/components": "workspace:*",

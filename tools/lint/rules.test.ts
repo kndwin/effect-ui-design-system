@@ -1,11 +1,10 @@
-import { NodeServices } from "@effect/platform-node"
+import { BunServices } from "@effect/platform-bun"
 import { assert, layer } from "@effect/vitest"
 import { Array, Context, Effect, FileSystem, Layer, Match, MutableHashMap, Option, Path, Schema } from "effect"
 import { ChildProcess, ChildProcessSpawner } from "effect/process"
 import { scan } from "./ast-grep.build.ts"
 import { findRuleFiles, repoRoot } from "./discover.build.ts"
-import { kinds } from "./kinds.constant.ts"
-import { ruleKindOf, scopeOf } from "./kinds.pure.ts"
+import { getRuleKind, getRuleScope, getRuleSuffixes } from "./kinds.pure.ts"
 
 interface Example {
   readonly kind: string
@@ -22,8 +21,8 @@ const block = /^## (.*)$|^```ts (good|bad)([^\n]*)\n([\s\S]*?)^```$/gm
 const examplesOf = Effect.fn("lint/rules/examplesOf")(function* (mdFile: string) {
   const fs = yield* FileSystem.FileSystem
   const path = yield* Path.Path
-  const kind = ruleKindOf(mdFile)
-  const first = kinds[kind]?.[0] ?? ".ts"
+  const kind = getRuleKind({ ruleFile: mdFile })
+  const first = getRuleSuffixes({ ruleFile: mdFile })[0] ?? ".ts"
   const suffix = Match.value(first === ".ts").pipe(
     Match.when(true, () => ".pure.ts"),
     Match.orElse(() => first)
@@ -43,7 +42,9 @@ const examplesOf = Effect.fn("lint/rules/examplesOf")(function* (mdFile: string)
         good: m[2] === "good",
         expected: heading.match(/→\s*(\S+)/)?.[1],
         path: Match.value(at).pipe(
-          Match.when(undefined, () => path.join(scopeOf(mdFile), "__rule_tests__", `${kind}-${i}${suffix}`)),
+          Match.when(undefined, () =>
+            path.join(getRuleScope({ ruleFile: mdFile }), "__rule_tests__", `${kind}-${i}${suffix}`)
+          ),
           Match.orElse((given) => path.join(repoRoot, given))
         ),
         code: m[4] ?? "",
@@ -57,7 +58,7 @@ const { mdFiles, examples } = await Effect.runPromise(
   Effect.gen(function* () {
     const files = yield* findRuleFiles("md")
     return { mdFiles: files, examples: Array.flatten(yield* Effect.forEach(files, examplesOf)) }
-  }).pipe(Effect.provide(NodeServices.layer))
+  }).pipe(Effect.provide(BunServices.layer))
 )
 
 const OxlintReport = Schema.fromJsonString(
@@ -95,8 +96,18 @@ const oxlint = Effect.gen(function* () {
   const spawner = yield* ChildProcessSpawner.ChildProcessSpawner
   const output = yield* spawner.string(
     ChildProcess.make(
-      path.join(repoRoot, "node_modules", ".bin", "oxlint"),
-      ["--disable-nested-config", "-c", "oxlint.config.ts", "-f", "json", ...Array.map(examples, (e) => e.path)],
+      path.join(repoRoot, "node_modules", ".bin", "bun"),
+      [
+        "--bun",
+        "x",
+        "oxlint",
+        "--disable-nested-config",
+        "-c",
+        "oxlint.config.ts",
+        "-f",
+        "json",
+        ...Array.map(examples, (e) => e.path)
+      ],
       { cwd: repoRoot }
     )
   )
@@ -124,7 +135,7 @@ class Findings extends Context.Service<Findings, MutableHashMap.MutableHashMap<s
         MutableHashMap.set(found, file, [...Option.getOrElse(MutableHashMap.get(found, file), () => []), ruleId])
       return found
     })
-  ).pipe(Layer.provide(NodeServices.layer))
+  ).pipe(Layer.provide(BunServices.layer))
 }
 
 layer(Findings.layer, { timeout: "120 seconds" })("every +rule md example", (it) => {

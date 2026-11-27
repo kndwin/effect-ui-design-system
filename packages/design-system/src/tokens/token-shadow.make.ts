@@ -5,4 +5,4 @@ export const Value = Schema.String.check(
   Schema.isPattern(/^(none|(inset\s+)?-?[\d.]+(px|rem)?\s.+)$/, { message: "expected a box-shadow value or none" })
 )
 
-export const make = Token.kind("Shadow", Value)
+export const make = Token.composeTokenKind({ kind: "Shadow", value: Value })

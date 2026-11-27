@@ -10,7 +10,7 @@
     "packages/*/+rule/**/*.lint.ts",
     "packages/themes/*/src",
     "apps/*/src",
-    "apps/*/vite.config.ts",
+    "apps/*/*.build.ts",
     "apps/*/vitest.config.ts",
     "tools",
     "+rule/**/*.lint.ts",

@@ -1,11 +1,13 @@
 import { assert, describe, it } from "@effect/vitest"
-import { recipe } from "./runtime.pure.ts"
+import { composeRecipe } from "./runtime.pure.ts"
 
-const card = recipe({
-  base: "base",
-  variants: { size: { sm: "sm", lg: "lg" }, wide: { true: "wide", false: "narrow" } },
-  defaults: { size: "sm", wide: "false" },
-  compound: [{ variants: { size: "lg", wide: "true" }, className: "lg-wide" }]
+const card = composeRecipe({
+  runtime: {
+    base: "base",
+    variants: { size: { sm: "sm", lg: "lg" }, wide: { true: "wide", false: "narrow" } },
+    defaults: { size: "sm", wide: "false" },
+    compound: [{ variants: { size: "lg", wide: "true" }, className: "lg-wide" }]
+  }
 })
 
 describe("recipe runtime", () => {

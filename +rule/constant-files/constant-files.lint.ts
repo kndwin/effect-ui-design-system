@@ -1,11 +1,11 @@
 import * as Effect from "effect/Effect"
 import * as Match from "effect/Match"
 import { Rule, RuleContext } from "effect-oxlint"
-import { report, rules } from "../../tools/lint/define.pure.ts"
+import * as RuleModule from "../../tools/lint/rule-module.make.ts"
 
 const isFunction = (node: any) => node?.type === "ArrowFunctionExpression" || node?.type === "FunctionExpression"
 
-export default rules(import.meta.url, {
+export default RuleModule.make(import.meta.url, {
   "no-functions": Rule.define({
     name: "no-functions",
     meta: Rule.meta({
@@ -20,10 +20,10 @@ export default rules(import.meta.url, {
         ExportNamedDeclaration: (node: any) => {
           const d = node.declaration
           if (d === null || d === undefined) return Effect.void
-          if (d.type === "FunctionDeclaration" || d.type === "ClassDeclaration") return report(node, message)
+          if (d.type === "FunctionDeclaration" || d.type === "ClassDeclaration") return RuleModule.report(node, message)
           if (d.type !== "VariableDeclaration") return Effect.void
           return Match.value(d.declarations.some((v: any) => isFunction(v.init))).pipe(
-            Match.when(true, () => report(node, message)),
+            Match.when(true, () => RuleModule.report(node, message)),
             Match.orElse(() => Effect.void)
           )
         }

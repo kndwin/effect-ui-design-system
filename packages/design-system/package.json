@@ -12,16 +12,17 @@
     "./TokenShadow": "./src/tokens/token-shadow.make.ts",
     "./TokenWeight": "./src/tokens/token-weight.make.ts",
     "./Theme": "./src/theme/theme.make.ts",
+    "./ThemeSchema": "./src/theme/theme.schema.ts",
     "./Style": "./src/style/style.make.ts",
     "./Rule": "./src/style/rule.constant.ts",
     "./Variant": "./src/variant/variant.make.ts",
     "./Kit": "./src/kit/kit.make.ts",
-    "./Element": "./src/element/element.pure.ts",
+    "./Element": "./src/element/element.make.ts",
     "./Manifest": "./src/manifest/manifest.make.ts",
     "./Compile": "./src/compile/compile.pure.ts"
   },
   "scripts": {
-    "test": "vitest run"
+    "test": "bun --bun x vitest run"
   },
   "dependencies": {
     "@acme/css-engine": "workspace:*",

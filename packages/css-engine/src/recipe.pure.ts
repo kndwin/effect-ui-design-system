@@ -1,30 +1,24 @@
 import { Record } from "effect"
-import { rules } from "./css.pure.ts"
-import { className } from "./hash.pure.ts"
-import type { Recipe } from "./rules.pure.ts"
-import type { RecipeRuntime } from "./runtime.pure.ts"
+import { getRules } from "./css.pure.ts"
+import { getClassName } from "./hash.pure.ts"
+import type { CompiledRecipe, GetCompiledRecipeInput } from "./recipe.schema.ts"
 
-export interface CompiledRecipe {
-  readonly css: ReadonlyArray<string>
-  readonly runtime: RecipeRuntime
-}
-
-export const compileRecipe = (recipe: Recipe, scope: string, debug: boolean): CompiledRecipe => {
-  const name = (key: string) => className(scope, recipe.debugId, key, debug)
-  const base = name("")
+export const getCompiledRecipe = ({ recipe, scope, debug }: GetCompiledRecipeInput): CompiledRecipe => {
+  const getSlotClassName = (key: string) => getClassName({ scope, debugId: recipe.debugId, key, debug })
+  const base = getSlotClassName("")
   const variants = Record.collect(recipe.variants, (variant, values) =>
-    Record.collect(values, (v, style) => ({ variant, value: v, cls: name(`${variant}_${v}`), style }))
+    Record.collect(values, (v, style) => ({ variant, value: v, cls: getSlotClassName(`${variant}_${v}`), style }))
   )
   const compound = recipe.compoundVariants.map((c, i) => ({
     variants: Record.map(c.variants, String),
-    className: name(`compound_${i}`),
+    className: getSlotClassName(`compound_${i}`),
     style: c.style
   }))
   return {
     css: [
-      ...rules(`.${base}`, recipe.base),
-      ...variants.flat().flatMap((v) => rules(`.${v.cls}`, v.style)),
-      ...compound.flatMap((c) => rules(`.${c.className}`, c.style))
+      ...getRules({ selector: `.${base}`, style: recipe.base }),
+      ...variants.flat().flatMap((v) => getRules({ selector: `.${v.cls}`, style: v.style })),
+      ...compound.flatMap((c) => getRules({ selector: `.${c.className}`, style: c.style }))
     ],
     runtime: {
       base,

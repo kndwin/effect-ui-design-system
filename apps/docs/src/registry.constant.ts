@@ -2,10 +2,8 @@ import type { Html } from "@effect/ui/html"
 import type { Child } from "@effect/ui/View"
 import { Array, Order, Record, String } from "effect"
 
-type Embeddable = <Msg>(h: Html.H<Msg>, options: { readonly key: string }) => Child<Msg>
-
 interface ExampleModule {
-  readonly default: Embeddable
+  readonly default: <Msg>(h: Html.H<Msg>, options: { readonly key: string }) => Child<Msg>
   readonly title?: string
 
   readonly order?: number

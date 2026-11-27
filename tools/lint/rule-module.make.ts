@@ -6,7 +6,7 @@ export interface RuleModule {
   readonly rules: Readonly<Record<string, ReturnType<typeof Rule.define>>>
 }
 
-export const rules = (url: string, defined: RuleModule["rules"]): RuleModule => ({ url, rules: defined })
+export const make = (url: string, defined: RuleModule["rules"]): RuleModule => ({ url, rules: defined })
 
 export const report = (node: unknown, message: string) =>
   Effect.gen(function* () {

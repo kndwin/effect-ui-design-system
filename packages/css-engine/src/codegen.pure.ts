@@ -1,32 +1,20 @@
 import { Match, Record } from "effect"
-import type { RecipeRuntime } from "./runtime.pure.ts"
+import type { CompiledExport, GetModuleSourceInput } from "./codegen.schema.ts"
 
-export type CompiledExport =
-  | { readonly name: string; readonly value: unknown }
-  | {
-      readonly name: string
-      readonly runtime: Readonly<Record<string, unknown>>
-      readonly recipesAt: string | undefined
-      readonly recipes: Readonly<Record<string, RecipeRuntime>>
-    }
+const getJson = (value: unknown): string => JSON.stringify(value) ?? "undefined"
 
-const json = (value: unknown): string => JSON.stringify(value) ?? "undefined"
-
-const expression = (e: CompiledExport): string => {
-  if ("value" in e) return json(e.value)
-  const classes = `{${Record.collect(e.recipes, (key, r) => `${json(key)}: __recipe(${json(r)})`).join(", ")}}`
+const getExportExpression = (e: CompiledExport): string => {
+  if ("value" in e) return getJson(e.value)
+  const classes = `{${Record.collect(e.recipes, (key, r) => `${getJson(key)}: __recipe({ runtime: ${getJson(r)} })`).join(", ")}}`
   return Match.value(e.recipesAt === undefined).pipe(
-    Match.when(true, () => `{ ...${json(e.runtime)}, ...${classes} }`),
-    Match.orElse(() => `{ ...${json(e.runtime)}, ${json(e.recipesAt)}: ${classes} }`)
+    Match.when(true, () => `{ ...${getJson(e.runtime)}, ...${classes} }`),
+    Match.orElse(() => `{ ...${getJson(e.runtime)}, ${getJson(e.recipesAt)}: ${classes} }`)
   )
 }
 
-export const moduleSource = (
-  exports: ReadonlyArray<CompiledExport>,
-  imports: { readonly css: string; readonly runtime: string }
-): string =>
+export const getModuleSource = ({ exports, imports }: GetModuleSourceInput): string =>
   [
-    `import ${json(imports.css)}`,
-    `import { recipe as __recipe } from ${json(imports.runtime)}`,
-    ...exports.map((e) => `export const ${e.name} = ${expression(e)}`)
+    `import ${getJson(imports.css)}`,
+    `import { composeRecipe as __recipe } from ${getJson(imports.runtime)}`,
+    ...exports.map((e) => `export const ${e.name} = ${getExportExpression(e)}`)
   ].join("\n")
