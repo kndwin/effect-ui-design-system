@@ -6,13 +6,12 @@ import type { Html } from "@effect/ui/html"
 import type { Input } from "@effect/ui/View"
 import {
   appFile,
+  addCommand,
   appPackage,
   cloneCommand,
-  copyComponents,
-  copyContract,
   copyTheme,
   devCommand,
-  fixImports,
+  listCommand,
   mainFile,
   themeFile,
   tsconfig,
@@ -46,7 +45,7 @@ export const GetStartedPage = <Msg>(h: Html.H<Msg>) => [
   Step(h, 2, "Add your app", [
     Note(
       h,
-      "Create apps/my-app with this package.json, then run pnpm install again so the workspace links it. There's no @weft/components or theme package in it; those parts will be yours."
+      "Create apps/my-app with this package.json, then run pnpm install again so the workspace links it. There's no @weft/components or theme package in it: @weft/cli copies the components in, and you write the theme."
     ),
     CodeBlock(h, { code: appPackage, title: "apps/my-app/package.json", language: "plain", key: "package" }),
     Note(h, "Point @/ at src so components import as @/components/ui/button."),
@@ -59,28 +58,20 @@ export const GetStartedPage = <Msg>(h: Html.H<Msg>) => [
     ),
     CodeBlock(h, { code: viteConfig, title: "apps/my-app/vite.config.ts", key: "vite" })
   ]),
-  Step(h, 4, "Copy the token contract", [
+  Step(h, 4, "Add components", [
     Note(
       h,
-      "The contract names every token: colours, spacing, sizes, radii, fonts. It holds no values. Components style against it and your theme fills it in. Run these from apps/my-app."
+      "Run weft add from apps/my-app with the components you need. It copies each one into src/components/ui, along with everything it imports: the token contract, shared scales, ui-kit parts and any other component it uses. Imports are rewritten to point at your copies."
     ),
-    CodeBlock(h, { code: copyContract, language: "shell", key: "contract" })
-  ]),
-  Step(h, 5, "Add components", [
-    Note(
-      h,
-      "Copy the components you need. Each one is a few small files: the component, its style and the ui-kit parts it styles. Here that's Button, Text and the layout primitives."
-    ),
-    CodeBlock(h, { code: copyComponents, language: "shell", key: "components" }),
-    Note(h, "Then flatten the names and point imports at your copies:"),
-    CodeBlock(h, { code: fixImports, language: "shell", key: "imports" }),
+    CodeBlock(h, { code: addCommand, language: "shell", key: "add" }),
     CodeBlock(h, { code: uiTree, language: "plain", key: "tree" }),
     Note(
       h,
-      "Each component page shows its style file's path, so you know which folder to copy, and its examples already import from @/components/ui. If a component imports another, copy that one too."
-    )
+      "Run it with no names to list every component. A file you already have is kept, so your edits are safe; pass --overwrite to take the latest version instead."
+    ),
+    CodeBlock(h, { code: listCommand, language: "shell", key: "list" })
   ]),
-  Step(h, 6, "Create your theme", [
+  Step(h, 5, "Create your theme", [
     Note(
       h,
       "A theme fills in every token of your contract, and modes override part of it. Start from a copy of a shipped theme rather than an empty file."
@@ -92,7 +83,7 @@ export const GetStartedPage = <Msg>(h: Html.H<Msg>) => [
     ),
     CodeBlock(h, { code: themeFile, title: "apps/my-app/src/brand.theme.ts", key: "theme" })
   ]),
-  Step(h, 7, "Mount and render", [
+  Step(h, 6, "Mount and render", [
     Note(
       h,
       "Importing the theme adds its CSS variables. Add an index.html with a #root element and a module script for src/main.ts."
@@ -101,7 +92,7 @@ export const GetStartedPage = <Msg>(h: Html.H<Msg>) => [
     CodeBlock(h, { code: appFile, title: "apps/my-app/src/app.component.ts", lineNumbers: true, key: "app" }),
     CodeBlock(h, { code: devCommand, language: "shell", key: "dev" })
   ]),
-  Step(h, 8, "Make it yours", [
+  Step(h, 7, "Make it yours", [
     Note(
       h,
       'The components are your code now. Change a style file and the CSS rebuilds; add a variant, a part or a token as you need. Add data-mode="dark" to any element to switch the mode below it. Theming covers the contract in depth, and Templates show whole pages built from these components.'

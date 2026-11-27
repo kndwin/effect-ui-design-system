@@ -15,6 +15,7 @@ export const appPackage = `{
     "effect": "4.1.6"
   },
   "devDependencies": {
+    "@weft/cli": "workspace:*",
     "@weft/css-engine": "workspace:*",
     "vite": "8.3.8"
   }
@@ -45,24 +46,9 @@ export const tsconfig = `{
   "include": ["src", "vite.config.ts"]
 }`
 
-export const copyContract = `ui=src/components/ui
-from=../../packages/components/src
-mkdir -p $ui
-cp $from/platform/token/contract.token.ts $ui/tokens.ts
-cp $from/platform/scale/scales.schema.ts $ui/scales.ts`
+export const addCommand = "pnpm weft add button text stack layout"
 
-export const copyComponents = `cp $from/platform/button/*.ts $from/feature/text/*.ts $from/feature/layout/*.ts $ui
-rm -f $ui/*.test.ts`
-
-export const fixImports = `cd src/components/ui
-for f in *.component.ts; do mv "$f" "\${f%.component.ts}.ts"; done
-sed -i -E \\
-  -e 's#"(\\.\\./)+(platform/)?token/contract\\.token\\.ts"#"./tokens.ts"#' \\
-  -e 's#"(\\.\\./)+(platform/)?scale/scales\\.schema\\.ts"#"./scales.ts"#' \\
-  -e 's#"(\\.\\./)+(platform|feature)/[a-z-]+/([a-z-]+)\\.component\\.ts"#"./\\3.ts"#' \\
-  -e 's#"\\./([a-z-]+)\\.component\\.ts"#"./\\1.ts"#' \\
-  *.ts
-cd -`
+export const listCommand = "pnpm weft add"
 
 export const uiTree = `src/components/ui/
   tokens.ts                   the token contract

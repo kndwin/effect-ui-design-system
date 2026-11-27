@@ -1,0 +1,25 @@
+{
+  "name": "@weft/cli",
+  "version": "0.0.0",
+  "private": true,
+  "bin": {
+    "weft": "./bin/weft.js"
+  },
+  "type": "module",
+  "exports": {
+    "./add": "./src/feature/add/add.build.ts"
+  },
+  "scripts": {
+    "test": "bun --bun x vitest run"
+  },
+  "dependencies": {
+    "@effect/platform-bun": "4.1.6",
+    "@weft/components": "workspace:*",
+    "effect": "4.1.6"
+  },
+  "devDependencies": {
+    "@effect/vitest": "4.1.6",
+    "@types/node": "^22.20.7",
+    "vitest": "5.1.1"
+  }
+}
