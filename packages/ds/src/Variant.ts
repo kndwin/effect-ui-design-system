@@ -1,6 +1,6 @@
 import type { Schema, SchemaAST } from "effect"
 
-export const VariantTypeId = "~cave/ds/Variant" as const
+export const VariantTypeId = "~acme/ds/Variant" as const
 
 /** `Slots` is the per-value slot map type (SlotStyles of the kit). */
 export interface Variant<V extends string | boolean, Slots> {

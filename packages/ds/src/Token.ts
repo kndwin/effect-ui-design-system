@@ -1,95 +1,53 @@
-import { Duration as EffectDuration, Schema, SchemaTransformation } from "effect"
+// Shared machinery for token kinds. Authors use the per-kind modules
+// (TokenColor, TokenLength, …), never this file directly.
+import type { Schema } from "effect"
 
-// ─── Kinds ──────────────────────────────────────────────────────────────────
-// Each kind is a Schema: Encoded = what a theme author writes, Type = a branded
-// CSS string. The brand is the *kind*, and it flows into the var ref type so a
-// Length ref can't be used where a Color is expected.
-
-export const Color = Schema.String.check(
-  Schema.isPattern(/^(#([0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})|(rgb|rgba|hsl|hsla|oklch)\(.+\))$/i, {
-    message: "expected #hex, rgb(), hsl() or oklch()"
-  })
-).pipe(Schema.brand("Color"))
-
-const LengthString = Schema.String.check(
-  Schema.isPattern(/^-?\d*\.?\d+(px|rem)$/, { message: "expected <n>px or <n>rem" })
-)
-export const Length = Schema.Union([Schema.Number, LengthString]).pipe(
-  Schema.decodeTo(
-    Schema.String.pipe(Schema.brand("Length")),
-    SchemaTransformation.transform<string, number | string>({
-      decode: (v) => (typeof v === "number" ? `${v}px` : v),
-      encode: (v) => v
-    }) as any
-  )
-)
-
-/** Effect DurationInput ("150 millis", "0.2 seconds", 150) → "150ms" */
-export const Duration = Schema.Union([Schema.Number, Schema.String]).pipe(
-  Schema.check(Schema.makeFilter((u) => EffectDuration.fromInput(u as any)._tag === "Some" || "expected an Effect DurationInput, e.g. \"150 millis\"")),
-  Schema.decodeTo(
-    Schema.String.pipe(Schema.brand("Duration")),
-    SchemaTransformation.transform<string, number | string>({
-      decode: (v) => `${EffectDuration.toMillis(v as EffectDuration.Input)}ms`,
-      encode: (v) => v
-    }) as any
-  )
-)
-
-/** A full box-shadow value. Kept opaque: themes own it, components only reference it. */
-export const Shadow = Schema.String.check(
-  Schema.isPattern(/^(none|(inset\s+)?-?[\d.]+(px|rem)?\s.+)$/, { message: "expected a box-shadow value" })
-).pipe(Schema.brand("Shadow"))
-
-export type Kind = "Color" | "Length" | "Duration" | "Shadow"
-type KindHint<T> = T extends typeof Color.Type ? "Color"
-  : T extends typeof Length.Type ? "Length"
-  : T extends typeof Duration.Type ? "Duration"
-  : T extends typeof Shadow.Type ? "Shadow"
-  : never
+export type Kind = "Color" | "Length" | "Duration" | "Shadow" | "Font" | "Weight"
 
 // ─── Refs ───────────────────────────────────────────────────────────────────
-// What a style author gets: a CSS expression string, tagged with its kind.
-// Group members are `var(--prefix-key)`; derived refs (alpha) are color-mix().
+// What a style author gets: a CSS expression string, tagged with its kind, so a
+// Length can't be used where a Color is expected.
 declare const RefKind: unique symbol
 export type Ref<K extends Kind = Kind, Expr extends string = string> = Expr & {
   readonly [RefKind]: K
 }
 
-/** `bg-primary/90` → alpha(Colors.primary, 90). Still a Color ref, so still checked. */
-export const alpha = <E extends string>(color: Ref<"Color", E>, percent: number): Ref<"Color", `color-mix(in oklab, ${E} ${number}%, transparent)`> =>
-  `color-mix(in oklab, ${color} ${percent}%, transparent)` as any
-
 // ─── Groups ─────────────────────────────────────────────────────────────────
-export const GroupTypeId = "~cave/ds/TokenGroup" as const
+export const GroupTypeId = "~acme/ds/TokenGroup" as const
+export type Key = string | number
 
-type Fields = Readonly<Record<string | number, Schema.Top>>
+export interface Meta<P extends string = string, K extends Kind = Kind, Keys extends Key = Key, Encoded = unknown> {
+  readonly prefix: P
+  readonly kind: K
+  readonly keys: ReadonlyArray<Keys>
+  /** decodes one theme value of this kind into a CSS string */
+  readonly value: Schema.Codec<string, Encoded>
+}
 
-export type Group<P extends string, F extends Fields> =
-  & { readonly [K in keyof F & (string | number)]: Ref<KindHint<F[K]["Type"]>, `var(--${P}-${SafeKey<K>})`> }
-  & {
-    readonly [GroupTypeId]: {
-      readonly prefix: P
-      readonly schema: Schema.Struct<F>
-    }
-  }
+export type Group<P extends string, K extends Kind, Keys extends Key, Encoded> =
+  & { readonly [X in Keys]: Ref<K, `var(--${P}-${SafeKey<X>})`> }
+  & { readonly [GroupTypeId]: Meta<P, K, Keys, Encoded> }
 
-export type AnyGroup = { readonly [GroupTypeId]: { readonly prefix: string; readonly schema: Schema.Struct<any> } }
+export type AnyGroup = { readonly [GroupTypeId]: Meta<string, Kind, any, any> }
 
-/** The token keys of a group, usable as a prop type: `Token.Key<typeof Colors>` */
-export type Key<G> = G extends Group<any, infer F> ? keyof F & (string | number) : never
-/** Encoded (author-facing) values for a group, used by Theme.make */
-export type Input<G> = G extends Group<any, infer F> ? Schema.Struct<F>["Encoded"] : never
+/** The keys of a group, usable as a prop type: `Token.KeyOf<typeof Colors>` */
+export type KeyOf<G> = G extends { readonly [GroupTypeId]: Meta<any, any, infer Keys, any> } ? Keys : never
+/** What a theme writes for a group: one encoded value per key. */
+export type Input<G> = G extends { readonly [GroupTypeId]: Meta<any, any, infer Keys, infer E> }
+  ? { readonly [X in Keys]: E }
+  : never
 
-export const group = <const P extends string, F extends Fields>(
+/** Builds a kind module's `make(prefix, keys)`. */
+export const kind = <K extends Kind, Encoded>(kind: K, value: Schema.Codec<string, Encoded>) =>
+<const P extends string, const Keys extends ReadonlyArray<Key>>(
   prefix: P,
-  schema: Schema.Struct<F>
-): Group<P, F> => {
+  keys: Keys
+): Group<P, K, Keys[number], Encoded> => {
   const refs: Record<string, string> = {}
-  for (const key of Object.keys(schema.fields)) refs[key] = `var(${cssVarName(prefix, key)})`
-  return Object.assign(refs, { [GroupTypeId]: { prefix, schema } }) as any
+  for (const key of keys) refs[key] = `var(${cssVarName(prefix, key)})`
+  return Object.assign(refs, { [GroupTypeId]: { prefix, kind, keys, value } }) as any
 }
 
 // "." isn't valid in a custom property name: Spacing["1.5"] → --spacing-1_5
-type SafeKey<K extends string | number> = `${K}` extends `${infer A}.${infer B}` ? `${A}_${SafeKey<B>}` : `${K}`
-export const cssVarName = (prefix: string, key: string | number) => `--${prefix}-${String(key).replaceAll(".", "_")}`
+type SafeKey<K extends Key> = `${K}` extends `${infer A}.${infer B}` ? `${A}_${SafeKey<B>}` : `${K}`
+export const cssVarName = (prefix: string, key: Key) => `--${prefix}-${String(key).replaceAll(".", "_")}`

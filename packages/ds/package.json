@@ -1,14 +1,11 @@
 {
-  "name": "@cave/ds",
+  "name": "@acme/ds",
   "private": true,
   "type": "module",
   "version": "0.0.0",
   "exports": {
     ".": "./src/index.ts",
     "./*": "./src/*.ts"
-  },
-  "scripts": {
-    "test": "vitest run"
   },
   "peerDependencies": {
     "@effect/ui": "*",
@@ -22,9 +19,6 @@
   "devDependencies": {
     "@effect/ui": "link:../../vendor/effect-ui/packages/ui",
     "@effect/ui-kit": "link:../../vendor/effect-ui/packages/ui-kit",
-    "@effect/vitest": "4.1.6",
-    "@vanilla-extract/vite-plugin": "^5.2.6",
-    "effect": "4.1.6",
-    "vitest": "5.1.1"
+    "effect": "4.1.6"
   }
 }

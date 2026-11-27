@@ -1,10 +1,12 @@
-import { ButtonStyle } from "./button.css.ts"
-import * as DesignSystem from "./DesignSystem.ts"
-import { dark, light } from "./themes.css.ts"
-import { Colors, Radius, Spacing } from "./tokens.ts"
-
-export { Size, Tone } from "./scales.ts"
-export { Colors, Radius, Spacing }
-
-export const DS = DesignSystem.make({ tokens: { Colors, Spacing, Radius }, themes: [dark, light], styles: [ButtonStyle] })
-export const Button = DS.component(ButtonStyle)
+// @acme/ds: the generic library. Component libraries and themes are built on it.
+export * as DesignSystem from "./DesignSystem.ts"
+export * as Style from "./Style.ts"
+export * as Theme from "./Theme.ts"
+export * as Token from "./Token.ts"
+export * as TokenColor from "./TokenColor.ts"
+export * as TokenDuration from "./TokenDuration.ts"
+export * as TokenFont from "./TokenFont.ts"
+export * as TokenLength from "./TokenLength.ts"
+export * as TokenShadow from "./TokenShadow.ts"
+export * as TokenWeight from "./TokenWeight.ts"
+export * as Variant from "./Variant.ts"

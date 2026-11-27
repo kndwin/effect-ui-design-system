@@ -1,0 +1,19 @@
+{
+  "name": "docs",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0",
+  "scripts": { "dev": "vite", "build": "vite build" },
+  "dependencies": {
+    "@acme/components": "workspace:*",
+    "@acme/theme-acme": "workspace:*",
+    "@acme/theme-astryx": "workspace:*",
+    "@effect/ui": "link:../../vendor/effect-ui/packages/ui",
+    "@effect/ui-kit": "link:../../vendor/effect-ui/packages/ui-kit",
+    "effect": "4.1.6"
+  },
+  "devDependencies": {
+    "@vanilla-extract/vite-plugin": "^5.2.6",
+    "vite": "8.3.8"
+  }
+}

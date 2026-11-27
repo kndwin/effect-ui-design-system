@@ -1,0 +1,28 @@
+/* Docs chrome only. It reads the same contract variables the components do. */
+* { box-sizing: border-box; }
+body { margin: 0; }
+.docs { min-height: 100vh; background: var(--color-surfaceMuted); color: var(--color-fg); font-family: var(--font-body); font-size: var(--text-sm); }
+.docs-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 12px 24px; background: var(--color-surface); border-bottom: 1px solid var(--color-border); position: sticky; top: 0; z-index: 1; }
+.docs-controls { display: flex; gap: 8px; flex-wrap: wrap; }
+.docs-body { display: flex; }
+.docs-nav { display: flex; flex-direction: column; gap: 2px; padding: 16px 12px; width: 180px; flex-shrink: 0; }
+.docs-link { all: unset; cursor: pointer; padding: 6px 10px; border-radius: var(--radius-control); color: var(--color-fgMuted); }
+.docs-link:hover { background: var(--color-surface); }
+.docs-link-active { background: var(--color-surface); color: var(--color-fg); font-weight: var(--weight-medium); }
+.docs-main { flex: 1; min-width: 0; padding: 16px 24px 48px; max-width: 960px; }
+.docs-main h1 { margin: 8px 0 16px; font-size: 1.5rem; }
+.docs-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 12px; padding: 16px; margin-top: 16px; }
+.docs-card h2 { margin: 0 0 12px; font-size: 1rem; }
+.docs-card h2 small { font-weight: 400; color: var(--color-fgMuted); }
+.docs-previews { display: grid; gap: 8px; }
+.docs-previews-grid { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+.docs-preview { background: var(--color-surface); color: var(--color-fg); font-family: var(--font-body); border: 1px solid var(--color-border); border-radius: 8px; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+.docs-preview-label { font-size: 11px; color: var(--color-fgMuted); }
+.docs-code { margin: 12px 0 0; padding: 12px; overflow-x: auto; background: var(--color-surfaceMuted); border-radius: 8px; font: 12px/1.5 ui-monospace, "SF Mono", Menlo, monospace; }
+.docs-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+.docs-table th, .docs-table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--color-border); vertical-align: middle; }
+.docs-table th { color: var(--color-fgMuted); font-weight: 500; }
+.docs-swatch { display: inline-block; width: 14px; height: 14px; border-radius: 4px; margin-right: 6px; vertical-align: -2px; border: 1px solid var(--color-border); }
+.example-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.example-note { color: var(--color-fgMuted); }
+@media (max-width: 640px) { .docs-body { flex-direction: column; } .docs-nav { flex-direction: row; width: auto; overflow-x: auto; } }
