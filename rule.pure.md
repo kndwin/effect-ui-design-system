@@ -19,7 +19,7 @@ and `*.theme.ts`.
 - module state: top-level `let` / `var`
 - statements that run on import, e.g. a top-level `foo()`
 - `Html.component(...)` (ast-grep: `data-has-no-component`)
-- `@vanilla-extract/*` imports (`acme/vanilla-imports`). That is a build detail in `tools/vite`.
+- `@vanilla-extract/*` imports (`acme/vanilla-imports`). That is a build detail of `@acme/css-engine`.
 
 ## Where effects go instead
 

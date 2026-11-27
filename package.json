@@ -7,7 +7,7 @@
     "lint": "oxlint --disable-nested-config && ast-grep scan",
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
-    "test": "pnpm --filter @acme/components test",
+    "test": "pnpm --filter @acme/css-engine --filter @acme/components test",
     "docs": "pnpm --filter docs dev",
     "build": "pnpm --filter docs build",
     "ci": "pnpm fmt:check && pnpm lint && pnpm check && pnpm test && pnpm build"
@@ -20,10 +20,6 @@
   "devDependencies": {
     "@ast-grep/cli": "^0.51.3",
     "@types/node": "^22.20.7",
-    "@vanilla-extract/compiler": "^0.7.2",
-    "@vanilla-extract/css": "^1.21.3",
-    "@vanilla-extract/integration": "^8.0.11",
-    "@vanilla-extract/recipes": "^0.5.7",
     "effect-oxlint": "0.5.1",
     "oxfmt": "^0.80.0",
     "oxlint": "^1.95.0",

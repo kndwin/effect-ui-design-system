@@ -3,7 +3,7 @@
 A style file **declares how a component looks, as data**. Each export is exactly one
 `Style.make(Kit)({ base, variants, compound })`. ast-grep: `style-exports-style`.
 
-The file is plain data, so `rule.pure.md` applies too. `tools/vite/acme-styles.ts` compiles it
+The file is plain data, so `rule.pure.md` applies too. `@acme/css-engine` compiles it
 to static CSS at build time; importers get class names.
 
 ## Values come from tokens (lint: `acme/tokens-only`)

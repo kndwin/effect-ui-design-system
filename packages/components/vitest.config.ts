@@ -1,4 +1,7 @@
+import { cssEngine } from "@acme/css-engine/vite"
 import { defineConfig } from "vitest/config"
-import { acmeStyles } from "../../tools/vite/acme-styles.ts"
 
-export default defineConfig({ plugins: [acmeStyles()], test: { include: ["test/**/*.test.ts"] } })
+export default defineConfig({
+  plugins: [cssEngine({ include: /\.(component\.style|theme)\.ts$/, adapter: "@acme/ds/Compile" })],
+  test: { include: ["test/**/*.test.ts"] }
+})

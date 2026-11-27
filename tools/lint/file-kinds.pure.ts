@@ -10,9 +10,11 @@ export const fileKinds = [
   { suffix: ".token.ts", doc: "rule.token.md", what: "the token contract: Token*.make(...) exports only" },
   { suffix: ".theme.ts", doc: "rule.theme.md", what: "Theme.make(...) exports only" },
   { suffix: ".pure.ts", doc: "rule.pure.md", what: "pure functions and data" },
+  { suffix: ".build.ts", doc: "rule.build.md", what: "build-time Node code: Vite plugins, the CSS engine" },
   { suffix: ".d.ts", what: "type declarations" },
   { suffix: ".test.ts", what: "tests (test/ only)" },
   { suffix: ".test-d.ts", what: "type tests (test/ only)" },
+  { suffix: ".fixture.ts", what: "test inputs (test/ only)" },
   { name: "main.ts", what: "app entry (apps/* only)" }
 ] as const
 
