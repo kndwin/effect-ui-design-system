@@ -2,7 +2,7 @@ import { Schema } from "effect"
 
 export const PageSchema = Schema.Struct({
   id: Schema.String,
-  section: Schema.Literals(["Getting started", "Components", "Foundations"]),
+  section: Schema.Literals(["Getting started", "Components", "Templates", "Foundations"]),
   title: Schema.String,
   lead: Schema.String,
   kit: Schema.optionalKey(Schema.String),

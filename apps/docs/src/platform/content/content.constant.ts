@@ -312,6 +312,30 @@ export const pages: ReadonlyArray<Page> = [
     Order.mapInput(Order.String, (page: Page) => page.title)
   ),
   {
+    id: "checkout",
+    section: "Templates",
+    title: "Checkout",
+    lead: "A sectioned checkout form beside a live order summary: Fieldsets, Field, Select, Radio Group and Number Field. Change a quantity or the shipping method and the total follows."
+  },
+  {
+    id: "dashboard",
+    section: "Templates",
+    title: "Dashboard",
+    lead: "Stat tiles, goal meters, a tabbed activity feed and a range picker: the shape of most analytics overviews."
+  },
+  {
+    id: "login",
+    section: "Templates",
+    title: "Login",
+    lead: "A centred sign-in card with validation on submit, a remember-me checkbox and provider buttons."
+  },
+  {
+    id: "settings",
+    section: "Templates",
+    title: "Settings",
+    lead: "Account settings split into tabs: a profile form, notification switches and appearance choices, with a save toast."
+  },
+  {
     id: "tokens",
     section: "Foundations",
     title: "Tokens",

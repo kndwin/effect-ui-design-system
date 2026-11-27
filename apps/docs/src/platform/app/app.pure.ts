@@ -1,6 +1,7 @@
 import { Match, Schema } from "effect"
 import { ComponentIdSchema } from "../content/component.schema.ts"
 import { pages } from "../content/content.constant.ts"
+import { TemplateIdSchema } from "../content/template.schema.ts"
 import type { Page } from "../content/content.schema.ts"
 import { AppRoute } from "./app.route.ts"
 import type { GetPageInput, GetPageRouteInput } from "./app.schema.ts"
@@ -13,6 +14,7 @@ export const getPage = ({ route }: GetPageInput): Page | undefined =>
         Introduction: () => "introduction",
         Theming: () => "theming",
         Component: ({ params }) => params.id,
+        Template: ({ params }) => params.id,
         Tokens: () => "tokens",
         NotFound: () => ""
       })
@@ -27,6 +29,7 @@ export const getPageRoute = ({ id, route }: GetPageRouteInput): AppRoute => {
     Match.when(Schema.is(ComponentIdSchema), (componentId) =>
       AppRoute.Component({ params: { id: componentId }, search })
     ),
+    Match.when(Schema.is(TemplateIdSchema), (templateId) => AppRoute.Template({ params: { id: templateId }, search })),
     Match.orElse(() => AppRoute.Introduction({ search }))
   )
 }

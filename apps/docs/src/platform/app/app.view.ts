@@ -11,6 +11,7 @@ import { ThemeBuilder } from "../../feature/theme-builder/theme-builder.componen
 import { getOverrides } from "../../feature/theme-builder/customize.pure.ts"
 import { mapVarsToInlineStyle } from "../../feature/theme-builder/customize.pure.map.ts"
 import { isCustomized } from "../../feature/theme-builder/customize.pure.predicate.ts"
+import { TemplatePage } from "../../feature/templates/templates.view.ts"
 import { ThemingPage } from "../../feature/theming/theming.view.ts"
 import { TokensPage } from "../../feature/tokens/tokens.view.ts"
 import { pages } from "../content/content.constant.ts"
@@ -114,6 +115,7 @@ const Body = AppDef.fragment((h, model: AppModel, page: Page) =>
     Introduction: () => IntroductionPage(h, getLook(model)),
     Theming: () => ThemingPage(h),
     Component: () => ComponentDocsPage(h, page, getLook(model)),
+    Template: () => TemplatePage(h, page, getLook(model)),
     Tokens: () => {
       const { theme, mode } = model.route.search
       const base = getTheme({ name: theme })

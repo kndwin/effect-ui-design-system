@@ -20,9 +20,10 @@ kinds only); **themes** fill the contract in. Swap the theme, keep the component
   (Dialog, Drawer, Popover, Tooltip, Preview Card, Menu, Context Menu, Menubar, Toast), structure (Tabs,
   Accordion, Collapsible, Scroll Area, Sortable List, Virtual List, Toolbar, Navigation Menu) and display.
 - **Two themes**, shadcn and astryx, each in light and dark, plus a theme builder in the docs.
+- **Page templates** built only from the components: Login, Settings, Checkout and Dashboard.
 - **Checked conventions**: every rule is a `+rule/` folder with a doc whose examples run as tests.
 
-![The docs, composed only from @weft/components, with the theme builder open](apps/docs/screenshots/theme-builder.png)
+![The Dashboard template in the docs, with a custom theme picked in the theme panel](apps/docs/screenshots/theme-builder.png)
 
 ## Setup
 
