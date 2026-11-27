@@ -19,7 +19,7 @@ export interface Style<Name extends string, Slot extends string, P> {
 export type Props<S> = S extends Style<any, any, infer P> ? P : never
 
 /**
- * What a `.component.style.ts` file declares. Plain data: the build (tools/vite/engine.ts)
+ * What a `.component.style.ts` file declares. Plain data: the build (@acme/css-engine, via the Compile adapter)
  * turns it into class names and CSS. Until then it has no classes.
  */
 export interface Definition {
