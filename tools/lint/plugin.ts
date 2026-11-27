@@ -40,8 +40,11 @@ const fileKind = Rule.define({
         }
         const name = "name" in kind ? kind.name : kind.suffix
         const inTest = /\/test\//.test(path)
-        if ((name === ".test.ts" || name === ".test-d.ts") !== inTest)
-          return report(node, inTest ? "Files in test/ must be *.test.ts or *.test-d.ts." : "Tests belong in test/.")
+        if ((name === ".test.ts" || name === ".test-d.ts" || name === ".fixture.ts") !== inTest)
+          return report(
+            node,
+            inTest ? "Files in test/ must be *.test.ts, *.test-d.ts or *.fixture.ts." : "Tests belong in test/."
+          )
         if (name === "main.ts" && !/\/apps\//.test(path)) return report(node, "main.ts is for app entries (apps/*).")
         if ("doc" in kind && findDoc(dirname(path), kind.doc) === undefined)
           return report(node, `*${name} files need a ${kind.doc} in this folder or an ancestor, explaining the rule.`)
@@ -112,23 +115,23 @@ const pure = Rule.define({
   }
 })
 
-/** vanilla-extract only in *.css.ts and the *.vanilla.ts APIs they call. */
+/** vanilla-extract is a build detail of @acme/css-engine: only *.build.ts may import it. */
 const vanillaImports = Rule.define({
   name: "vanilla-imports",
   meta: Rule.meta({
     type: "problem",
-    description: "@vanilla-extract/* may only be imported by *.css.ts and *.vanilla.ts."
+    description: "@vanilla-extract/* may only be imported by *.build.ts (the css-engine)."
   }),
   create: function* () {
     const ctx = yield* RuleContext
-    const allowed = !isGoverned(ctx.filename) || /\.(css|vanilla)\.ts$/.test(ctx.filename)
+    const allowed = !isGoverned(ctx.filename) || ctx.filename.endsWith(".build.ts")
     return {
       ImportDeclaration: (node: any) =>
         !allowed &&
         node.importKind !== "type" &&
         typeof node.source?.value === "string" &&
         node.source.value.startsWith("@vanilla-extract/")
-          ? report(node, "vanilla-extract is a build detail: use Style.make / Theme.make; only tools/vite imports it.")
+          ? report(node, "vanilla-extract is a build detail of @acme/css-engine: use Style.make / Theme.make.")
           : Effect.void
     }
   }

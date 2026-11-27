@@ -28,6 +28,7 @@ packages/
     src/Style.pure.ts          Style.make(Kit)({ base, variants, compound }) → data
     src/Theme.pure.ts          Theme.make(Tokens, { name, values, modes }) → data
     src/Variant.pure.ts Manifest.pure.ts Rule.pure.ts highlight.pure.ts
+    src/Compile.pure.ts        the adapter for @acme/css-engine
     src/kit/*.pure.ts          the only files that know ui-kit's DOM (parts, data attributes);
                                kit/layout + kit/element for the components the DS owns outright
   components/            @acme/components
@@ -43,9 +44,12 @@ packages/
     shadcn/  shadcn.theme.ts   (default, also on :root)
     astryx/  astryx.theme.ts
 apps/docs/               composed only from @acme/components; no stylesheet
+  css-engine/            @acme/css-engine: generic, no design-system knowledge
+    src/rules.pure.ts          the input contract: recipes, global rules (plain data)
+    src/register.build.ts      writes rules as CSS (vanilla-extract today)
+    src/vite.build.ts          cssEngine({ include, adapter }) Vite plugin
+    rule.build.md
 tools/
-  vite/acme-styles.ts    Vite plugin: compiles *.component.style.ts / *.theme.ts to CSS
-  vite/engine.ts         the only code that touches vanilla-extract
   lint/plugin.ts         effect-oxlint rules: file-kind, pure, vanilla-imports, tokens-only
   ast-grep/rules/        the structural rules for each file kind
 rule.pure.md  rule.component.md
@@ -109,10 +113,22 @@ Layout(h.div)
   )
 ```
 
-## How styles become CSS
+## How styles become CSS: `@acme/css-engine`
 
-Style, token and theme files are plain data. `tools/vite/acme-styles.ts` runs each
-`*.component.style.ts` / `*.theme.ts` through vanilla-extract's compiler. It wraps the file in a
-module that hands its exports to `tools/vite/engine.ts`, which turns them into recipes and global
-rules. Importers get the compiled class functions plus a CSS import. HMR works.
-vanilla-extract is used only as that compiler, so swapping in our own engine touches only `tools/vite`.
+A generic engine with no knowledge of tokens, kits or Effect UI:
+
+```ts
+// vite.config.ts
+cssEngine({ include: /\.(component\.style|theme)\.ts$/, adapter: "@acme/ds/Compile" })
+```
+
+- **Input:** files matching `include` export plain data. The **adapter** (`@acme/ds/Compile`) turns
+  each export into engine rules (`rules.pure.ts`): recipes (a class per variant value) and global rules.
+- **Build:** `register.build.ts` writes those rules. vanilla-extract's compiler runs it
+  and emits static CSS. Importers get the compiled exports plus a CSS import.
+- **Hosts:** dev with hot reload, vitest and production builds.
+- **Isolation:** vanilla-extract is a dependency of `@acme/css-engine` only (lint: `acme/vanilla-imports`). Its
+  imports resolve from the engine, so component and theme packages don't install it.
+- **Proof it's generic:** `packages/css-engine/test` compiles a fixture with a fixture adapter, no design system.
+
+Swapping vanilla-extract for our own engine changes only `register.build.ts` and `vite.build.ts`.

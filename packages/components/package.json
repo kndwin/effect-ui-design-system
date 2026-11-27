@@ -22,10 +22,10 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@acme/ds": "workspace:*",
-    "@vanilla-extract/recipes": "^0.5.7"
+    "@acme/ds": "workspace:*"
   },
   "devDependencies": {
+    "@acme/css-engine": "workspace:*",
     "@effect/ui": "link:../../vendor/effect-ui/packages/ui",
     "@effect/ui-kit": "link:../../vendor/effect-ui/packages/ui-kit",
     "@effect/vitest": "4.1.6",

@@ -95,7 +95,7 @@ export const classes = <Slot extends string, P>(
   }
   if (isDefinition(style)) {
     throw new Error(
-      `${style.kit.name}: this style wasn't compiled. Add acmeStyles() (tools/vite/acme-styles.ts) to the Vite config.`
+      `${style.kit.name}: this style wasn't compiled. Add cssEngine({ adapter: "@acme/ds/Compile" }) from @acme/css-engine/vite to the Vite config.`
     )
   }
   for (const [slot, fn] of Object.entries(style.slots)) out[slot] = (fn as (p: unknown) => string)(picked)
