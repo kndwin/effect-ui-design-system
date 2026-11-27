@@ -14,17 +14,43 @@ export const Colors = TokenColor.make("color", [
   "dangerFg",
   "ring"
 ])
+/** CodeBlock surface and line marks */
+export const Code = TokenColor.make("code", [
+  "surface",
+  "fg",
+  "muted",
+  "border",
+  "lineHighlighted",
+  "lineAdded",
+  "lineRemoved"
+])
+/** CodeBlock token colours */
+export const Syntax = TokenColor.make("syntax", ["comment", "string", "keyword", "number", "type", "call"])
 /** Avatar fallback backgrounds; text on them uses Colors.onHue */
 export const Hues = TokenColor.make("hue", ["blue", "green", "amber", "rose", "onHue"])
 export const Spacing = TokenLength.make("spacing", [1, 2, 3, 4, 6])
 export const Size = TokenLength.make("size", ["controlSm", "controlMd", "avatarSm", "avatarMd", "avatarLg"])
-export const Radius = TokenLength.make("radius", ["control", "avatarSquare", "full"])
+export const Radius = TokenLength.make("radius", ["control", "avatarSquare", "container", "full"])
 export const Stroke = TokenLength.make("stroke", ["border", "focus", "focusOffset"])
-export const Text = TokenLength.make("text", ["xs", "sm", "md"])
-export const Font = TokenFont.make("font", ["body"])
+export const Text = TokenLength.make("text", ["xs", "sm", "md", "code"])
+export const Font = TokenFont.make("font", ["body", "mono"])
 export const Weight = TokenWeight.make("weight", ["medium", "semibold"])
 export const Shadow = TokenShadow.make("shadow", ["control"])
 export const Motion = TokenDuration.make("motion", ["fast"])
 
 /** The whole contract, as one object: what a theme must fill in. */
-export const Tokens = { Colors, Hues, Spacing, Size, Radius, Stroke, Text, Font, Weight, Shadow, Motion }
+export const Tokens = {
+  Colors,
+  Code,
+  Syntax,
+  Hues,
+  Spacing,
+  Size,
+  Radius,
+  Stroke,
+  Text,
+  Font,
+  Weight,
+  Shadow,
+  Motion
+}

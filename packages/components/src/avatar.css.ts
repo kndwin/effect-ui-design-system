@@ -1,7 +1,7 @@
 import { Style, Variant } from "@acme/ds"
 import { Avatar } from "@acme/ds/kit/avatar"
-import { AvatarSize, Hue, Shape } from "./scales.ts"
-import { Colors, Font, Hues, Radius, Size, Stroke, Text, Weight } from "./tokens.ts"
+import { AvatarSize, Hue, Shape } from "./scales.pure.ts"
+import { Colors, Font, Hues, Radius, Size, Stroke, Text, Weight } from "./tokens.pure.ts"
 
 export const AvatarStyle = Style.make(Avatar)({
   base: {

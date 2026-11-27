@@ -1,4 +1,5 @@
-// A tiny TypeScript highlighter: enough for docs snippets, no dependency.
+// A tiny highlighter for CodeBlock: TypeScript and shell, no dependency.
+// Each token gets data-token=<kind>; colours come from the Syntax tokens.
 const pattern = new RegExp(
   [
     /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)/.source, // 1 comment
@@ -14,13 +15,30 @@ const pattern = new RegExp(
 const kinds = ["comment", "string", "keyword", "number", "type", "call"] as const
 export type Kind = (typeof kinds)[number] | "plain"
 
-export const highlight = (code: string): ReadonlyArray<readonly [Kind, string]> => {
+const shell = new RegExp(
+  [
+    /(#[^\n]*)/.source, // 1 comment
+    /("(?:[^"\\\n]|\\.)*"|'[^'\n]*')/.source, // 2 string
+    /(?:^|(?<=[;&|]\s*))\b(pnpm|npm|npx|git|cd|node|bun|yarn)\b/.source, // 3 command
+    /(\s--?[\w-]+)/.source // 4 flag
+  ].join("|"),
+  "gm"
+)
+const shellKinds = ["comment", "string", "keyword", "number"] as const
+
+export type Language = "ts" | "shell" | "plain"
+
+export const highlight = (code: string, language: Language = "ts"): ReadonlyArray<readonly [Kind, string]> => {
+  if (language === "plain") return [["plain", code]]
   const out: Array<readonly [Kind, string]> = []
   let last = 0
-  for (const m of code.matchAll(pattern)) {
+  const re = language === "shell" ? shell : pattern
+  const names: ReadonlyArray<Kind> = language === "shell" ? shellKinds : kinds
+  for (const m of code.matchAll(re)) {
+    if (m[0] === "") continue
     if (m.index > last) out.push(["plain", code.slice(last, m.index)])
     const group = m.slice(1).findIndex((g) => g !== undefined)
-    out.push([kinds[group]!, m[0]])
+    out.push([names[group] ?? "plain", m[0]])
     last = m.index + m[0].length
   }
   if (last < code.length) out.push(["plain", code.slice(last)])

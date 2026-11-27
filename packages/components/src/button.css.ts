@@ -1,7 +1,7 @@
 import { Style, TokenColor, Variant } from "@acme/ds"
 import { Button } from "@acme/ds/kit/button"
-import { Size, Tone } from "./scales.ts"
-import { Colors, Font, Motion, Radius, Shadow, Size as Sizes, Spacing, Stroke, Text, Weight } from "./tokens.ts"
+import { ControlSize, Tone } from "./scales.pure.ts"
+import { Colors, Font, Motion, Radius, Shadow, Size as Sizes, Spacing, Stroke, Text, Weight } from "./tokens.pure.ts"
 
 export const ButtonStyle = Style.make(Button)({
   base: {
@@ -64,7 +64,7 @@ export const ButtonStyle = Style.make(Button)({
       { default: "neutral" }
     ),
     size: Variant.make(
-      Size,
+      ControlSize,
       {
         sm: { root: { height: Sizes.controlSm, paddingInline: Spacing[3] } },
         md: { root: { height: Sizes.controlMd, paddingInline: Spacing[4] } }

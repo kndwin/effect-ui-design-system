@@ -2,7 +2,7 @@
 // this file and its kit-map test change; nothing else does.
 import { Button as KitButton, type ButtonElement } from "@effect/ui-kit/Button"
 import { Html } from "@effect/ui/html"
-import * as Kit from "../Kit.ts"
+import * as Kit from "../Kit.pure.ts"
 
 const ButtonDescriptor = Kit.describe({
   name: "Button",

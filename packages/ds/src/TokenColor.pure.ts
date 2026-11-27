@@ -1,5 +1,5 @@
 import { Schema } from "effect"
-import * as Token from "./Token.ts"
+import * as Token from "./Token.pure.ts"
 
 /** "#hex" | "rgb()" | "hsl()" | "oklch()" */
 export const Value = Schema.String.check(

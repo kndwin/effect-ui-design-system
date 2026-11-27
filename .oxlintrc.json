@@ -9,10 +9,16 @@
     // TypeScript already checks default imports, and ?source modules are virtual
     "import/default": "off",
     "no-unused-vars": "error",
-    "eqeqeq": "error"
+    "eqeqeq": "error",
+    "acme/file-kind": "error",
+    "acme/vanilla-imports": "error"
   },
-  "jsPlugins": ["./tools/oxlint-plugin-acme.mjs"],
+  "jsPlugins": ["./tools/lint/plugin.ts"],
   "overrides": [
+    {
+      "files": ["**/*.pure.ts"],
+      "rules": { "acme/pure": "error" }
+    },
     {
       // Component styles may only use tokens: no raw colours, lengths or durations.
       "files": ["packages/components/src/**/*.css.ts"],

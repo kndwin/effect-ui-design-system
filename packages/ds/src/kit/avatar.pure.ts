@@ -4,7 +4,7 @@
 import { Avatar as KitAvatar } from "@effect/ui-kit/Avatar"
 import type { Html } from "@effect/ui/html"
 import type { Child } from "@effect/ui/View"
-import * as Kit from "../Kit.ts"
+import * as Kit from "../Kit.pure.ts"
 
 const AvatarDescriptor = Kit.describe({
   name: "Avatar",

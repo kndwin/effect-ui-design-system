@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "check": "tsc -p tsconfig.json",
-    "lint": "oxlint --disable-nested-config",
+    "lint": "oxlint --disable-nested-config && ast-grep scan",
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
     "test": "pnpm --filter @acme/components test",
@@ -18,7 +18,9 @@
     "effect": "4.1.6"
   },
   "devDependencies": {
+    "@ast-grep/cli": "^0.51.3",
     "@types/node": "^22.20.7",
+    "effect-oxlint": "0.5.1",
     "oxfmt": "^0.80.0",
     "oxlint": "^1.95.0",
     "typescript": "7.0.2"

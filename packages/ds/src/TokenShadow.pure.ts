@@ -1,5 +1,5 @@
 import { Schema } from "effect"
-import * as Token from "./Token.ts"
+import * as Token from "./Token.pure.ts"
 
 /** A full box-shadow value. Opaque: themes own it, components only reference it. */
 export const Value = Schema.String.check(

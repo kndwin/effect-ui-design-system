@@ -5,7 +5,7 @@ Typed tokens → Schema-backed variants → per-part styles for
 Components and themes are separate packages: components are written against a **token contract**
 (names and kinds only), and any theme that fills in the contract can style them.
 
-![Docs: introduction](apps/docs/screenshots/introduction.png)
+![Docs with the theme customizer](apps/docs/screenshots/customize.png)
 
 ## Setup
 
@@ -26,24 +26,44 @@ pnpm ci      # oxfmt --check → oxlint → tsc (TypeScript 7) → vitest → do
 | `pnpm fmt`   | oxfmt                                                                                                                                                                      |
 | `pnpm test`  | server render + manifest                                                                                                                                                   |
 
+## File kinds
+
+Every file under `packages/*/src`, `packages/themes/*/src`, `apps/*/src` and `test/` must be one of these.
+`acme/file-kind` rejects anything else.
+
+| file                                           | what it may contain                                                                                                                                               | enforced by                                                                         |
+| :--------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------- |
+| `*.component.ts`                               | must define an `Html.component`                                                                                                                                   | ast-grep `component-defines-component`                                              |
+| `*.pure.ts`                                    | pure functions and data: no `window`/`document`/`console`/`fetch`…, no `Math.random`/`Date.now`/`new Date`, no top-level `let` or statements, no `Html.component` | oxlint `acme/pure`, ast-grep `pure-has-no-component`                                |
+| `*.css.ts`                                     | vanilla-extract styles and themes. In `@acme/components`, tokens only (no raw colours, lengths or durations, no lint-disable comments)                            | oxlint `acme/tokens-only`, ast-grep `css-has-no-runtime`                            |
+| `*.vanilla.ts`                                 | build-time APIs that call vanilla-extract (`Theme.make`, `Style.make`)                                                                                            | oxlint `acme/vanilla-imports`: `@vanilla-extract/*` only in `.css.ts`/`.vanilla.ts` |
+| `index.ts`                                     | re-exports only                                                                                                                                                   | ast-grep `index-reexports-only`                                                     |
+| `main.ts`                                      | app entry (apps only)                                                                                                                                             | oxlint `acme/file-kind`                                                             |
+| `*.d.ts`, `test/*.test.ts`, `test/*.test-d.ts` | declarations and tests                                                                                                                                            | oxlint `acme/file-kind`                                                             |
+
+Package `exports` keep public paths free of kinds: `@acme/ds/kit/button`, `@acme/components/tokens`.
+
 ## Layout
 
 ```
 packages/
   ds/                  @acme/ds          the generic library
-    src/TokenColor.ts TokenLength.ts TokenFont.ts TokenWeight.ts TokenShadow.ts TokenDuration.ts
-    src/Theme.ts Variant.ts Style.ts DesignSystem.ts
-    src/kit/button.ts kit/avatar.ts       the ONLY files that know ui-kit's DOM (parts, data attributes)
-  components/          @acme/components  Button + Avatar
-    src/tokens.ts  🔒  the token contract (names + kinds, no values)
-    src/scales.ts  🔒  Tone, Size, AvatarSize, Shape, Hue
-    src/button.css.ts avatar.css.ts index.ts
+    src/Token*.pure.ts                    one module per token kind
+    src/Theme.vanilla.ts Style.vanilla.ts Variant.pure.ts DesignSystem.pure.ts highlight.pure.ts
+    src/kit/button.pure.ts kit/avatar.pure.ts   the ONLY files that know ui-kit's DOM (parts, data attributes)
+    src/kit/code-block.component.ts             CodeBlock has no ui-kit counterpart: the DS owns its DOM
+  components/          @acme/components  Button, Avatar, CodeBlock
+    src/tokens.pure.ts  🔒  the token contract (names + kinds, no values)
+    src/scales.pure.ts  🔒  Tone, ControlSize, AvatarSize, Shape, Hue, CodeTone
+    src/button.css.ts avatar.css.ts code-block.css.ts library.pure.ts index.ts
   themes/shadcn/       @acme/theme-shadcn 🔒 shadcn/ui neutral, Geist (default, also on :root)
   themes/astryx/       @acme/theme-astryx 🔒 Astryx-inspired: near-black accent, Figtree, 12px corners
 apps/
-  docs/                examples/<component>/*.ts are rendered live AND shown as source (import.meta.glob + ?raw);
-                       component styles, the contract and themes are shown from the real files (?source)
-tools/oxlint-plugin-acme.mjs   the "tokens only" lint rule
+  docs/                examples/<component>/*.component.ts are rendered live AND shown as source;
+                       component styles, the contract and themes are shown from the real files (?source);
+                       a theme customizer whose controls map to contract tokens and export a Theme.make file
+tools/lint/          effect-oxlint plugin (file-kind, pure, vanilla-imports, tokens-only)
+tools/ast-grep/      structural rules for file kinds
 ```
 
 ## Authoring in one screen
