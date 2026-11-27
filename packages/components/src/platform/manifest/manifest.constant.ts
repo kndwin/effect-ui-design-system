@@ -1,4 +1,12 @@
 import * as Manifest from "@acme/design-system/Manifest"
+import { CalendarStyle } from "../../feature/date/calendar.component.style.ts"
+import { DateFieldStyle } from "../../feature/date/date-field.component.style.ts"
+import { ComboboxStyle } from "../../feature/combobox/combobox.component.style.ts"
+import { ContextMenuStyle } from "../../feature/menu/context-menu.component.style.ts"
+import { MenubarStyle } from "../../feature/menu/menubar.component.style.ts"
+import { FileDropStyle } from "../../feature/file-drop/file-drop.component.style.ts"
+import { SortableListStyle } from "../../feature/sortable-list/sortable-list.component.style.ts"
+import { VirtualListStyle } from "../../feature/virtual-list/virtual-list.component.style.ts"
 import { ProgressStyle } from "../../feature/progress/progress.component.style.ts"
 import { CheckboxGroupStyle } from "../../feature/checkbox/checkbox-group.component.style.ts"
 import { ToggleGroupStyle } from "../../feature/toggle/toggle-group.component.style.ts"
@@ -93,6 +101,14 @@ export const manifest = Manifest.make({
     FormStyle,
     NumberFieldStyle,
     OtpFieldStyle,
-    PreviewCardStyle
+    PreviewCardStyle,
+    CalendarStyle,
+    DateFieldStyle,
+    ComboboxStyle,
+    ContextMenuStyle,
+    MenubarStyle,
+    FileDropStyle,
+    SortableListStyle,
+    VirtualListStyle
   ]
 })
