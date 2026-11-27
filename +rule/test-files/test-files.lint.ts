@@ -32,7 +32,7 @@ export default RuleModule.make(import.meta.url, {
           return Match.value(marks.join(",") === order.join(",")).pipe(
             Match.when(true, () => Effect.void),
             Match.orElse(() =>
-              RuleModule.report(
+              RuleModule.makeReport(
                 node,
                 "A test is three steps: // Arrange, // Act, // Assert, in that order. See +rule/test-files/test-files.md."
               )

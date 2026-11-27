@@ -1,7 +1,7 @@
 import * as Style from "@acme/design-system/Style"
 import * as Variant from "@acme/design-system/Variant"
 import { AvatarParts } from "./avatar.parts.constant.ts"
-import { AvatarSize, Hue, Shape } from "../scales.schema.ts"
+import { AvatarSizeSchema, HueSchema, ShapeSchema } from "../scales.schema.ts"
 import { Colors, Font, Hues, Radius, Size, Stroke, Text, Weight } from "../contract.token.ts"
 
 export const AvatarStyle = Style.make(AvatarParts)({
@@ -26,7 +26,7 @@ export const AvatarStyle = Style.make(AvatarParts)({
   },
   variants: {
     size: Variant.make(
-      AvatarSize,
+      AvatarSizeSchema,
       {
         sm: { root: { width: Size.avatarSm, height: Size.avatarSm }, fallback: { fontSize: Text.xs } },
         md: { root: { width: Size.avatarMd, height: Size.avatarMd }, fallback: { fontSize: Text.sm } },
@@ -35,7 +35,7 @@ export const AvatarStyle = Style.make(AvatarParts)({
       { default: "md" }
     ),
     shape: Variant.make(
-      Shape,
+      ShapeSchema,
       {
         circle: { root: { borderRadius: Radius.full } },
         square: { root: { borderRadius: Radius.avatarSquare } }
@@ -43,7 +43,7 @@ export const AvatarStyle = Style.make(AvatarParts)({
       { default: "circle" }
     ),
 
-    hue: Variant.make(Hue, {
+    hue: Variant.make(HueSchema, {
       blue: { root: { background: Hues.blue } },
       green: { root: { background: Hues.green } },
       amber: { root: { background: Hues.amber } },

@@ -38,7 +38,7 @@ export default RuleModule.make(import.meta.url, {
           return Match.value(ok).pipe(
             Match.when(true, () => Effect.void),
             Match.orElse(() =>
-              RuleModule.report(
+              RuleModule.makeReport(
                 node,
                 "Export only Schemas, built with Schema.* or UiSchema.*. See +rule/schema-files/schema-files.md."
               )
@@ -62,7 +62,7 @@ export default RuleModule.make(import.meta.url, {
           Match.value(allowedImport(String(node.source?.value ?? ""))).pipe(
             Match.when(true, () => Effect.void),
             Match.orElse(() =>
-              RuleModule.report(
+              RuleModule.makeReport(
                 node,
                 "Import only from effect, @effect/ui or another *.schema.ts. See +rule/schema-files/schema-files.md."
               )

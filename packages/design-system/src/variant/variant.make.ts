@@ -22,7 +22,7 @@ export const make = <const L extends ReadonlyArray<SchemaAST.LiteralValue & stri
   styles: styles as any
 })
 
-export const flag = <Slots>(styles: NoInfer<Slots>): Variant<boolean, Slots> => ({
+export const makeFlag = <Slots>(styles: NoInfer<Slots>): Variant<boolean, Slots> => ({
   [VariantTypeId]: undefined as any,
   kind: "flag",
   values: ["true", "false"],

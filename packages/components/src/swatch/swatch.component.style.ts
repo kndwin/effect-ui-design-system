@@ -2,7 +2,7 @@ import * as Style from "@acme/design-system/Style"
 import * as Variant from "@acme/design-system/Variant"
 import { SwatchParts } from "./swatch.parts.constant.ts"
 import { Colors, Radius, Spacing, Stroke } from "../contract.token.ts"
-import { ControlSize } from "../scales.schema.ts"
+import { ControlSizeSchema } from "../scales.schema.ts"
 
 export const SwatchStyle = Style.make(SwatchParts)({
   base: {
@@ -18,13 +18,13 @@ export const SwatchStyle = Style.make(SwatchParts)({
   },
   variants: {
     size: Variant.make(
-      ControlSize,
+      ControlSizeSchema,
       {
         sm: { root: { width: Spacing[3], height: Spacing[3] } },
         md: { root: { width: Spacing[4], height: Spacing[4] } }
       },
       { default: "md" }
     ),
-    round: Variant.flag({ root: { borderRadius: Radius.full } })
+    round: Variant.makeFlag({ root: { borderRadius: Radius.full } })
   }
 })

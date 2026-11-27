@@ -3,6 +3,8 @@ import { Effect } from "effect"
 import * as Kit from "../src/kit/kit.make.ts"
 import * as Manifest from "../src/manifest/manifest.make.ts"
 import * as Style from "../src/style/style.make.ts"
+import { getStyleClasses } from "../src/style/style.pure.ts"
+import { mapSlotRuleToSelectors } from "../src/style/style.pure.map.ts"
 import * as Theme from "../src/theme/theme.make.ts"
 import * as TokenColor from "../src/tokens/token-color.make.ts"
 
@@ -37,9 +39,9 @@ describe("typed errors", () => {
   it.effect("Style.classes fails with UncompiledStyleError outside the CSS engine", () =>
     Effect.gen(function* () {
       // Arrange
-      const CardStyle = Style.make(Kit.single("Card"))({ base: { root: { color: Colors.fg } } })
+      const CardStyle = Style.make(Kit.makeSingle("Card"))({ base: { root: { color: Colors.fg } } })
       // Act
-      const error = yield* failure<Style.UncompiledStyleError>(() => Style.classes(CardStyle, {}))
+      const error = yield* failure<Style.UncompiledStyleError>(() => getStyleClasses({ style: CardStyle, props: {} }))
       // Assert
       assert.instanceOf(error, Style.UncompiledStyleError)
       assert.strictEqual(error.kit, "Card")
@@ -50,7 +52,7 @@ describe("typed errors", () => {
       // Arrange
       const rule = { states: { open: { opacity: 1 } } }
       // Act
-      const error = yield* failure<Style.UnknownStateError>(() => Style.selectorsOf(rule as never, {}))
+      const error = yield* failure<Style.UnknownStateError>(() => mapSlotRuleToSelectors({ rule, partStates: {} }))
       // Assert
       assert.instanceOf(error, Style.UnknownStateError)
       assert.strictEqual(error.state, "open")

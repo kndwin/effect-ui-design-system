@@ -1,6 +1,6 @@
 import { Schema } from "effect"
 
-export const RecipeRuntime = Schema.Struct({
+export const RecipeRuntimeSchema = Schema.Struct({
   base: Schema.String,
   variants: Schema.Record(Schema.String, Schema.Record(Schema.String, Schema.String)),
   defaults: Schema.Record(Schema.String, Schema.String),
@@ -8,10 +8,10 @@ export const RecipeRuntime = Schema.Struct({
     Schema.Struct({ variants: Schema.Record(Schema.String, Schema.String), className: Schema.String })
   )
 })
-export type RecipeRuntime = typeof RecipeRuntime.Type
+export type RecipeRuntime = typeof RecipeRuntimeSchema.Type
 
-export const ComposeRecipeInput = Schema.Struct({ runtime: RecipeRuntime })
-export type ComposeRecipeInput = typeof ComposeRecipeInput.Type
+export const ComposeRecipeInputSchema = Schema.Struct({ runtime: RecipeRuntimeSchema })
+export type ComposeRecipeInput = typeof ComposeRecipeInputSchema.Type
 
-export const RecipeProps = Schema.Record(Schema.String, Schema.Unknown)
-export type RecipeProps = typeof RecipeProps.Type
+export const RecipePropsSchema = Schema.Record(Schema.String, Schema.Unknown)
+export type RecipeProps = typeof RecipePropsSchema.Type

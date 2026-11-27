@@ -1,16 +1,6 @@
 import { assert, describe, it } from "@effect/vitest"
-import {
-  getDocPath,
-  isInScope,
-  isGoverned,
-  getKebabProblem,
-  getFileKind,
-  getRuleKind,
-  getRuleScope,
-  getRuleSuffixes
-} from "./kinds.pure.ts"
+import { getKebabProblem, getFileKind, getRuleSuffixes } from "./kinds.pure.ts"
 import { Match } from "effect"
-
 describe("kinds", () => {
   it("matches the most specific suffix first", () => {
     // Arrange
@@ -33,43 +23,6 @@ describe("kinds", () => {
       "main.ts",
       undefined
     ])
-  })
-
-  it("governs src and test folders of packages and apps", () => {
-    // Arrange
-    const paths = ["packages/a/src/x.ts", "packages/themes/b/src/x.ts", "apps/docs/test/x.ts", "tools/lint/x.ts"]
-    // Act
-    const governed = paths.map((path) => isGoverned({ path }))
-    // Assert
-    assert.deepStrictEqual(governed, [true, true, true, false])
-  })
-
-  it("reads a rule's kind and scope from its +rule folder", () => {
-    // Arrange
-    const ruleFile = "/repo/packages/components/+rule/component-style-files/component-style-files.lint.ts"
-    // Act
-    const kind = getRuleKind({ ruleFile: ruleFile })
-    const scope = getRuleScope({ ruleFile: ruleFile })
-    // Assert
-    assert.strictEqual(kind, "component-style-files")
-    assert.strictEqual(scope, "/repo/packages/components")
-    assert.strictEqual(
-      getDocPath({ dir: scope, kind: kind }),
-      "/repo/packages/components/+rule/component-style-files/component-style-files.md"
-    )
-  })
-
-  it("covers files of the rule's kind under its folder only", () => {
-    // Arrange
-    const ruleFile = "/repo/packages/components/+rule/component-style-files/component-style-files.yml"
-    // Act
-    const results = [
-      "/repo/packages/components/src/button/button.component.style.ts",
-      "/repo/packages/components/src/button/button.component.ts",
-      "/repo/packages/themes/x.component.style.ts"
-    ].map((f) => isInScope({ ruleFile: ruleFile, file: f }))
-    // Assert
-    assert.deepStrictEqual(results, [true, false, false])
   })
 
   it("names the first path segment that isn't kebab-case", () => {

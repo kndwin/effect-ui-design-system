@@ -5,10 +5,13 @@ import * as Match from "effect/Match"
 import { Rule, RuleContext } from "effect-oxlint"
 import * as RuleModule from "../../tools/lint/rule-module.make.ts"
 import { allowed } from "../../tools/lint/kinds.constant.ts"
-import { getDocPath, isGoverned, getKebabProblem, getFileKind } from "../../tools/lint/kinds.pure.ts"
+import { mapRuleKindToDocPath } from "../../tools/lint/kinds.pure.map.ts"
+import { isGoverned } from "../../tools/lint/kinds.pure.predicate.ts"
+import { getFileKind, getKebabProblem } from "../../tools/lint/kinds.pure.ts"
 
 const findDoc = (dir: string, kind: string): boolean => {
-  for (let d = dir; d !== parse(d).root; d = dirname(d)) if (existsSync(getDocPath({ dir: d, kind: kind }))) return true
+  for (let d = dir; d !== parse(d).root; d = dirname(d))
+    if (existsSync(mapRuleKindToDocPath({ dir: d, kind: kind }))) return true
   return false
 }
 
@@ -59,7 +62,7 @@ export default RuleModule.make(import.meta.url, {
         Program: (node: unknown) =>
           Match.value(problem).pipe(
             Match.when(undefined, () => Effect.void),
-            Match.orElse((message) => RuleModule.report(node, message))
+            Match.orElse((message) => RuleModule.makeReport(node, message))
           )
       }
     }
@@ -81,7 +84,7 @@ export default RuleModule.make(import.meta.url, {
           Match.value(bad).pipe(
             Match.when(undefined, () => Effect.void),
             Match.orElse((segment) =>
-              RuleModule.report(
+              RuleModule.makeReport(
                 node,
                 `"${segment}" isn't kebab-case: rename it, e.g. profile-card.component.ts. See +rule/allowed-file-kinds/allowed-file-kinds.md.`
               )

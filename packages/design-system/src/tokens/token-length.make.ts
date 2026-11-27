@@ -1,7 +1,7 @@
 import { Match, Schema, SchemaTransformation } from "effect"
 import * as Token from "./token.pure.ts"
 
-export const Value = Schema.Union([
+export const ValueSchema = Schema.Union([
   Schema.Number,
   Schema.String.check(Schema.isPattern(/^-?\d*\.?\d+(px|rem)$/, { message: "expected <n>px or <n>rem" }))
 ]).pipe(
@@ -18,9 +18,9 @@ export const Value = Schema.Union([
   )
 ) as unknown as Schema.Codec<string, number | `${number}px` | `${number}rem`>
 
-export const make = Token.composeTokenKind({ kind: "Length", value: Value })
+export const make = Token.composeTokenKind({ kind: "Length", value: ValueSchema })
 
-export const calc = (
+export const makeCalc = (
   strings: TemplateStringsArray,
   ...tokens: ReadonlyArray<Token.Ref<"Length">>
 ): Token.Ref<"Length"> =>

@@ -9,7 +9,7 @@ import {
   LayoutPanelParts
 } from "./layout.parts.constant.ts"
 import { Colors, Font, Size, Spacing, Stroke, Text } from "../contract.token.ts"
-import { Side } from "../scales.schema.ts"
+import { SideSchema } from "../scales.schema.ts"
 
 const rule = { borderStyle: "solid", borderColor: Colors.border, borderWidth: 0 } as const
 
@@ -67,7 +67,7 @@ export const LayoutPanelStyle = Style.make(LayoutPanelParts)({
       position: "sticky",
       top: Size.header,
       alignSelf: "start",
-      maxHeight: TokenLength.calc`100vh - ${Size.header}`,
+      maxHeight: TokenLength.makeCalc`100vh - ${Size.header}`,
       overflowY: "auto",
       padding: Spacing[6],
       media: { narrow: { position: "static", maxHeight: "none", width: "auto", padding: Spacing[4] } }
@@ -75,7 +75,7 @@ export const LayoutPanelStyle = Style.make(LayoutPanelParts)({
   },
   variants: {
     side: Variant.make(
-      Side,
+      SideSchema,
       {
         start: { root: { gridArea: "start", width: Size.sidebar, borderRightWidth: Stroke.border } },
         end: {

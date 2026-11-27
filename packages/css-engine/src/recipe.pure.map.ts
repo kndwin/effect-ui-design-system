@@ -1,9 +1,9 @@
 import { Record } from "effect"
-import { getRules } from "./css.pure.ts"
+import { mapStyleRuleToCssRules } from "./css.pure.map.ts"
 import { getClassName } from "./hash.pure.ts"
-import type { CompiledRecipe, GetCompiledRecipeInput } from "./recipe.schema.ts"
+import type { CompiledRecipe, MapRecipeToCompiledRecipeInput } from "./recipe.schema.ts"
 
-export const getCompiledRecipe = ({ recipe, scope, debug }: GetCompiledRecipeInput): CompiledRecipe => {
+export const mapRecipeToCompiledRecipe = ({ recipe, scope, debug }: MapRecipeToCompiledRecipeInput): CompiledRecipe => {
   const getSlotClassName = (key: string) => getClassName({ scope, debugId: recipe.debugId, key, debug })
   const base = getSlotClassName("")
   const variants = Record.collect(recipe.variants, (variant, values) =>
@@ -16,9 +16,9 @@ export const getCompiledRecipe = ({ recipe, scope, debug }: GetCompiledRecipeInp
   }))
   return {
     css: [
-      ...getRules({ selector: `.${base}`, style: recipe.base }),
-      ...variants.flat().flatMap((v) => getRules({ selector: `.${v.cls}`, style: v.style })),
-      ...compound.flatMap((c) => getRules({ selector: `.${c.className}`, style: c.style }))
+      ...mapStyleRuleToCssRules({ selector: `.${base}`, style: recipe.base }),
+      ...variants.flat().flatMap((v) => mapStyleRuleToCssRules({ selector: `.${v.cls}`, style: v.style })),
+      ...compound.flatMap((c) => mapStyleRuleToCssRules({ selector: `.${c.className}`, style: c.style }))
     ],
     runtime: {
       base,

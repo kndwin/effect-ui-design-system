@@ -1,13 +1,13 @@
 import { Schema } from "effect"
 
-export const PathInput = Schema.Struct({ path: Schema.String })
-export type PathInput = typeof PathInput.Type
+export const PathInputSchema = Schema.Struct({ path: Schema.String })
+export type PathInput = typeof PathInputSchema.Type
 
-export const RuleFileInput = Schema.Struct({ ruleFile: Schema.String })
-export type RuleFileInput = typeof RuleFileInput.Type
+export const RuleFileInputSchema = Schema.Struct({ ruleFile: Schema.String })
+export type RuleFileInput = typeof RuleFileInputSchema.Type
 
-export const GetDocPathInput = Schema.Struct({ dir: Schema.String, kind: Schema.String })
-export type GetDocPathInput = typeof GetDocPathInput.Type
+export const MapRuleKindToDocPathInputSchema = Schema.Struct({ dir: Schema.String, kind: Schema.String })
+export type MapRuleKindToDocPathInput = typeof MapRuleKindToDocPathInputSchema.Type
 
-export const IsInScopeInput = Schema.Struct({ ruleFile: Schema.String, file: Schema.String })
-export type IsInScopeInput = typeof IsInScopeInput.Type
+export const IsInScopeInputSchema = Schema.Struct({ ruleFile: Schema.String, file: Schema.String })
+export type IsInScopeInput = typeof IsInScopeInputSchema.Type

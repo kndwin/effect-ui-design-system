@@ -1,5 +1,5 @@
 import { assert, describe, it } from "@effect/vitest"
-import { make, render } from "../src/element/element.make.ts"
+import { make } from "../src/element/element.make.ts"
 
 const element = {
   added: [] as Array<string | false | null | undefined>,
@@ -8,17 +8,6 @@ const element = {
     return this
   }
 }
-
-describe("render", () => {
-  it("adds the root class, then the caller's", () => {
-    // Arrange
-    const classes = { root: "Stack_root__x" }
-    // Act
-    const out = render(element, classes, "extra")
-    // Assert
-    assert.deepStrictEqual(out.added, ["Stack_root__x", "extra"])
-  })
-})
 
 describe("make", () => {
   it("applies a compiled style's root classes for the given props, then the caller's", () => {

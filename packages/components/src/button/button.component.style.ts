@@ -2,7 +2,7 @@ import * as Style from "@acme/design-system/Style"
 import * as TokenColor from "@acme/design-system/TokenColor"
 import * as Variant from "@acme/design-system/Variant"
 import { ButtonParts } from "./button.parts.constant.ts"
-import { ControlSize, Tone } from "../scales.schema.ts"
+import { ControlSizeSchema, ToneSchema } from "../scales.schema.ts"
 import {
   Colors,
   Font,
@@ -47,14 +47,14 @@ export const ButtonStyle = Style.make(ButtonParts)({
   },
   variants: {
     tone: Variant.make(
-      Tone,
+      ToneSchema,
       {
         primary: {
           root: {
             background: Colors.accent,
             color: Colors.accentFg,
             borderColor: Colors.accent,
-            states: { hover: { background: TokenColor.alpha(Colors.accent, 88) } }
+            states: { hover: { background: TokenColor.makeAlpha(Colors.accent, 88) } }
           }
         },
         neutral: {
@@ -64,7 +64,7 @@ export const ButtonStyle = Style.make(ButtonParts)({
             borderColor: Colors.border,
             states: {
               hover: { background: Colors.surfaceMuted },
-              pressed: { borderColor: Colors.accent, background: TokenColor.alpha(Colors.accent, 8) }
+              pressed: { borderColor: Colors.accent, background: TokenColor.makeAlpha(Colors.accent, 8) }
             }
           }
         },
@@ -73,15 +73,15 @@ export const ButtonStyle = Style.make(ButtonParts)({
             background: Colors.danger,
             color: Colors.dangerFg,
             borderColor: Colors.danger,
-            states: { hover: { background: TokenColor.alpha(Colors.danger, 88) } }
+            states: { hover: { background: TokenColor.makeAlpha(Colors.danger, 88) } }
           }
         },
 
         ghost: {
           root: {
-            background: TokenColor.alpha(Colors.fg, 0),
+            background: TokenColor.makeAlpha(Colors.fg, 0),
             color: Colors.fgMuted,
-            borderColor: TokenColor.alpha(Colors.fg, 0),
+            borderColor: TokenColor.makeAlpha(Colors.fg, 0),
             boxShadow: "none",
             states: {
               hover: { background: Colors.surfaceMuted, color: Colors.fg },
@@ -93,9 +93,9 @@ export const ButtonStyle = Style.make(ButtonParts)({
       { default: "neutral" }
     ),
 
-    fill: Variant.flag({ root: { width: "100%", justifyContent: "flex-start" } }),
+    fill: Variant.makeFlag({ root: { width: "100%", justifyContent: "flex-start" } }),
     size: Variant.make(
-      ControlSize,
+      ControlSizeSchema,
       {
         sm: { root: { height: Sizes.controlSm, paddingInline: Spacing[3] } },
         md: { root: { height: Sizes.controlMd, paddingInline: Spacing[4] } }

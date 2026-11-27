@@ -1,5 +1,5 @@
 import { assert, describe, it } from "@effect/vitest"
-import { isAdapter } from "./rules.pure.ts"
+import { isAdapter } from "./rules.pure.predicate.ts"
 
 describe("isAdapter", () => {
   it("accepts a compile function and rejects anything else", () => {

@@ -1,9 +1,10 @@
 import { BunRuntime, BunServices } from "@effect/platform-bun"
 import { Array, Console, Effect, Match, Path, Schema } from "effect"
 import { ChildProcess, ChildProcessSpawner } from "effect/process"
-import { findRuleFiles, repoRoot } from "./discover.build.ts"
+import { scanRuleFiles, repoRoot } from "./discover.build.ts"
 import { kinds } from "./kinds.constant.ts"
-import { isInScope, getRuleKind, getRuleScope } from "./kinds.pure.ts"
+import { isInScope } from "./kinds.pure.predicate.ts"
+import { mapRuleFileToRuleKind, mapRuleFileToScope } from "./kinds.pure.map.ts"
 
 export interface Match {
   readonly ruleId: string
@@ -26,7 +27,7 @@ const Found = Schema.fromJsonString(
 const scanRule = Effect.fn("lint/ast-grep/scanRule")(function* (ruleFile: string, only?: ReadonlyArray<string>) {
   const path = yield* Path.Path
   const spawner = yield* ChildProcessSpawner.ChildProcessSpawner
-  const dir = getRuleScope({ ruleFile: ruleFile })
+  const dir = mapRuleFileToScope({ ruleFile: ruleFile })
   const targets = Match.value(only).pipe(
     Match.when(undefined, () => ["."]),
     Match.orElse((files) =>
@@ -37,7 +38,10 @@ const scanRule = Effect.fn("lint/ast-grep/scanRule")(function* (ruleFile: string
     )
   )
   if (targets.length === 0) return []
-  const globs = Array.flatMap(kinds[getRuleKind({ ruleFile: ruleFile })] ?? [], (s) => ["--globs", `**/*${s}`])
+  const globs = Array.flatMap(kinds[mapRuleFileToRuleKind({ ruleFile: ruleFile })] ?? [], (s) => [
+    "--globs",
+    `**/*${s}`
+  ])
   const output = yield* spawner.string(
     ChildProcess.make(
       path.join(repoRoot, "node_modules", ".bin", "ast-grep"),
@@ -69,7 +73,7 @@ const scanRule = Effect.fn("lint/ast-grep/scanRule")(function* (ruleFile: string
 })
 
 export const scan = Effect.fn("lint/ast-grep/scan")(function* (only?: ReadonlyArray<string>) {
-  const rules = yield* findRuleFiles("yml")
+  const rules = yield* scanRuleFiles("yml")
   const found = yield* Effect.forEach(rules, (ruleFile) => scanRule(ruleFile, only))
   return { rules: rules.length, matches: Array.flatten(found) }
 })

@@ -1,17 +1,17 @@
 import { Schema } from "effect"
-import { GlobalRule, StyleRule } from "./rules.schema.ts"
+import { GlobalRuleSchema, StyleRuleSchema } from "./rules.schema.ts"
 
-export const GetPropertyNameInput = Schema.Struct({ name: Schema.String })
-export type GetPropertyNameInput = typeof GetPropertyNameInput.Type
+export const MapPropertyNameToCssNameInputSchema = Schema.Struct({ name: Schema.String })
+export type MapPropertyNameToCssNameInput = typeof MapPropertyNameToCssNameInputSchema.Type
 
-export const GetPropertyValueInput = Schema.Struct({ name: Schema.String, value: Schema.Unknown })
-export type GetPropertyValueInput = typeof GetPropertyValueInput.Type
+export const MapValueToCssValueInputSchema = Schema.Struct({ name: Schema.String, value: Schema.Unknown })
+export type MapValueToCssValueInput = typeof MapValueToCssValueInputSchema.Type
 
-export const GetDeclarationsInput = Schema.Struct({ style: StyleRule })
-export type GetDeclarationsInput = typeof GetDeclarationsInput.Type
+export const MapStyleRuleToDeclarationsInputSchema = Schema.Struct({ style: StyleRuleSchema })
+export type MapStyleRuleToDeclarationsInput = typeof MapStyleRuleToDeclarationsInputSchema.Type
 
-export const GetRulesInput = Schema.Struct({ selector: Schema.String, style: StyleRule })
-export type GetRulesInput = typeof GetRulesInput.Type
+export const MapStyleRuleToCssRulesInputSchema = Schema.Struct({ selector: Schema.String, style: StyleRuleSchema })
+export type MapStyleRuleToCssRulesInput = typeof MapStyleRuleToCssRulesInputSchema.Type
 
-export const GetGlobalRulesInput = Schema.Struct({ rule: GlobalRule })
-export type GetGlobalRulesInput = typeof GetGlobalRulesInput.Type
+export const MapGlobalRuleToCssRulesInputSchema = Schema.Struct({ rule: GlobalRuleSchema })
+export type MapGlobalRuleToCssRulesInput = typeof MapGlobalRuleToCssRulesInputSchema.Type

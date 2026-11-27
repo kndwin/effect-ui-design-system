@@ -1,12 +1,12 @@
 import { Schema } from "effect"
 
-const Vars = Schema.Record(Schema.String, Schema.String)
+const VarsSchema = Schema.Record(Schema.String, Schema.String)
 
-export const ThemeData = Schema.Struct({
+export const ThemeDataSchema = Schema.Struct({
   "~acme": Schema.Literal("Theme"),
   name: Schema.String,
-  rules: Schema.Array(Schema.Struct({ selector: Schema.String, vars: Vars })),
+  rules: Schema.Array(Schema.Struct({ selector: Schema.String, vars: VarsSchema })),
   modes: Schema.Array(Schema.String),
-  vars: Schema.Struct({ base: Vars, modes: Schema.Record(Schema.String, Vars) })
+  vars: Schema.Struct({ base: VarsSchema, modes: Schema.Record(Schema.String, VarsSchema) })
 })
-export type ThemeData = typeof ThemeData.Type
+export type ThemeData = typeof ThemeDataSchema.Type

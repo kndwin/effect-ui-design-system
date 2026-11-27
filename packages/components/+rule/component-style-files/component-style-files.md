@@ -6,7 +6,7 @@ build time, and importers get class names. It is a data file, so `+rule/pure-fil
 
 **Values are tokens.** Colours, lengths, durations, shadows, fonts and weights come from the
 contract (`Colors.accent`, `Spacing[4]`, `Radius.control`), or are derived from it
-(`TokenColor.alpha(…)`, ``TokenLength.calc`…` ``). Keywords are fine: `display`, `cursor`,
+(`TokenColor.makeAlpha(…)`, ``TokenLength.makeCalc`…` ``). Keywords are fine: `display`, `cursor`,
 `"100%"`, `"auto"`, `0`, unitless line-heights. No raw `#hex`, `rgb()`, `oklch()`, `12px`,
 `1rem` or `150ms`.
 

@@ -1,4 +1,5 @@
-import * as Style from "@acme/design-system/Style"
+import type * as Style from "@acme/design-system/Style"
+import { getStyleClasses } from "@acme/design-system/StyleClasses"
 import { Button as KitButton } from "@effect/ui-kit/Button"
 import { Command, UiSchema } from "@effect/ui"
 import type { Html } from "@effect/ui/html"
@@ -6,7 +7,7 @@ import { Html as H } from "@effect/ui/html"
 import type { Child } from "@effect/ui/View"
 import { Effect, Match, Schema } from "effect"
 import type { CodeBlockOptions, LineMark } from "./code-block.schema.ts"
-import { getHighlightTokens } from "./highlight.pure.ts"
+import { mapCodeToHighlightTokens } from "./highlight.pure.map.ts"
 
 import { CodeBlockStyle } from "./code-block.component.style.ts"
 
@@ -136,7 +137,7 @@ const Impl = H.component({
                   ...Match.value(line === "").pipe(
                     Match.when(true, () => [" "]),
                     Match.orElse(() =>
-                      getHighlightTokens({ code: line, language: p.language ?? "ts" }).map(([kind, text]) =>
+                      mapCodeToHighlightTokens({ code: line, language: p.language ?? "ts" }).map(([kind, text]) =>
                         Match.value(kind === "plain").pipe(
                           Match.when(true, () => text),
                           Match.orElse(() => h.span.class(c.token).attr("data-token", kind).children(text))
@@ -182,7 +183,7 @@ const copyIcon = <Msg>(h: Html.H<Msg>) =>
 const checkIcon = <Msg>(h: Html.H<Msg>) => icon(h, "M20 6 9 17l-5-5")
 
 export const CodeBlock = <Msg>(h: Html.H<Msg>, options: CodeBlockOptions & CodeBlockProps): Child<Msg> => {
-  const classes = Style.classes(CodeBlockStyle, options)
+  const classes = getStyleClasses({ style: CodeBlockStyle, props: options })
   return Impl(h, {
     ...Match.value(options.key === undefined).pipe(
       Match.when(true, () => ({})),

@@ -31,8 +31,6 @@ const atTopLevel = (node: any) => node.parent?.type === "Program" || node.parent
 
 const isFunction = (node: any) => node?.type === "ArrowFunctionExpression" || node?.type === "FunctionExpression"
 
-const verbs = /^(get|compose|is|has|should)[A-Z]/
-
 const isSchemaModule = (source: string) => source.endsWith(".schema.ts") || /^@[\w-]+\/[\w-]+\/\w*Schema$/.test(source)
 
 const schemaImports = (program: any): ReadonlySet<string> =>
@@ -62,7 +60,7 @@ const typeName = (param: any): string | undefined => {
 }
 
 const exportedIn = (filename: string, node: any) =>
-  Match.value(filename.endsWith(".pure.ts")).pipe(
+  Match.value(/\.pure(\.map|\.predicate)?\.ts$/.test(filename)).pipe(
     Match.when(true, () => exportedFunctions(node)),
     Match.orElse(() => [])
   )
@@ -84,7 +82,7 @@ export default RuleModule.make(import.meta.url, {
               Match.value(fn.params.length === 1 && fn.params[0].type === "ObjectPattern").pipe(
                 Match.when(true, () => Effect.void),
                 Match.orElse(() =>
-                  RuleModule.report(
+                  RuleModule.makeReport(
                     fn,
                     `\`${name}\` takes one object parameter: ${name}({ … }). See +rule/pure-files/pure-files.md.`
                   )
@@ -120,39 +118,11 @@ export default RuleModule.make(import.meta.url, {
                   Match.value(fromSchema.has(typeName(fn.params[0]) ?? "")).pipe(
                     Match.when(true, () => Effect.void),
                     Match.orElse(() =>
-                      RuleModule.report(
+                      RuleModule.makeReport(
                         fn,
                         `\`${name}\`'s input type is a Schema type imported from a *.schema.ts. See +rule/pure-files/pure-files.md.`
                       )
                     )
-                  )
-                )
-              ),
-            { discard: true }
-          )
-      }
-    }
-  }),
-  naming: Rule.define({
-    name: "naming",
-    meta: Rule.meta({
-      type: "problem",
-      description:
-        "Exported pure functions start with get, compose, is, has or should. See +rule/pure-files/pure-files.md."
-    }),
-    create: function* () {
-      const ctx = yield* RuleContext
-      return {
-        ExportNamedDeclaration: (node: any) =>
-          Effect.forEach(
-            exportedIn(ctx.filename, node),
-            ({ name, fn }) =>
-              Match.value(verbs.test(name)).pipe(
-                Match.when(true, () => Effect.void),
-                Match.orElse(() =>
-                  RuleModule.report(
-                    fn,
-                    `\`${name}\` doesn't say what it does: start with get, compose, is, has or should. See +rule/pure-files/pure-files.md.`
                   )
                 )
               ),
@@ -169,18 +139,18 @@ export default RuleModule.make(import.meta.url, {
     }),
     create: function* () {
       const ctx = yield* RuleContext
-      const governed = ctx.filename.endsWith(".pure.ts")
+      const governed = /\.pure(\.map|\.predicate)?\.ts$/.test(ctx.filename)
       const message =
         "A *.pure.ts exports only functions: constants go in a *.constant.ts and Schemas in a *.schema.ts. See +rule/pure-files/pure-files.md."
       return {
         ExportNamedDeclaration: (node: any) => {
           const d = node.declaration
           if (!governed || d === null || d === undefined) return Effect.void
-          if (d.type === "ClassDeclaration") return RuleModule.report(node, message)
+          if (d.type === "ClassDeclaration") return RuleModule.makeReport(node, message)
           if (d.type !== "VariableDeclaration") return Effect.void
           return Match.value(d.declarations.every((v: any) => isFunction(v.init))).pipe(
             Match.when(true, () => Effect.void),
-            Match.orElse(() => RuleModule.report(node, message))
+            Match.orElse(() => RuleModule.makeReport(node, message))
           )
         }
       }
@@ -195,12 +165,15 @@ export default RuleModule.make(import.meta.url, {
     create: function* () {
       const ctx = yield* RuleContext
       const missing =
-        ctx.filename.endsWith(".pure.ts") && !existsSync(ctx.filename.replace(/\.pure\.ts$/, ".pure.test.ts"))
+        /\.pure(\.map|\.predicate)?\.ts$/.test(ctx.filename) && !existsSync(ctx.filename.replace(/\.ts$/, ".test.ts"))
       return {
         Program: (node: unknown) =>
           Match.value(missing).pipe(
             Match.when(true, () =>
-              RuleModule.report(node, "Add a *.pure.test.ts next to this file. See +rule/pure-files/pure-files.md.")
+              RuleModule.makeReport(
+                node,
+                "Add a colocated test next to this file (x.pure.ts → x.pure.test.ts, x.pure.map.ts → x.pure.map.test.ts). See +rule/pure-files/pure-files.md."
+              )
             ),
             Match.orElse(() => Effect.void)
           )
@@ -219,7 +192,7 @@ export default RuleModule.make(import.meta.url, {
         Identifier: (node: any) =>
           Match.value(!isPropertyName(node) && ambient.has(node.name ?? "")).pipe(
             Match.when(true, () =>
-              RuleModule.report(node, `\`${node.name}\` is an ambient effect. See +rule/pure-files/pure-files.md.`)
+              RuleModule.makeReport(node, `\`${node.name}\` is an ambient effect. See +rule/pure-files/pure-files.md.`)
             ),
             Match.orElse(() => Effect.void)
           ),
@@ -229,7 +202,7 @@ export default RuleModule.make(import.meta.url, {
               (node.object?.name === "Date" && node.property?.name === "now")
           ).pipe(
             Match.when(true, () =>
-              RuleModule.report(
+              RuleModule.makeReport(
                 node,
                 `\`${node.object?.name}.${node.property?.name}\` is non-deterministic. See +rule/pure-files/pure-files.md.`
               )
@@ -239,14 +212,14 @@ export default RuleModule.make(import.meta.url, {
         NewExpression: (node: any) =>
           Match.value(node.callee?.name === "Date").pipe(
             Match.when(true, () =>
-              RuleModule.report(node, "`new Date()` is non-deterministic. See +rule/pure-files/pure-files.md.")
+              RuleModule.makeReport(node, "`new Date()` is non-deterministic. See +rule/pure-files/pure-files.md.")
             ),
             Match.orElse(() => Effect.void)
           ),
         VariableDeclaration: (node: any) =>
           Match.value(atTopLevel(node) && node.kind !== "const").pipe(
             Match.when(true, () =>
-              RuleModule.report(
+              RuleModule.makeReport(
                 node,
                 `Top-level \`${node.kind}\` is module state: use const. See +rule/pure-files/pure-files.md.`
               )
@@ -256,7 +229,7 @@ export default RuleModule.make(import.meta.url, {
         ExpressionStatement: (node: any) =>
           Match.value(node.parent?.type === "Program" && !node.directive).pipe(
             Match.when(true, () =>
-              RuleModule.report(node, "Top-level statements run on import. See +rule/pure-files/pure-files.md.")
+              RuleModule.makeReport(node, "Top-level statements run on import. See +rule/pure-files/pure-files.md.")
             ),
             Match.orElse(() => Effect.void)
           )

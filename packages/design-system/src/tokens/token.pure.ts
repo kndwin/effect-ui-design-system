@@ -1,7 +1,7 @@
 import type { Schema } from "effect"
+import { mapTokenKeyToCssVarName } from "./token.pure.map.ts"
 import { GroupTypeId } from "./token.constant.ts"
-import type { GetCssVarNameInput, Key, Kind } from "./token.schema.ts"
-
+import type { Key, Kind } from "./token.schema.ts"
 declare const RefKind: unique symbol
 export type Ref<K extends Kind = Kind, Expr extends string = string> = Expr & {
   readonly [RefKind]: K
@@ -34,10 +34,8 @@ export const composeTokenKind =
     keys: Keys
   ): Group<P, K, Keys[number], Encoded> => {
     const refs: Record<string, string> = {}
-    for (const key of keys) refs[key] = `var(${getCssVarName({ prefix, key })})`
+    for (const key of keys) refs[key] = `var(${mapTokenKeyToCssVarName({ prefix, key })})`
     return Object.assign(refs, { [GroupTypeId]: { prefix, kind, keys, value } }) as any
   }
 
 type SafeKey<K extends Key> = `${K}` extends `${infer A}.${infer B}` ? `${A}_${SafeKey<B>}` : `${K}`
-export const getCssVarName = ({ prefix, key }: GetCssVarNameInput): string =>
-  `--${prefix}-${String(key).replaceAll(".", "_")}`

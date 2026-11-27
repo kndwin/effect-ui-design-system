@@ -14,6 +14,7 @@
     "./Theme": "./src/theme/theme.make.ts",
     "./ThemeSchema": "./src/theme/theme.schema.ts",
     "./Style": "./src/style/style.make.ts",
+    "./StyleClasses": "./src/style/style.pure.ts",
     "./Rule": "./src/style/rule.constant.ts",
     "./Variant": "./src/variant/variant.make.ts",
     "./Kit": "./src/kit/kit.make.ts",

@@ -8,7 +8,7 @@ export interface RuleModule {
 
 export const make = (url: string, defined: RuleModule["rules"]): RuleModule => ({ url, rules: defined })
 
-export const report = (node: unknown, message: string) =>
+export const makeReport = (node: unknown, message: string) =>
   Effect.gen(function* () {
     const ctx = yield* RuleContext
     yield* ctx.report(Diagnostic.make({ node: node as never, message }))

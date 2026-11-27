@@ -13,7 +13,7 @@ const check = (node: unknown, text: unknown) => {
   return Match.value(found).pipe(
     Match.when(null, () => Effect.void),
     Match.orElse((m) =>
-      RuleModule.report(
+      RuleModule.makeReport(
         node,
         `Raw value ${JSON.stringify(m[0])}: use a token. See +rule/component-style-files/component-style-files.md.`
       )

@@ -9,7 +9,7 @@ export type Breakpoint = keyof typeof breakpoints
 ```
 
 - No exported functions or classes. A function goes in a `*.pure.ts`; a Schema in a `*.schema.ts`.
-- A value may be computed by a call (`Kit.single("Stack")`), as long as the result is data.
+- A value may be computed by a call (`Kit.makeSingle("Stack")`), as long as the result is data.
 - It is a data module, so `+rule/pure-files/pure-files.md` applies. It has no logic of its own, so it needs no
   colocated test; check its shape from `test/` when it matters.
 

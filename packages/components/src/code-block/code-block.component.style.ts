@@ -2,7 +2,7 @@ import * as Style from "@acme/design-system/Style"
 import * as TokenColor from "@acme/design-system/TokenColor"
 import * as Variant from "@acme/design-system/Variant"
 import { CodeBlockParts } from "./code-block.parts.constant.ts"
-import { CodeTone, ControlSize } from "../scales.schema.ts"
+import { CodeToneSchema, ControlSizeSchema } from "../scales.schema.ts"
 import {
   Code,
   Colors,
@@ -60,13 +60,13 @@ export const CodeBlockStyle = Style.make(CodeBlockParts)({
       padding: 0,
       borderWidth: 0,
       borderRadius: Radius.control,
-      background: TokenColor.alpha(Code.fg, 0),
+      background: TokenColor.makeAlpha(Code.fg, 0),
       color: Code.muted,
       cursor: "pointer",
       transitionProperty: "background-color, color",
       transitionDuration: Motion.fast,
       states: {
-        hover: { background: TokenColor.alpha(Code.fg, 8), color: Code.fg },
+        hover: { background: TokenColor.makeAlpha(Code.fg, 8), color: Code.fg },
         focusVisible: { outlineStyle: "solid", outlineWidth: Stroke.focus, outlineColor: Colors.ring },
         copied: { color: Code.fg },
         floating: { position: "absolute", top: Spacing[2], right: Spacing[2], zIndex: 1, background: Code.surface }
@@ -112,7 +112,7 @@ export const CodeBlockStyle = Style.make(CodeBlockParts)({
   },
   variants: {
     size: Variant.make(
-      ControlSize,
+      ControlSizeSchema,
       {
         sm: { content: { fontSize: Text.xs, paddingBlock: Spacing[3] }, line: { paddingInline: Spacing[3] } },
         md: { content: { fontSize: Text.code } }
@@ -120,7 +120,7 @@ export const CodeBlockStyle = Style.make(CodeBlockParts)({
       { default: "md" }
     ),
     tone: Variant.make(
-      CodeTone,
+      CodeToneSchema,
       {
         default: {},
         destructive: { root: { borderColor: Colors.danger }, title: { color: Colors.danger } }

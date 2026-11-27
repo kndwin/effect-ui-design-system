@@ -1,16 +1,7 @@
 import { Code, Colors, Font, Hues, Radius, Size, Spacing, Text } from "@acme/components/tokens"
 import type { ThemeData } from "@acme/design-system/ThemeSchema"
 import { Array, Match, Predicate, Record } from "effect"
-import type {
-  ComposeInlineStyleInput,
-  GetControlsInput,
-  GetOverridesInput,
-  GetThemeVarsInput,
-  IsCustomizedInput,
-  Mode,
-  Vars
-} from "./docs.schema.ts"
-
+import type { GetControlsInput, GetOverridesInput, GetThemeVarsInput, Mode, Vars } from "./docs.schema.ts"
 export interface ControlOption {
   readonly id: string
   readonly label: string
@@ -178,14 +169,6 @@ export const getControls = ({ themes }: GetControlsInput) => {
   ]
 }
 
-export const isCustomized = ({ choices }: IsCustomizedInput): boolean =>
-  Record.some(choices, (value, key) =>
-    Match.value(key).pipe(
-      Match.when("scale", () => value !== 100),
-      Match.orElse(() => value !== null)
-    )
-  )
-
 const getScaledLength = (value: string, factor: number) =>
   Match.value(value.match(/^(-?[\d.]+)(px|rem)$/)).pipe(
     Match.when(null, () => value),
@@ -211,8 +194,3 @@ export const getOverrides = ({ choices, themes, theme, mode }: GetOverridesInput
     )
   }
 }
-
-export const composeInlineStyle = ({ vars }: ComposeInlineStyleInput): string =>
-  Record.toEntries(vars)
-    .map(([name, value]) => `${name}:${value}`)
-    .join(";")

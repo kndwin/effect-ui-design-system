@@ -20,10 +20,11 @@ export default RuleModule.make(import.meta.url, {
         ExportNamedDeclaration: (node: any) => {
           const d = node.declaration
           if (d === null || d === undefined) return Effect.void
-          if (d.type === "FunctionDeclaration" || d.type === "ClassDeclaration") return RuleModule.report(node, message)
+          if (d.type === "FunctionDeclaration" || d.type === "ClassDeclaration")
+            return RuleModule.makeReport(node, message)
           if (d.type !== "VariableDeclaration") return Effect.void
           return Match.value(d.declarations.some((v: any) => isFunction(v.init))).pipe(
-            Match.when(true, () => RuleModule.report(node, message)),
+            Match.when(true, () => RuleModule.makeReport(node, message)),
             Match.orElse(() => Effect.void)
           )
         }

@@ -1,17 +1,10 @@
-import { dirname, relative, sep } from "node:path"
 import { type FileKind, fileKinds, kinds } from "./kinds.constant.ts"
 import { Match } from "effect"
-import type { GetDocPathInput, IsInScopeInput, PathInput, RuleFileInput } from "./kinds.schema.ts"
-
-const skipped = /(^|\/)(node_modules|vendor|dist|\.git)\//
-
-export const getPosixPath = ({ path }: PathInput): string => path.split(sep).join("/")
-
-export const isGoverned = ({ path }: PathInput): boolean =>
-  /(^|\/)(packages\/(themes\/)?[^/]+|apps\/[^/]+)\/(src|test)\//.test(getPosixPath({ path }))
+import { mapPathToPosixPath, mapRuleFileToRuleKind } from "./kinds.pure.map.ts"
+import type { PathInput, RuleFileInput } from "./kinds.schema.ts"
 
 export const getFileKind = ({ path }: PathInput): FileKind | undefined => {
-  const file = getPosixPath({ path }).split("/").at(-1) ?? ""
+  const file = mapPathToPosixPath({ path }).split("/").at(-1) ?? ""
   return fileKinds.find((k) =>
     Match.value<FileKind>(k).pipe(
       Match.when({ name: Match.string }, (named) => file === named.name),
@@ -20,28 +13,13 @@ export const getFileKind = ({ path }: PathInput): FileKind | undefined => {
   )
 }
 
-export const getRuleKind = ({ ruleFile }: RuleFileInput): string =>
-  getPosixPath({ path: dirname(ruleFile) })
-    .split("/")
-    .at(-1) ?? ""
-
 export const getRuleSuffixes = ({ ruleFile }: RuleFileInput): ReadonlyArray<string> =>
-  kinds[getRuleKind({ ruleFile })] ?? []
-
-export const getRuleScope = ({ ruleFile }: RuleFileInput): string => dirname(dirname(dirname(ruleFile)))
-
-export const getDocPath = ({ dir, kind }: GetDocPathInput): string => `${dir}/+rule/${kind}/${kind}.md`
-
-export const isInScope = ({ ruleFile, file }: IsInScopeInput): boolean => {
-  const within = getPosixPath({ path: relative(getRuleScope({ ruleFile }), file) })
-  if (within.startsWith("..") || skipped.test(`/${within}`)) return false
-  return (kinds[getRuleKind({ ruleFile })] ?? []).some((suffix) => within.endsWith(suffix))
-}
+  kinds[mapRuleFileToRuleKind({ ruleFile })] ?? []
 
 const kebab = /^[a-z0-9]+(-[a-z0-9]+)*$/
 
 export const getKebabProblem = ({ path }: PathInput): string | undefined => {
-  const within = getPosixPath({ path }).match(
+  const within = mapPathToPosixPath({ path }).match(
     /(?:^|\/)(?:packages\/(?:themes\/)?[^/]+|apps\/[^/]+)\/((?:src|test)\/.*)$/
   )?.[1]
   if (within === undefined) return undefined

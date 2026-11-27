@@ -4,7 +4,26 @@ export const kinds: Readonly<Record<string, ReadonlyArray<string>>> = {
   "no-comments": [".ts"],
   "no-ternary": [".ts"],
   "types-from-schema": [".ts"],
-  "pure-files": [".pure.ts", ".make.ts", ".schema.ts", ".constant.ts", ".component.style.ts", ".token.ts", ".theme.ts"],
+  "function-names": [
+    ".pure.ts",
+    ".pure.map.ts",
+    ".pure.predicate.ts",
+    ".make.ts",
+    ".build.ts",
+    ".component.ts",
+    ".schema.ts"
+  ],
+  "pure-files": [
+    ".pure.ts",
+    ".pure.map.ts",
+    ".pure.predicate.ts",
+    ".make.ts",
+    ".schema.ts",
+    ".constant.ts",
+    ".component.style.ts",
+    ".token.ts",
+    ".theme.ts"
+  ],
   "make-files": [".make.ts"],
   "schema-files": [".schema.ts"],
   "constant-files": [".constant.ts"],
@@ -24,7 +43,11 @@ export const fileKinds = [
   { suffix: ".make.ts", doc: "make-files" },
   { suffix: ".schema.ts", doc: "schema-files" },
   { suffix: ".constant.ts", doc: "constant-files" },
+  { suffix: ".pure.map.test.ts", doc: "test-files", colocated: true },
+  { suffix: ".pure.predicate.test.ts", doc: "test-files", colocated: true },
   { suffix: ".pure.test.ts", doc: "test-files", colocated: true },
+  { suffix: ".pure.map.ts", doc: "pure-files" },
+  { suffix: ".pure.predicate.ts", doc: "pure-files" },
   { suffix: ".pure.ts", doc: "pure-files" },
   { suffix: ".build.ts", doc: "build-files" },
   { suffix: ".d.ts" },
@@ -44,3 +67,5 @@ export const allowed = fileKinds
     )
   )
   .join(", ")
+
+export const skipped = /(^|\/)(node_modules|vendor|dist|\.git)\//

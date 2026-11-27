@@ -1,4 +1,5 @@
-import * as Style from "@acme/design-system/Style"
+import type * as Style from "@acme/design-system/Style"
+import { getStyleClasses } from "@acme/design-system/StyleClasses"
 import { Button as KitButton, type ButtonElement } from "@effect/ui-kit/Button"
 import { Html } from "@effect/ui/html"
 import type * as View from "@effect/ui/View"
@@ -27,7 +28,7 @@ export const Button = <Msg, R = never>(
   h: { readonly button: ButtonElement<Msg> },
   options: ButtonOptions<Msg, R> & ButtonProps
 ): ButtonElement<Msg, R> => {
-  const classes = Style.classes(ButtonStyle, options)
+  const classes = getStyleClasses({ style: ButtonStyle, props: options })
   const loading = options.loading === true
   const el = KitButton<Msg, R>(h, {
     element: options.element,

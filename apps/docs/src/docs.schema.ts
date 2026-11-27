@@ -1,13 +1,13 @@
 import { UiSchema } from "@effect/ui"
-import { ThemeData } from "@acme/design-system/ThemeSchema"
+import { ThemeDataSchema } from "@acme/design-system/ThemeSchema"
 import { Schema } from "effect"
 
-export const Mode = Schema.Literals(["light", "dark"])
-export type Mode = typeof Mode.Type
-export const Tab = Schema.Literals(["preview", "code", "themes"])
-export type Tab = typeof Tab.Type
+export const ModeSchema = Schema.Literals(["light", "dark"])
+export type Mode = typeof ModeSchema.Type
+export const TabSchema = Schema.Literals(["preview", "code", "themes"])
+export type Tab = typeof TabSchema.Type
 
-export const Choices = Schema.Struct({
+export const ChoicesSchema = Schema.Struct({
   accent: Schema.NullOr(Schema.String),
   neutrals: Schema.NullOr(Schema.String),
   radius: Schema.NullOr(Schema.String),
@@ -17,52 +17,52 @@ export const Choices = Schema.Struct({
   scale: Schema.Number
 })
 
-export const Msg = UiSchema.TaggedEnum({
+export const MsgSchema = UiSchema.TaggedEnum({
   Navigated: { page: Schema.String },
   PickedTheme: { theme: Schema.String },
-  PickedMode: { mode: Mode },
+  PickedMode: { mode: ModeSchema },
   ToggledMode: {},
-  PickedTab: { id: Schema.String, tab: Tab },
+  PickedTab: { id: Schema.String, tab: TabSchema },
   ToggledPanel: {},
-  Chose: { choices: Choices },
+  Chose: { choices: ChoicesSchema },
   ResetChoices: {}
 })
 
-export const Model = Schema.Struct({
+export const ModelSchema = Schema.Struct({
   page: Schema.String,
   theme: Schema.String,
-  mode: Mode,
-  tabs: Schema.Record(Schema.String, Tab),
+  mode: ModeSchema,
+  tabs: Schema.Record(Schema.String, TabSchema),
   panel: Schema.Boolean,
-  choices: Choices
+  choices: ChoicesSchema
 })
-export type Model = typeof Model.Type
-export type Choices = typeof Choices.Type
+export type Model = typeof ModelSchema.Type
+export type Choices = typeof ChoicesSchema.Type
 
-export const Vars = Schema.Record(Schema.String, Schema.String)
-export type Vars = typeof Vars.Type
+export const VarsSchema = Schema.Record(Schema.String, Schema.String)
+export type Vars = typeof VarsSchema.Type
 
-export const GetThemeVarsInput = Schema.Struct({ theme: ThemeData, mode: Mode })
-export type GetThemeVarsInput = typeof GetThemeVarsInput.Type
+export const GetThemeVarsInputSchema = Schema.Struct({ theme: ThemeDataSchema, mode: ModeSchema })
+export type GetThemeVarsInput = typeof GetThemeVarsInputSchema.Type
 
-export const GetControlsInput = Schema.Struct({ themes: Schema.Array(ThemeData) })
-export type GetControlsInput = typeof GetControlsInput.Type
+export const GetControlsInputSchema = Schema.Struct({ themes: Schema.Array(ThemeDataSchema) })
+export type GetControlsInput = typeof GetControlsInputSchema.Type
 
-export const IsCustomizedInput = Schema.Struct({ choices: Choices })
-export type IsCustomizedInput = typeof IsCustomizedInput.Type
+export const IsCustomizedInputSchema = Schema.Struct({ choices: ChoicesSchema })
+export type IsCustomizedInput = typeof IsCustomizedInputSchema.Type
 
-export const GetOverridesInput = Schema.Struct({
-  choices: Choices,
-  themes: Schema.Array(ThemeData),
-  theme: ThemeData,
-  mode: Mode
+export const GetOverridesInputSchema = Schema.Struct({
+  choices: ChoicesSchema,
+  themes: Schema.Array(ThemeDataSchema),
+  theme: ThemeDataSchema,
+  mode: ModeSchema
 })
-export type GetOverridesInput = typeof GetOverridesInput.Type
+export type GetOverridesInput = typeof GetOverridesInputSchema.Type
 
-export const ComposeInlineStyleInput = Schema.Struct({ vars: Vars })
-export type ComposeInlineStyleInput = typeof ComposeInlineStyleInput.Type
+export const MapVarsToInlineStyleInputSchema = Schema.Struct({ vars: VarsSchema })
+export type MapVarsToInlineStyleInput = typeof MapVarsToInlineStyleInputSchema.Type
 
-export const Page = Schema.Struct({
+export const PageSchema = Schema.Struct({
   id: Schema.String,
   section: Schema.Literals(["Getting started", "Components", "Foundations"]),
   title: Schema.String,
@@ -71,4 +71,4 @@ export const Page = Schema.Struct({
   style: Schema.optionalKey(Schema.String),
   styleFile: Schema.optionalKey(Schema.String)
 })
-export type Page = typeof Page.Type
+export type Page = typeof PageSchema.Type

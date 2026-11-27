@@ -1,7 +1,7 @@
 import { Duration, Option, Schema, SchemaTransformation } from "effect"
 import * as Token from "./token.pure.ts"
 
-export const Value = Schema.String.pipe(
+export const ValueSchema = Schema.String.pipe(
   Schema.check(
     Schema.makeFilter(
       (u) =>
@@ -17,4 +17,4 @@ export const Value = Schema.String.pipe(
   )
 ) as unknown as Schema.Codec<string, Duration.Input & string>
 
-export const make = Token.composeTokenKind({ kind: "Duration", value: Value })
+export const make = Token.composeTokenKind({ kind: "Duration", value: ValueSchema })
