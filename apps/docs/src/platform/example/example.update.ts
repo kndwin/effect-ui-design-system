@@ -1,3 +1,3 @@
 import { ExampleDef } from "./example.define.ts"
 
-export const update = ExampleDef.update({ PressedTab: ($, { tab }) => $.evolve({ tab }) })
+export const update = ExampleDef.update({ ToggledCode: ($, { open }) => $.evolve({ codeOpen: open }) })

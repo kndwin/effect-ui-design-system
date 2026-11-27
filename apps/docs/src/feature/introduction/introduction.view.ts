@@ -17,9 +17,7 @@ const PackageCard = <Msg>(h: Html.H<Msg>, name: string, text: string) =>
   )
 
 export const IntroductionPage = <Msg>(h: Html.H<Msg>, look: Look) => [
-  ...examples
-    .filter((e) => e.page === "introduction")
-    .map((e) => ExampleBlock(h, { id: e.id, initialTab: "preview", ...look })),
+  ...examples.filter((e) => e.page === "introduction").map((e) => ExampleBlock(h, { id: e.id, ...look })),
   VStack(h.section, { gap: "4" }).children(
     Heading(h, "How it fits together"),
     Grid(h.div, { columns: "3", gap: "3", stack: true }).children(

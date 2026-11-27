@@ -15,9 +15,7 @@ import { Heading, InlineCode, Pill } from "../../platform/ui/ui.view.ts"
 export const ComponentDocsPage = <Msg>(h: Html.H<Msg>, page: Page, look: Look) => [
   VStack(h.section, { gap: "4" }).children(
     Heading(h, "Examples"),
-    ...examples
-      .filter((e) => e.page === page.id)
-      .map((e) => ExampleBlock(h, { id: e.id, initialTab: "preview", ...look }))
+    ...examples.filter((e) => e.page === page.id).map((e) => ExampleBlock(h, { id: e.id, ...look }))
   ),
   Match.value(manifest.components.find((c) => c.kit === page.kit)).pipe(
     Match.when(undefined, () => h.span),
