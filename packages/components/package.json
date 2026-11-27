@@ -1,14 +1,15 @@
 {
   "name": "@acme/components",
+  "version": "0.0.0",
   "private": true,
   "type": "module",
-  "version": "0.0.0",
   "exports": {
     ".": "./src/index.ts",
     "./*": "./src/*.ts"
   },
-  "scripts": { "test": "vitest run" },
-  "peerDependencies": { "@effect/ui": "*", "@effect/ui-kit": "*", "effect": "^4.1.6" },
+  "scripts": {
+    "test": "vitest run"
+  },
   "dependencies": {
     "@acme/ds": "workspace:*",
     "@vanilla-extract/css": "^1.21.3",
@@ -21,5 +22,10 @@
     "@vanilla-extract/vite-plugin": "^5.2.6",
     "effect": "4.1.6",
     "vitest": "5.1.1"
+  },
+  "peerDependencies": {
+    "@effect/ui": "*",
+    "@effect/ui-kit": "*",
+    "effect": "^4.1.6"
   }
 }

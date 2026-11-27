@@ -3,8 +3,16 @@
 import { TokenColor, TokenDuration, TokenFont, TokenLength, TokenShadow, TokenWeight } from "@acme/ds"
 
 export const Colors = TokenColor.make("color", [
-  "surface", "surfaceMuted", "fg", "fgMuted", "border",
-  "accent", "accentFg", "danger", "dangerFg", "ring"
+  "surface",
+  "surfaceMuted",
+  "fg",
+  "fgMuted",
+  "border",
+  "accent",
+  "accentFg",
+  "danger",
+  "dangerFg",
+  "ring"
 ])
 /** Avatar fallback backgrounds; text on them uses Colors.onHue */
 export const Hues = TokenColor.make("hue", ["blue", "green", "amber", "rose", "onHue"])

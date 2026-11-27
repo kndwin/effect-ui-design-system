@@ -8,6 +8,8 @@ type Embeddable = <Msg>(h: Html.H<Msg>, options: { readonly key: string }) => Ch
 interface ExampleModule {
   readonly default: Embeddable
   readonly title?: string
+  /** position on the page; lower first */
+  readonly order?: number
 }
 
 const modules = import.meta.glob<ExampleModule>("./examples/*/*.ts", { eager: true })
@@ -17,11 +19,21 @@ export interface Example {
   readonly id: string
   readonly page: string
   readonly title: string
+  readonly order: number
   readonly component: ExampleModule["default"]
   readonly source: string
 }
 
-export const examples: ReadonlyArray<Example> = Object.entries(modules).map(([path, mod]) => {
-  const [, page, file] = path.match(/\.\/examples\/([^/]+)\/([^/]+)\.ts$/)!
-  return { id: `${page}-${file}`, page: page!, title: mod.title ?? file!, component: mod.default, source: sources[path]! }
-})
+export const examples: ReadonlyArray<Example> = Object.entries(modules)
+  .map(([path, mod]) => {
+    const [, page, file] = path.match(/\.\/examples\/([^/]+)\/([^/]+)\.ts$/)!
+    return {
+      id: `${page}-${file}`,
+      page: page!,
+      title: mod.title ?? file!,
+      order: mod.order ?? 99,
+      component: mod.default,
+      source: sources[path]!
+    }
+  })
+  .toSorted((a, b) => a.order - b.order)

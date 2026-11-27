@@ -1,0 +1,22 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc", "import"],
+  "categories": { "correctness": "error", "suspicious": "warn" },
+  "ignorePatterns": ["vendor/**", "**/dist/**", "**/node_modules/**"],
+  "rules": {
+    "typescript/no-explicit-any": "off",
+    "import/no-unassigned-import": "off",
+    // TypeScript already checks default imports, and ?source modules are virtual
+    "import/default": "off",
+    "no-unused-vars": "error",
+    "eqeqeq": "error"
+  },
+  "jsPlugins": ["./tools/oxlint-plugin-acme.mjs"],
+  "overrides": [
+    {
+      // Component styles may only use tokens: no raw colours, lengths or durations.
+      "files": ["packages/components/src/**/*.css.ts"],
+      "rules": { "acme/tokens-only": "error" }
+    }
+  ]
+}

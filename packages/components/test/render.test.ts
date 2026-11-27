@@ -18,7 +18,7 @@ const Demo = Html.component({ name: "Demo", model: Schema.Struct({}), message: M
 
 describe("components", () => {
   it.effect("Button: variant classes, and loading → disabled + focusable + aria-busy", () =>
-    Effect.gen(function*() {
+    Effect.gen(function* () {
       const { html } = yield* HtmlServer.renderToHtml(Demo, {})
       const buttons = [...html.matchAll(/<button[^>]*>/g)].map((m) => m[0])
       assert.match(buttons[0]!, /class="button__\w+ button_tone_primary__\w+ button_size_md__\w+"/)
@@ -26,10 +26,11 @@ describe("components", () => {
       assert.match(buttons[1]!, /aria-busy="true"/)
       assert.match(buttons[1]!, /aria-disabled="true"/)
       assert.match(buttons[1]!, /data-disabled/)
-    }))
+    })
+  )
 
   it.effect("Avatar: initials on the server, data-status on the root, hue from the name", () =>
-    Effect.gen(function*() {
+    Effect.gen(function* () {
       const { html } = yield* HtmlServer.renderToHtml(Demo, {})
       const root = html.match(/<span class="(avatar__[^"]+)"[^>]*data-status="(\w+)"/)
       assert.isNotNull(root)
@@ -37,13 +38,17 @@ describe("components", () => {
       assert.strictEqual(root![2], "loading")
       assert.match(html, /aria-label="Ada Lovelace">AL<\/span>/)
       assert.notInclude(html, "<img")
-    }))
+    })
+  )
 
   it("manifest lists components, slots, variants and the token contract", () => {
-    assert.deepStrictEqual(DS.manifest.components.map((c) => [c.kit, c.slots, Object.keys(c.variants)]), [
-      ["Button", ["root"], ["tone", "size"]],
-      ["Avatar", ["root", "image", "fallback"], ["size", "shape", "hue"]]
-    ])
+    assert.deepStrictEqual(
+      DS.manifest.components.map((c) => [c.kit, c.slots, Object.keys(c.variants)]),
+      [
+        ["Button", ["root"], ["tone", "size"]],
+        ["Avatar", ["root", "image", "fallback"], ["size", "shape", "hue"]]
+      ]
+    )
     assert.deepStrictEqual(DS.manifest.tokens.Colors?.kind, "Color")
   })
 })

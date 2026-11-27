@@ -15,7 +15,10 @@ export interface Theme<Name extends string = string, Mode extends string = strin
   readonly name: Name
   readonly modes: ReadonlyArray<Mode>
   /** CSS variable → decoded value, for the base and for each mode */
-  readonly vars: { readonly base: Readonly<Record<string, string>>; readonly modes: Readonly<Record<Mode, Readonly<Record<string, string>>>> }
+  readonly vars: {
+    readonly base: Readonly<Record<string, string>>
+    readonly modes: Readonly<Record<Mode, Readonly<Record<string, string>>>>
+  }
 }
 
 /**
@@ -78,10 +81,11 @@ const decode = (tokens: Contract, values: unknown, partial: boolean, label: stri
   const decoded = exit.value as Record<string, Record<string, string> | undefined>
   const vars: Record<string, string> = {}
   for (const [groupName, g] of Object.entries(tokens)) {
-    for (const [key, value] of Object.entries(decoded[groupName] ?? {})) vars[cssVarName(g[GroupTypeId].prefix, key)] = value
+    for (const [key, value] of Object.entries(decoded[groupName] ?? {}))
+      vars[cssVarName(g[GroupTypeId].prefix, key)] = value
   }
   return vars
 }
 
 const getPath = (v: unknown, path: ReadonlyArray<PropertyKey>): unknown =>
-  path.reduce<any>((acc, k) => (acc == null ? acc : acc[k as any]), v)
+  path.reduce<any>((acc, k) => (acc === null || acc === undefined ? acc : acc[k as any]), v)

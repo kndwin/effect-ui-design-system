@@ -1,4 +1,4 @@
-import "@acme/theme-acme"
+import "@acme/theme-shadcn"
 import "@acme/theme-astryx"
 import "./docs.css"
 import { BrowserHost } from "@effect/ui/html"

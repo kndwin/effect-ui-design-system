@@ -31,7 +31,10 @@ const variantKeys = (s: Style<any, any, any>) => new Set(Object.keys(s.variants)
  * A component library: a token contract (names only; themes supply values)
  * plus the styles written against it.
  */
-export const make = <const T extends Contract, const S extends ReadonlyArray<Style<keyof Components<any>, any, any>>>(config: {
+export const make = <
+  const T extends Contract,
+  const S extends ReadonlyArray<Style<keyof Components<any>, any, any>>
+>(config: {
   readonly tokens: T
   readonly styles: S
 }) => {
@@ -60,7 +63,10 @@ export const make = <const T extends Contract, const S extends ReadonlyArray<Sty
     manifest: {
       components: config.styles.map((s) => ({ kit: s.kit, slots: Object.keys(s.slots), variants: s.variants })),
       tokens: Object.fromEntries(
-        Object.entries(config.tokens).map(([n, g]) => [n, { prefix: g[GroupTypeId].prefix, kind: g[GroupTypeId].kind, keys: g[GroupTypeId].keys.map(String) }])
+        Object.entries(config.tokens).map(([n, g]) => [
+          n,
+          { prefix: g[GroupTypeId].prefix, kind: g[GroupTypeId].kind, keys: g[GroupTypeId].keys.map(String) }
+        ])
       )
     }
   }

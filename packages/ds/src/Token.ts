@@ -24,9 +24,9 @@ export interface Meta<P extends string = string, K extends Kind = Kind, Keys ext
   readonly value: Schema.Codec<string, Encoded>
 }
 
-export type Group<P extends string, K extends Kind, Keys extends Key, Encoded> =
-  & { readonly [X in Keys]: Ref<K, `var(--${P}-${SafeKey<X>})`> }
-  & { readonly [GroupTypeId]: Meta<P, K, Keys, Encoded> }
+export type Group<P extends string, K extends Kind, Keys extends Key, Encoded> = {
+  readonly [X in Keys]: Ref<K, `var(--${P}-${SafeKey<X>})`>
+} & { readonly [GroupTypeId]: Meta<P, K, Keys, Encoded> }
 
 export type AnyGroup = { readonly [GroupTypeId]: Meta<string, Kind, any, any> }
 
@@ -38,15 +38,16 @@ export type Input<G> = G extends { readonly [GroupTypeId]: Meta<any, any, infer 
   : never
 
 /** Builds a kind module's `make(prefix, keys)`. */
-export const kind = <K extends Kind, Encoded>(kind: K, value: Schema.Codec<string, Encoded>) =>
-<const P extends string, const Keys extends ReadonlyArray<Key>>(
-  prefix: P,
-  keys: Keys
-): Group<P, K, Keys[number], Encoded> => {
-  const refs: Record<string, string> = {}
-  for (const key of keys) refs[key] = `var(${cssVarName(prefix, key)})`
-  return Object.assign(refs, { [GroupTypeId]: { prefix, kind, keys, value } }) as any
-}
+export const kind =
+  <K extends Kind, Encoded>(name: K, value: Schema.Codec<string, Encoded>) =>
+  <const P extends string, const Keys extends ReadonlyArray<Key>>(
+    prefix: P,
+    keys: Keys
+  ): Group<P, K, Keys[number], Encoded> => {
+    const refs: Record<string, string> = {}
+    for (const key of keys) refs[key] = `var(${cssVarName(prefix, key)})`
+    return Object.assign(refs, { [GroupTypeId]: { prefix, kind: name, keys, value } }) as any
+  }
 
 // "." isn't valid in a custom property name: Spacing["1.5"] → --spacing-1_5
 type SafeKey<K extends Key> = `${K}` extends `${infer A}.${infer B}` ? `${A}_${SafeKey<B>}` : `${K}`
