@@ -1,4 +1,4 @@
-import { NumberField } from "@acme/components/number-field"
+import { NumberField } from "@weft/components/number-field"
 import { UiSchema } from "@effect/ui"
 import { Html } from "@effect/ui/html"
 import { Schema } from "effect"

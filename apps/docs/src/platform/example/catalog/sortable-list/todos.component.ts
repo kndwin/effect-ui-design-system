@@ -1,4 +1,4 @@
-import { SortableList } from "@acme/components/sortable-list"
+import { SortableList } from "@weft/components/sortable-list"
 import { UiSchema } from "@effect/ui"
 import { Html } from "@effect/ui/html"
 import { Array, Option, Schema } from "effect"

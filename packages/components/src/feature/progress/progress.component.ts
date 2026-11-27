@@ -1,4 +1,4 @@
-import { getStyleClasses } from "@acme/design-system/StyleClasses"
+import { getStyleClasses } from "@weft/design-system/StyleClasses"
 import { Progress as KitProgress } from "@effect/ui-kit/Progress"
 import type { Html } from "@effect/ui/html"
 import type { Child } from "@effect/ui/View"

@@ -1,4 +1,4 @@
-import { NavigationMenu } from "@acme/components/navigation-menu"
+import { NavigationMenu } from "@weft/components/navigation-menu"
 import { Html } from "@effect/ui/html"
 import { Schema } from "effect"
 

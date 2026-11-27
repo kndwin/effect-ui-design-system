@@ -1,5 +1,5 @@
-import { astryx } from "@acme/theme-astryx"
-import { shadcn } from "@acme/theme-shadcn"
+import { astryx } from "@weft/theme-astryx"
+import { shadcn } from "@weft/theme-shadcn"
 import { assert, describe, it } from "@effect/vitest"
 import { getThemeVars } from "../../platform/theme/theme.pure.ts"
 import { getControls, getOverrides } from "./customize.pure.ts"

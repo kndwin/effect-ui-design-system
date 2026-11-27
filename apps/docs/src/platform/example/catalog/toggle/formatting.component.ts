@@ -1,5 +1,5 @@
-import { HStack } from "@acme/components/layout/stack"
-import { Toggle } from "@acme/components/toggle"
+import { HStack } from "@weft/components/layout/stack"
+import { Toggle } from "@weft/components/toggle"
 import { UiSchema } from "@effect/ui"
 import { Html } from "@effect/ui/html"
 import { Schema } from "effect"

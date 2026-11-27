@@ -1,6 +1,6 @@
-import * as Style from "@acme/design-system/Style"
-import * as TokenColor from "@acme/design-system/TokenColor"
-import * as Variant from "@acme/design-system/Variant"
+import * as Style from "@weft/design-system/Style"
+import * as TokenColor from "@weft/design-system/TokenColor"
+import * as Variant from "@weft/design-system/Variant"
 import { CodeBlockParts } from "./code-block.parts.constant.ts"
 import { CodeToneSchema, ControlSizeSchema } from "../../platform/scale/scales.schema.ts"
 import {

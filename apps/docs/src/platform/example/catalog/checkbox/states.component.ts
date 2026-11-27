@@ -1,5 +1,5 @@
-import { Checkbox } from "@acme/components/checkbox"
-import { VStack } from "@acme/components/layout/stack"
+import { Checkbox } from "@weft/components/checkbox"
+import { VStack } from "@weft/components/layout/stack"
 import { UiSchema } from "@effect/ui"
 import { Html } from "@effect/ui/html"
 import { Schema } from "effect"

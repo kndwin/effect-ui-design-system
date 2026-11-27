@@ -1,6 +1,6 @@
 import { Button } from "../../platform/button/button.component.ts"
-import type * as Style from "@acme/design-system/Style"
-import { getStyleClasses } from "@acme/design-system/StyleClasses"
+import type * as Style from "@weft/design-system/Style"
+import { getStyleClasses } from "@weft/design-system/StyleClasses"
 import { Dialog as KitDialog } from "@effect/ui-kit/Dialog"
 import type { Html } from "@effect/ui/html"
 import type { Child, Input } from "@effect/ui/View"

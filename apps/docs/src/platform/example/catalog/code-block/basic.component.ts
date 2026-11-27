@@ -1,12 +1,12 @@
-import { CodeBlock } from "@acme/components/code-block"
-import { StackItem } from "@acme/components/layout/stack"
+import { CodeBlock } from "@weft/components/code-block"
+import { StackItem } from "@weft/components/layout/stack"
 import { Html } from "@effect/ui/html"
 import { Schema } from "effect"
 
 export const title = "Title and copy"
 export const order = 1
 
-const code = `import { Button } from "@acme/components/button"
+const code = `import { Button } from "@weft/components/button"
 
 Button(h, { tone: "primary", onPress: Msg.Saved(), children: "Save" })`
 

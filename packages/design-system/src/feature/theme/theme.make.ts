@@ -10,7 +10,7 @@ export type Values<T extends Contract> = { readonly [G in keyof T]: Input<T[G]> 
 export type ModeValues<T extends Contract> = { readonly [G in keyof T]?: Partial<Input<T[G]>> }
 
 export interface Theme<Name extends string = string, Mode extends string = string> {
-  readonly "~acme": "Theme"
+  readonly "~weft": "Theme"
   readonly name: Name
 
   readonly rules: ReadonlyArray<{ readonly selector: string; readonly vars: Readonly<Record<string, string>> }>
@@ -103,7 +103,7 @@ export const make = <const T extends Contract, const Name extends string, const 
     decode(tokens, values, name, mode)
   )
   return {
-    "~acme": "Theme",
+    "~weft": "Theme",
     name,
     rules: [
       { selector: scope(), vars: base },

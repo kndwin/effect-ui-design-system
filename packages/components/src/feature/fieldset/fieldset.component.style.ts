@@ -1,4 +1,4 @@
-import * as Style from "@acme/design-system/Style"
+import * as Style from "@weft/design-system/Style"
 import { Colors, Font, Radius, Size, Spacing, Stroke, Text, Weight } from "../../platform/token/contract.token.ts"
 import { FieldsetParts } from "./fieldset.parts.constant.ts"
 

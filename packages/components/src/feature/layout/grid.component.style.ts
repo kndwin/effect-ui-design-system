@@ -1,5 +1,5 @@
-import * as Style from "@acme/design-system/Style"
-import * as Variant from "@acme/design-system/Variant"
+import * as Style from "@weft/design-system/Style"
+import * as Variant from "@weft/design-system/Variant"
 import { GridParts, GridSpanParts } from "./layout.parts.constant.ts"
 import { ColumnsSchema, SpaceSchema, SpanSchema } from "../../platform/scale/scales.schema.ts"
 import { Size } from "../../platform/token/contract.token.ts"

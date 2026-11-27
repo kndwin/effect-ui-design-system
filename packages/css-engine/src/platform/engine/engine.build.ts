@@ -33,7 +33,7 @@ export class ModuleLoader extends Context.Service<
   {
     readonly load: (id: string, importer?: string) => Effect.Effect<Readonly<Record<string, unknown>>, EvaluationError>
   }
->()("@acme/css-engine/ModuleLoader") {}
+>()("@weft/css-engine/ModuleLoader") {}
 
 const adapterOf = Effect.fn("css-engine/adapterOf")(function* (options: CompileOptions, file: string) {
   const loader = yield* ModuleLoader

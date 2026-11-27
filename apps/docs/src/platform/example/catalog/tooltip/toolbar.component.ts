@@ -1,5 +1,5 @@
-import { HStack } from "@acme/components/layout/stack"
-import { Tooltip } from "@acme/components/tooltip"
+import { HStack } from "@weft/components/layout/stack"
+import { Tooltip } from "@weft/components/tooltip"
 import { UiSchema } from "@effect/ui"
 import { Html } from "@effect/ui/html"
 import { Match, Schema } from "effect"

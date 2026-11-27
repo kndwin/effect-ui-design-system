@@ -114,7 +114,7 @@ const oxlint = Effect.gen(function* () {
   )
   const { diagnostics } = yield* Schema.decodeUnknownEffect(OxlintReport)(output)
   return Array.flatMap(diagnostics ?? [], (d) => {
-    const ruleId = d.code.match(/^acme\((.+)\)$/)?.[1]
+    const ruleId = d.code.match(/^weft\((.+)\)$/)?.[1]
     return Match.value(ruleId).pipe(
       Match.when(undefined, () => []),
       Match.orElse((id) => [{ file: path.join(repoRoot, d.filename), ruleId: id }])
@@ -123,7 +123,7 @@ const oxlint = Effect.gen(function* () {
 })
 
 class Findings extends Context.Service<Findings, MutableHashMap.MutableHashMap<string, ReadonlyArray<string>>>()(
-  "acme/lint/Findings"
+  "weft/lint/Findings"
 ) {
   static readonly layer = Layer.effect(
     Findings,

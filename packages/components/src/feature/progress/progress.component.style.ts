@@ -1,4 +1,4 @@
-import * as Style from "@acme/design-system/Style"
+import * as Style from "@weft/design-system/Style"
 import { Colors, Font, Motion, Radius, Size, Spacing, Text, Weight } from "../../platform/token/contract.token.ts"
 import { ProgressParts } from "./progress.parts.constant.ts"
 

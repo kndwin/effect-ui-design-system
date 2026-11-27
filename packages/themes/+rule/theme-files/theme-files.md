@@ -9,13 +9,13 @@ A `*.theme.ts` file **fills in the token contract**. Its only export is
   the theme, mode and path, e.g. `Theme "astryx" (dark): Colors.accent: expected #hex…`.
 - The build writes `[data-theme="<name>"]` and `[data-theme="<name>"][data-mode="<mode>"]`.
   With `default: true` it also writes `:root`.
-- It is a data file (`+rule/pure-files/pure-files.md`) and imports only `@acme/*`.
+- It is a data file (`+rule/pure-files/pure-files.md`) and imports only `@weft/*`.
 
 ## ✅
 
 ```ts good
-import { Tokens } from "@acme/components/tokens"
-import * as Theme from "@acme/design-system/Theme"
+import { Tokens } from "@weft/components/tokens"
+import * as Theme from "@weft/design-system/Theme"
 
 export const brand = Theme.make(Tokens, { name: "brand", values: {} as never })
 ```
@@ -26,7 +26,7 @@ export const brand = Theme.make(Tokens, { name: "brand", values: {} as never })
 export const accent = "#7c5cff"
 ```
 
-## ❌ a non-@acme import → theme-files/imports
+## ❌ a non-@weft import → theme-files/imports
 
 ```ts bad
 import { readFileSync } from "node:fs"

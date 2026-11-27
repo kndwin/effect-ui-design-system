@@ -1,4 +1,4 @@
-import { ToggleGroup } from "@acme/components/toggle-group"
+import { ToggleGroup } from "@weft/components/toggle-group"
 import { UiSchema } from "@effect/ui"
 import { Html } from "@effect/ui/html"
 import { Schema } from "effect"

@@ -1,5 +1,5 @@
-import "@acme/theme-shadcn"
-import "@acme/theme-astryx"
+import "@weft/theme-shadcn"
+import "@weft/theme-astryx"
 import { Router } from "@effect/ui"
 import { BrowserHost, BrowserRouter } from "@effect/ui/html"
 import { Effect, Layer } from "effect"

@@ -1,4 +1,4 @@
-import type { Output, Recipe, StyleRule } from "@acme/css-engine/rules"
+import type { Output, Recipe, StyleRule } from "@weft/css-engine/rules"
 import { Array, Match, Predicate, Record, Result } from "effect"
 import type { Definition } from "../../feature/style/style.make.ts"
 import { mapSlotRuleToSelectors } from "../../feature/style/style.pure.map.ts"
@@ -6,7 +6,7 @@ import { isStyleDefinition } from "../../feature/style/style.pure.predicate.ts"
 import type { Theme } from "../../feature/theme/theme.make.ts"
 import type { ComposeOutputInput } from "./compile.schema.ts"
 
-const isTheme = (u: unknown): u is Theme => Predicate.isObject(u) && (u as { "~acme"?: unknown })["~acme"] === "Theme"
+const isTheme = (u: unknown): u is Theme => Predicate.isObject(u) && (u as { "~weft"?: unknown })["~weft"] === "Theme"
 
 const toRule = (rule: unknown, partStates: Readonly<Record<string, string>>): StyleRule => {
   const { decl, selectors, media } = mapSlotRuleToSelectors({ rule: rule as never, partStates })

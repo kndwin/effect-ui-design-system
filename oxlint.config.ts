@@ -12,6 +12,6 @@ export default defineConfig({
     "import/default": "off",
     "no-unused-vars": "error",
     eqeqeq: "error",
-    ...Object.fromEntries(ruleIds.map((id) => [`acme/${id}`, "error" as const]))
+    ...Object.fromEntries(ruleIds.map((id) => [`weft/${id}`, "error" as const]))
   }
 })

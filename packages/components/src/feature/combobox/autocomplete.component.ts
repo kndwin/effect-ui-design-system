@@ -1,4 +1,4 @@
-import { getStyleClasses } from "@acme/design-system/StyleClasses"
+import { getStyleClasses } from "@weft/design-system/StyleClasses"
 import { Autocomplete as KitAutocomplete } from "@effect/ui-kit/Autocomplete"
 import { Field as KitField } from "@effect/ui-kit/Field"
 import type { Html } from "@effect/ui/html"

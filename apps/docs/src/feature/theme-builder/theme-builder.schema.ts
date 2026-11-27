@@ -1,5 +1,5 @@
 import { UiSchema } from "@effect/ui"
-import { ThemeDataSchema } from "@acme/design-system/ThemeSchema"
+import { ThemeDataSchema } from "@weft/design-system/ThemeSchema"
 import { Schema } from "effect"
 import { ModeSchema, VarsSchema } from "../../platform/theme/theme.schema.ts"
 

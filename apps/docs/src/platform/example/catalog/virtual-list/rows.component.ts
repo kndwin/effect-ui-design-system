@@ -1,4 +1,4 @@
-import { VirtualList } from "@acme/components/virtual-list"
+import { VirtualList } from "@weft/components/virtual-list"
 import { Html } from "@effect/ui/html"
 import { Schema } from "effect"
 

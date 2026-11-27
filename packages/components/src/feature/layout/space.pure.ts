@@ -1,4 +1,4 @@
-import type { Decl } from "@acme/design-system/Rule"
+import type { Decl } from "@weft/design-system/Rule"
 import { Spacing } from "../../platform/token/contract.token.ts"
 import type { ComposeSpaceVariantsInput } from "./space.schema.ts"
 

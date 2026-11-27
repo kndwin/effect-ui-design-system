@@ -1,7 +1,7 @@
 # rule: component style files
 
 A `*.component.style.ts` file **declares how a component looks, as data**. Each export is one
-`Style.make(Kit)({ base, variants, compound })`. `@acme/css-engine` compiles it to static CSS at
+`Style.make(Kit)({ base, variants, compound })`. `@weft/css-engine` compiles it to static CSS at
 build time, and importers get class names. It is a data file, so `+rule/pure-files/pure-files.md` applies too.
 
 **Values are tokens.** Colours, lengths, durations, shadows, fonts and weights come from the
@@ -19,8 +19,8 @@ variant's Schema must be styled.
 ## ✅
 
 ```ts good
-import * as Style from "@acme/design-system/Style"
-import { Button } from "@acme/design-system/kit/button"
+import * as Style from "@weft/design-system/Style"
+import { Button } from "@weft/design-system/kit/button"
 import { Colors, Radius } from "./contract.token.ts"
 
 export const ButtonStyle = Style.make(Button)({
@@ -31,8 +31,8 @@ export const ButtonStyle = Style.make(Button)({
 ## ❌ raw value → component-style-files/tokens-only
 
 ```ts bad
-import * as Style from "@acme/design-system/Style"
-import { Button } from "@acme/design-system/kit/button"
+import * as Style from "@weft/design-system/Style"
+import { Button } from "@weft/design-system/kit/button"
 
 export const ButtonStyle = Style.make(Button)({ base: { root: { background: "#7c5cff" } } })
 ```
@@ -43,7 +43,7 @@ export const ButtonStyle = Style.make(Button)({ base: { root: { background: "#7c
 export const double = (n: number) => n * 2
 ```
 
-## ❌ a non-@acme import → component-style-files/imports
+## ❌ a non-@weft import → component-style-files/imports
 
 ```ts bad
 import { readFileSync } from "node:fs"

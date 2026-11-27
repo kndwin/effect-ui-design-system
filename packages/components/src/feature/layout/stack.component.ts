@@ -1,4 +1,4 @@
-import * as Element from "@acme/design-system/Element"
+import * as Element from "@weft/design-system/Element"
 import { StackItemStyle, StackStyle } from "./stack.component.style.ts"
 
 type Options = Omit<Element.StyledOptions<typeof StackStyle>, "direction">

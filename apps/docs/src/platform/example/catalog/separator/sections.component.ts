@@ -1,6 +1,6 @@
-import { HStack, VStack } from "@acme/components/layout/stack"
-import { Separator } from "@acme/components/separator"
-import { Text } from "@acme/components/text"
+import { HStack, VStack } from "@weft/components/layout/stack"
+import { Separator } from "@weft/components/separator"
+import { Text } from "@weft/components/text"
 import { Html } from "@effect/ui/html"
 import { Schema } from "effect"
 
@@ -12,7 +12,7 @@ export default Html.component({ name: "SeparatorSections", model: Schema.Null, m
   update: ($) => $.model,
   view: (h) =>
     VStack(h.div, { gap: "3" }).children(
-      Text(h.strong, { weight: "semibold" }).children("acme/ui"),
+      Text(h.strong, { weight: "semibold" }).children("weft"),
       Text(h.span, { size: "sm", tone: "muted" }).children("Typed styles for @effect/ui-kit."),
       Separator(h),
       HStack(h.div, { gap: "3" }).children(

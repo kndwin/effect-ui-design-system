@@ -1,5 +1,5 @@
-import { Avatar } from "@acme/components/avatar"
-import { HStack } from "@acme/components/layout/stack"
+import { Avatar } from "@weft/components/avatar"
+import { HStack } from "@weft/components/layout/stack"
 import { Html } from "@effect/ui/html"
 import { Schema } from "effect"
 

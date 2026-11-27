@@ -1,4 +1,4 @@
-import { getStyleClasses } from "@acme/design-system/StyleClasses"
+import { getStyleClasses } from "@weft/design-system/StyleClasses"
 import { Field as KitField } from "@effect/ui-kit/Field"
 import { NumberField as KitNumberField } from "@effect/ui-kit/NumberField"
 import type { Html } from "@effect/ui/html"

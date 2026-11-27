@@ -11,20 +11,20 @@
     "deploy": "bun alchemy deploy --stage prod --yes"
   },
   "dependencies": {
-    "@acme/components": "workspace:*",
-    "@acme/design-system": "workspace:*",
-    "@acme/theme-astryx": "workspace:*",
-    "@acme/theme-shadcn": "workspace:*",
     "@effect/ui": "link:../../vendor/effect-ui/packages/ui",
     "@effect/ui-kit": "link:../../vendor/effect-ui/packages/ui-kit",
+    "@weft/components": "workspace:*",
+    "@weft/design-system": "workspace:*",
+    "@weft/theme-astryx": "workspace:*",
+    "@weft/theme-shadcn": "workspace:*",
     "effect": "4.1.6"
   },
   "devDependencies": {
-    "@acme/css-engine": "workspace:*",
     "@alchemy.run/cloudflare": "2.0.0-beta.87",
     "@effect/platform-node": "4.1.6",
     "@effect/vitest": "4.1.6",
     "@types/node": "^22.20.7",
+    "@weft/css-engine": "workspace:*",
     "alchemy": "2.0.0-beta.87",
     "vite": "8.3.8",
     "vitest": "5.1.1"

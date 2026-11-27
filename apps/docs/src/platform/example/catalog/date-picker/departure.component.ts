@@ -1,4 +1,4 @@
-import { DatePicker } from "@acme/components/date-picker"
+import { DatePicker } from "@weft/components/date-picker"
 import { UiSchema } from "@effect/ui"
 import { Html } from "@effect/ui/html"
 import { DateTime, Schema } from "effect"

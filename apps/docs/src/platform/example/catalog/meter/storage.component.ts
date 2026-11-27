@@ -1,4 +1,4 @@
-import { Meter } from "@acme/components/meter"
+import { Meter } from "@weft/components/meter"
 import { Html } from "@effect/ui/html"
 import { Schema } from "effect"
 

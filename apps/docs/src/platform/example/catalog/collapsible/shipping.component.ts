@@ -1,5 +1,5 @@
-import { Collapsible } from "@acme/components/collapsible"
-import { Text } from "@acme/components/text"
+import { Collapsible } from "@weft/components/collapsible"
+import { Text } from "@weft/components/text"
 import { UiSchema } from "@effect/ui"
 import { Html } from "@effect/ui/html"
 import { Schema } from "effect"

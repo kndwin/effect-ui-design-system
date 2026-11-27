@@ -1,5 +1,5 @@
 {
-  "name": "@acme/components",
+  "name": "@weft/components",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -64,13 +64,13 @@
     "test": "bun --bun x vitest run"
   },
   "dependencies": {
-    "@acme/design-system": "workspace:*"
+    "@weft/design-system": "workspace:*"
   },
   "devDependencies": {
-    "@acme/css-engine": "workspace:*",
     "@effect/ui": "link:../../vendor/effect-ui/packages/ui",
     "@effect/ui-kit": "link:../../vendor/effect-ui/packages/ui-kit",
     "@effect/vitest": "4.1.6",
+    "@weft/css-engine": "workspace:*",
     "effect": "4.1.6",
     "vitest": "5.1.1"
   },

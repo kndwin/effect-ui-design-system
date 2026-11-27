@@ -1,4 +1,4 @@
-import { getStyleClasses } from "@acme/design-system/StyleClasses"
+import { getStyleClasses } from "@weft/design-system/StyleClasses"
 import { OTPField as KitOTPField } from "@effect/ui-kit/OTPField"
 import type { Html } from "@effect/ui/html"
 import type { Child } from "@effect/ui/View"

@@ -1,6 +1,6 @@
 import type { Schema, SchemaAST } from "effect"
 
-export const VariantTypeId = "~acme/ds/Variant" as const
+export const VariantTypeId = "~weft/ds/Variant" as const
 
 export interface Variant<V extends string | boolean, Slots> {
   readonly [VariantTypeId]: { readonly value: V }

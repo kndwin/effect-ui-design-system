@@ -1,4 +1,4 @@
-import { getStyleClasses } from "@acme/design-system/StyleClasses"
+import { getStyleClasses } from "@weft/design-system/StyleClasses"
 import { Menu as KitMenu } from "@effect/ui-kit/Menu"
 import { Menubar as KitMenubar } from "@effect/ui-kit/Menubar"
 import { Html as H } from "@effect/ui/html"

@@ -1,4 +1,4 @@
-import * as Style from "@acme/design-system/Style"
+import * as Style from "@weft/design-system/Style"
 import { Spacing } from "../../platform/token/contract.token.ts"
 import { CheckboxGroupParts } from "./checkbox-group.parts.constant.ts"
 

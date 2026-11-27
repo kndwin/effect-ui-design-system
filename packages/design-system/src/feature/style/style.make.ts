@@ -18,7 +18,7 @@ export interface Style<Name extends string, Slot extends string, P> {
 export type Props<S> = S extends Style<any, any, infer P> ? P : never
 
 export interface Definition {
-  readonly "~acme": "Style"
+  readonly "~weft": "Style"
   readonly kit: Descriptor
   readonly slots: ReadonlyArray<string>
   readonly base: Readonly<Record<string, SlotRule<string> | undefined>>
@@ -36,7 +36,7 @@ export class UnknownStateError extends Data.TaggedError("UnknownStateError")<{ r
 
 export class UncompiledStyleError extends Data.TaggedError("UncompiledStyleError")<{ readonly kit: string }> {
   override get message() {
-    return `${this.kit}: this style wasn't compiled. Add makePlugin({ adapter: "@acme/design-system/Compile" }) from @acme/css-engine/vite to the Vite config.`
+    return `${this.kit}: this style wasn't compiled. Add makePlugin({ adapter: "@weft/design-system/Compile" }) from @weft/css-engine/vite to the Vite config.`
   }
 }
 
@@ -48,7 +48,7 @@ export const make =
     readonly compound?: ReadonlyArray<{ readonly when: NoInfer<{ readonly [N in keyof V]?: V[N] }> } & SlotStyles<K, E>>
   }): Style<K["name"], PartName<K> | E, { readonly [N in keyof V]?: V[N] | undefined }> => {
     const definition: Definition = {
-      "~acme": "Style",
+      "~weft": "Style",
       kit,
       slots: [...Record.keys(kit.parts), ...(options?.extend ?? [])],
       base: (spec.base ?? {}) as Definition["base"],

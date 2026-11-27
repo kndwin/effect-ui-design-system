@@ -1,5 +1,5 @@
-import { Code, Colors, Font, Hues, Radius, Size, Spacing, Text } from "@acme/components/tokens"
-import type { ThemeData } from "@acme/design-system/ThemeSchema"
+import { Code, Colors, Font, Hues, Radius, Size, Spacing, Text } from "@weft/components/tokens"
+import type { ThemeData } from "@weft/design-system/ThemeSchema"
 import { Array, Match, Predicate, Record } from "effect"
 import { getThemeVars } from "../../platform/theme/theme.pure.ts"
 import type { Mode, Vars } from "../../platform/theme/theme.schema.ts"

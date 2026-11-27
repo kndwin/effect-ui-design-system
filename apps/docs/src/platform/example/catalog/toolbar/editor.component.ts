@@ -1,4 +1,4 @@
-import { Toolbar } from "@acme/components/toolbar"
+import { Toolbar } from "@weft/components/toolbar"
 import { UiSchema } from "@effect/ui"
 import { Html } from "@effect/ui/html"
 import { Schema } from "effect"

@@ -1,7 +1,7 @@
 import { assert, describe, it } from "@effect/vitest"
 import { mapExportsToModuleSource } from "./codegen.pure.map.ts"
 
-const imports = { css: "/x.ts.acme.css", runtime: "/runtime.pure.ts" }
+const imports = { css: "/x.ts.weft.css", runtime: "/runtime.pure.ts" }
 const runtime = { base: "b", variants: {}, defaults: {}, compound: [] }
 
 describe("mapExportsToModuleSource", () => {
@@ -11,7 +11,7 @@ describe("mapExportsToModuleSource", () => {
     // Act
     const [css, rt] = mapExportsToModuleSource({ exports: exports, imports }).split("\n")
     // Assert
-    assert.strictEqual(css, 'import "/x.ts.acme.css"')
+    assert.strictEqual(css, 'import "/x.ts.weft.css"')
     assert.strictEqual(rt, 'import { composeRecipe as __recipe } from "/runtime.pure.ts"')
   })
 

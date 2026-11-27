@@ -1,1 +1,1 @@
-export const GroupTypeId = "~acme/ds/TokenGroup" as const
+export const GroupTypeId = "~weft/ds/TokenGroup" as const

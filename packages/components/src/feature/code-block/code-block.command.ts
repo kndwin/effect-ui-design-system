@@ -2,7 +2,7 @@ import { Command } from "@effect/ui"
 import { Effect, Schema } from "effect"
 import { CodeBlockMessageSchema } from "./code-block.schema.ts"
 
-export const CopyCode = Command.make("acme/CodeBlock/Copy", { args: { text: Schema.String } }, ({ text }) =>
+export const CopyCode = Command.make("weft/CodeBlock/Copy", { args: { text: Schema.String } }, ({ text }) =>
   Effect.tryPromise(() => navigator.clipboard.writeText(text)).pipe(
     Effect.match({
       onSuccess: () => CodeBlockMessageSchema.Copied(),
@@ -11,6 +11,6 @@ export const CopyCode = Command.make("acme/CodeBlock/Copy", { args: { text: Sche
   )
 )
 
-export const ClearCopied = Command.make("acme/CodeBlock/ClearCopied", { args: {}, mode: "switch" }, () =>
+export const ClearCopied = Command.make("weft/CodeBlock/ClearCopied", { args: {}, mode: "switch" }, () =>
   Effect.sleep("2 seconds").pipe(Effect.as(CodeBlockMessageSchema.ClearedCopied()))
 )

@@ -13,7 +13,7 @@ src/
 
 - **feature/** holds one self-contained capability. In the docs app that's a page
   (`feature/component-docs`: route and view) or a panel (`feature/theme-builder`). In
-  `@acme/components` it's a component (`feature/code-block`).
+  `@weft/components` it's a component (`feature/code-block`).
 - **platform/** holds what several features share (`platform/theme`, `platform/token`,
   `platform/scale`), the runtime (`platform/engine`, `platform/vite`), and composition, which is
   allowed to import features (`platform/app`, `platform/manifest`, `platform/compile`).

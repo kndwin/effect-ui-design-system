@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" stroke-width="3.2" stroke-linecap="round">
+  <title>Weft</title>
+  <style>
+    .warp { stroke: #a1a1aa; }
+    .weft { stroke: #18181b; }
+    @media (prefers-color-scheme: dark) {
+      .warp { stroke: #71717a; }
+      .weft { stroke: #fafafa; }
+    }
+  </style>
+  <mask id="warp-under" maskUnits="userSpaceOnUse" x="0" y="0" width="32" height="32">
+    <rect width="32" height="32" fill="#fff"/>
+    <g fill="#000"><rect x="10.4" y="5.5" width="4.2" height="6"/><rect x="17.4" y="13" width="4.2" height="6"/><rect x="10.4" y="20.5" width="4.2" height="6"/></g>
+  </mask>
+  <mask id="weft-under" maskUnits="userSpaceOnUse" x="0" y="0" width="32" height="32">
+    <rect width="32" height="32" fill="#fff"/>
+    <g fill="#000"><rect x="16.5" y="6.4" width="6" height="4.2"/><rect x="9.5" y="13.9" width="6" height="4.2"/><rect x="16.5" y="21.4" width="6" height="4.2"/></g>
+  </mask>
+  <path class="warp" mask="url(#warp-under)" d="M12.5 4.5V27.5M19.5 4.5V27.5"/>
+  <path class="weft" mask="url(#weft-under)" d="M4.5 8.5H23.25a3.75 3.75 0 0 1 0 7.5H8.75a3.75 3.75 0 0 0 0 7.5H27.5"/>
+</svg>

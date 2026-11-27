@@ -1,5 +1,5 @@
 import { Button } from "../../platform/button/button.component.ts"
-import { getStyleClasses } from "@acme/design-system/StyleClasses"
+import { getStyleClasses } from "@weft/design-system/StyleClasses"
 import { ToastProvider } from "@effect/ui-kit/Toast"
 import type { Html } from "@effect/ui/html"
 import type { Child, Input } from "@effect/ui/View"

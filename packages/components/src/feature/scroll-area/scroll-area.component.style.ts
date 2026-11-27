@@ -1,4 +1,4 @@
-import * as Style from "@acme/design-system/Style"
+import * as Style from "@weft/design-system/Style"
 import { Colors, Motion, Radius, Size, Spacing, Stroke } from "../../platform/token/contract.token.ts"
 import { ScrollAreaParts } from "./scroll-area.parts.constant.ts"
 

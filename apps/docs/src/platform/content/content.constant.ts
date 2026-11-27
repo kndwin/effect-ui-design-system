@@ -287,14 +287,14 @@ export const pages: ReadonlyArray<Page> = [
 
 export const sources = { contract, themes: { shadcn: shadcnTheme, astryx: astryxTheme } }
 
-export const installCommand = "pnpm add @acme/components @acme/theme-shadcn"
+export const installCommand = "pnpm add @weft/components @weft/theme-shadcn"
 
 export const install = `// main.ts
-import "@acme/theme-shadcn"
+import "@weft/theme-shadcn"
 
 // anywhere in a view
-import { Avatar } from "@acme/components/avatar"
-import { Button } from "@acme/components/button"
+import { Avatar } from "@weft/components/avatar"
+import { Button } from "@weft/components/button"
 
 h.div.attr("data-theme", "shadcn").attr("data-mode", "dark").children(
   Avatar(h, { name: "Ada Lovelace", src: user.photo }),
