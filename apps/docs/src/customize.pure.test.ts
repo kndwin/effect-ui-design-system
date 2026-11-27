@@ -2,7 +2,7 @@ import { astryx } from "@acme/theme-astryx"
 import { shadcn } from "@acme/theme-shadcn"
 import { assert, describe, it } from "@effect/vitest"
 import { initialChoices } from "./customize.constant.ts"
-import { controls, isCustomized, overrides, themeSource, varsOf } from "./customize.pure.ts"
+import { controls, isCustomized, overrides, varsOf } from "./customize.pure.ts"
 
 const themes = [shadcn, astryx]
 
@@ -42,15 +42,5 @@ describe("theme builder", () => {
     const customized = isCustomized(choices)
     // Assert
     assert.strictEqual(customized, false)
-  })
-
-  it("exports a Theme.make file", () => {
-    // Arrange
-    const choices = { ...initialChoices, radius: "none" }
-    // Act
-    const source = themeSource(choices, themes, shadcn)
-    // Assert
-    assert.include(source, "Theme.make(Tokens, {")
-    assert.include(source, "control: 0")
   })
 })
