@@ -69,6 +69,7 @@ export const DialogStyle = Style.make(DialogParts)({
       ControlSizeSchema,
       { sm: { popup: { maxWidth: Size.field } }, md: { popup: { maxWidth: Size.dialog } } },
       { default: "md" }
-    )
+    ),
+    wide: Variant.makeFlag({ popup: { maxWidth: Size.content } })
   }
 })

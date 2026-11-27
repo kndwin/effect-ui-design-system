@@ -7,7 +7,9 @@ export const TemplateIdSchema = Schema.Literals([
   "inbox",
   "kanban",
   "login",
+  "product-gallery",
   "settings",
+  "settings-dialog",
   "wizard"
 ])
 export type TemplateId = typeof TemplateIdSchema.Type

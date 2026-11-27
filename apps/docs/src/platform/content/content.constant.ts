@@ -354,10 +354,22 @@ export const pages: ReadonlyArray<Page> = [
     lead: "A centred sign-in card with validation on submit, a remember-me checkbox and provider buttons."
   },
   {
+    id: "product-gallery",
+    section: "Templates",
+    title: "Product gallery",
+    lead: "A grid of product cards with search, category filters and sorting, an add-to-cart count, and an empty state when nothing matches."
+  },
+  {
     id: "settings",
     section: "Templates",
     title: "Settings",
     lead: "Account settings split into tabs: a profile form, notification switches and appearance choices, with a save toast."
+  },
+  {
+    id: "settings-dialog",
+    section: "Templates",
+    title: "Settings dialog",
+    lead: "Preferences in a wide modal: a searchable section list beside the chosen section's switches and fields, saved or cancelled from the footer."
   },
   {
     id: "tokens",
