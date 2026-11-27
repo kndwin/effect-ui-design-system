@@ -2,10 +2,10 @@ import { BunServices } from "@effect/platform-bun"
 import { assert, layer } from "@effect/vitest"
 import { Array, Context, Effect, FileSystem, Layer, Match, MutableHashMap, Option, Path, Schema } from "effect"
 import { ChildProcess, ChildProcessSpawner } from "effect/process"
-import { scan } from "./ast-grep.build.ts"
-import { scanRuleFiles, repoRoot } from "./discover.build.ts"
-import { mapRuleFileToRuleKind, mapRuleFileToScope } from "./kinds.pure.map.ts"
-import { getRuleSuffixes } from "./kinds.pure.ts"
+import { scan } from "../src/feature/ast-grep/ast-grep.build.ts"
+import { scanRuleFiles, repoRoot } from "../src/platform/discover/discover.build.ts"
+import { mapRuleFileToRuleKind, mapRuleFileToScope } from "../src/platform/kind/kinds.pure.map.ts"
+import { getRuleSuffixes } from "../src/platform/kind/kinds.pure.ts"
 
 interface Example {
   readonly kind: string

@@ -2,12 +2,12 @@ import { dirname, resolve } from "node:path"
 import * as Effect from "effect/Effect"
 import * as Match from "effect/Match"
 import { Rule, RuleContext } from "effect-oxlint"
-import { mapPathToPosixPath } from "../../tools/lint/kinds.pure.map.ts"
-import * as RuleModule from "../../tools/lint/rule-module.make.ts"
+import { mapPathToPosixPath } from "../../tools/lint/src/platform/kind/kinds.pure.map.ts"
+import * as RuleModule from "../../tools/lint/src/platform/rule-module/rule-module.make.ts"
 
 const see = "See +rule/feature-folders/feature-folders.md."
 
-const sourceRoot = /^(.*\/(?:packages\/(?!themes\/)[^/]+|apps\/[^/]+)\/src)\/(.*)$/
+const sourceRoot = /^(.*\/(?:packages\/(?!themes\/)[^/]+|apps\/[^/]+|tools\/[^/]+)\/src)\/(.*)$/
 
 const layout = /^(main\.ts|(feature|platform)\/[a-z0-9]+(-[a-z0-9]+)*\/.+)$/
 

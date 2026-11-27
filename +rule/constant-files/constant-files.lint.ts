@@ -1,7 +1,7 @@
 import * as Effect from "effect/Effect"
 import * as Match from "effect/Match"
 import { Rule, RuleContext } from "effect-oxlint"
-import * as RuleModule from "../../tools/lint/rule-module.make.ts"
+import * as RuleModule from "../../tools/lint/src/platform/rule-module/rule-module.make.ts"
 
 const isFunction = (node: any) => node?.type === "ArrowFunctionExpression" || node?.type === "FunctionExpression"
 

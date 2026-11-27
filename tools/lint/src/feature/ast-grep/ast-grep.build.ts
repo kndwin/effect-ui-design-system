@@ -1,33 +1,16 @@
 import { BunRuntime, BunServices } from "@effect/platform-bun"
 import { Array, Console, Effect, Match, Path, Schema } from "effect"
 import { ChildProcess, ChildProcessSpawner } from "effect/process"
-import { scanRuleFiles, repoRoot } from "./discover.build.ts"
-import { kinds } from "./kinds.constant.ts"
-import { isInScope } from "./kinds.pure.predicate.ts"
-import { mapRuleFileToRuleKind, mapRuleFileToScope } from "./kinds.pure.map.ts"
-
-export interface Match {
-  readonly ruleId: string
-  readonly file: string
-  readonly line: number
-  readonly message: string
-}
-
-const Found = Schema.fromJsonString(
-  Schema.Array(
-    Schema.Struct({
-      ruleId: Schema.String,
-      file: Schema.String,
-      message: Schema.String,
-      range: Schema.Struct({ start: Schema.Struct({ line: Schema.Number }) })
-    })
-  )
-)
+import { scanRuleFiles, repoRoot } from "../../platform/discover/discover.build.ts"
+import { kinds } from "../../platform/kind/kinds.constant.ts"
+import { isInScope } from "../../platform/kind/kinds.pure.predicate.ts"
+import { mapRuleFileToRuleKind, mapRuleFileToScope } from "../../platform/kind/kinds.pure.map.ts"
+import { AstGrepOutputSchema, type Finding } from "./ast-grep.schema.ts"
 
 const scanRule = Effect.fn("lint/ast-grep/scanRule")(function* (ruleFile: string, only?: ReadonlyArray<string>) {
   const path = yield* Path.Path
   const spawner = yield* ChildProcessSpawner.ChildProcessSpawner
-  const dir = mapRuleFileToScope({ ruleFile: ruleFile })
+  const dir = mapRuleFileToScope({ ruleFile })
   const targets = Match.value(only).pipe(
     Match.when(undefined, () => ["."]),
     Match.orElse((files) =>
@@ -38,10 +21,7 @@ const scanRule = Effect.fn("lint/ast-grep/scanRule")(function* (ruleFile: string
     )
   )
   if (targets.length === 0) return []
-  const globs = Array.flatMap(kinds[mapRuleFileToRuleKind({ ruleFile: ruleFile })] ?? [], (s) => [
-    "--globs",
-    `**/*${s}`
-  ])
+  const globs = Array.flatMap(kinds[mapRuleFileToRuleKind({ ruleFile })] ?? [], (s) => ["--globs", `**/*${s}`])
   const output = yield* spawner.string(
     ChildProcess.make(
       path.join(repoRoot, "node_modules", ".bin", "ast-grep"),
@@ -60,9 +40,9 @@ const scanRule = Effect.fn("lint/ast-grep/scanRule")(function* (ruleFile: string
       { cwd: dir }
     )
   )
-  const found = yield* Schema.decodeUnknownEffect(Found)(output.trim() || "[]")
+  const found = yield* Schema.decodeUnknownEffect(AstGrepOutputSchema)(output.trim() || "[]")
   return Array.filter(
-    Array.map(found, (m) => ({
+    Array.map(found, (m): Finding => ({
       ruleId: m.ruleId,
       file: path.join(dir, m.file),
       line: m.range.start.line + 1,
