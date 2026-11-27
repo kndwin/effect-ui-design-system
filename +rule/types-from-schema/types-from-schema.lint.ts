@@ -1,8 +1,8 @@
 import * as Effect from "effect/Effect"
 import * as Match from "effect/Match"
 import { Rule, RuleContext } from "effect-oxlint"
-import * as RuleModule from "../../tools/lint/rule-module.make.ts"
-import { isGoverned } from "../../tools/lint/kinds.pure.predicate.ts"
+import * as RuleModule from "../../tools/lint/src/platform/rule-module/rule-module.make.ts"
+import { isGoverned } from "../../tools/lint/src/platform/kind/kinds.pure.predicate.ts"
 
 const exempt = /\.(schema|test|test-d|d)\.ts$/
 

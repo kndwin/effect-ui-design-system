@@ -1,7 +1,7 @@
 # rule: feature and platform folders
 
-Every package with real code (`components`, `design-system`, `css-engine`) and every app has the
-same `src/` layout, after [Bulletproof React](https://github.com/alan2207/bulletproof-react),
+Every package with real code (`components`, `design-system`, `css-engine`), every app and every
+tool (`tools/lint`) has the same `src/` layout, after [Bulletproof React](https://github.com/alan2207/bulletproof-react),
 adapted to `@effect/ui`:
 
 ```

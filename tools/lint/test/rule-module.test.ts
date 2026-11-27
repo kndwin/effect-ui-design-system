@@ -1,6 +1,6 @@
 import { Rule, RuleContext } from "effect-oxlint"
 import { assert, describe, it } from "@effect/vitest"
-import * as RuleModule from "./rule-module.make.ts"
+import * as RuleModule from "../src/platform/rule-module/rule-module.make.ts"
 
 describe("RuleModule.make", () => {
   it("keeps the module's url with its rules", () => {

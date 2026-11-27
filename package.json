@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "check": "bun --bun x tsc -p tsconfig.json",
-    "lint": "bun --bun x oxlint --disable-nested-config -c oxlint.config.ts && bun tools/lint/ast-grep.build.ts",
+    "lint": "bun --bun x oxlint --disable-nested-config -c oxlint.config.ts && bun tools/lint/src/feature/ast-grep/ast-grep.build.ts",
     "fmt": "bun --bun x oxfmt",
     "fmt:check": "bun --bun x oxfmt --check",
     "test": "pnpm -r --workspace-concurrency=1 test",

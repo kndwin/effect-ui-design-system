@@ -3,7 +3,7 @@ import { Array, Effect, FileSystem, HashSet, Match, Path } from "effect"
 
 const skip = HashSet.make("node_modules", "vendor", "dist", ".git", "__rule_tests__")
 
-export const repoRoot = join(import.meta.dirname, "..", "..")
+export const repoRoot = join(import.meta.dirname, "..", "..", "..", "..", "..")
 
 export type RuleExt = "md" | "yml" | "lint.ts"
 

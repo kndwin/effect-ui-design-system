@@ -2,10 +2,10 @@ import { fileURLToPath } from "node:url"
 import { BunServices } from "@effect/platform-bun"
 import { Array, Effect, Match, Record } from "effect"
 import { Plugin } from "effect-oxlint"
-import type { RuleModule } from "./rule-module.make.ts"
-import { scanRuleFiles } from "./discover.build.ts"
-import { isInScope } from "./kinds.pure.predicate.ts"
-import { mapRuleFileToRuleKind } from "./kinds.pure.map.ts"
+import type { RuleModule } from "../../platform/rule-module/rule-module.make.ts"
+import { scanRuleFiles } from "../../platform/discover/discover.build.ts"
+import { isInScope } from "../../platform/kind/kinds.pure.predicate.ts"
+import { mapRuleFileToRuleKind } from "../../platform/kind/kinds.pure.map.ts"
 
 type AnyRule = { readonly create: (context: { readonly filename: string }) => object }
 

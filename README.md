@@ -59,6 +59,10 @@ apps/docs/         composed only from @acme/components; routed with Route + Brow
   src/feature/{introduction,theming,component-docs,tokens}/   x.route.ts + x.view.ts
   src/feature/theme-builder/ schema, define, update, view, component, customize.pure(.map/.predicate)
 tools/lint/        finds every +rule/<rule>/<rule>.{lint.ts,yml}, runs them, tests every <rule>.md (all Effect programs)
+  src/platform/{kind,rule-module,discover}/   file kinds, the rule-module helper, finding +rule folders
+  src/feature/oxlint/        the oxlint plugin (loads every <rule>.lint.ts)
+  src/feature/ast-grep/      runs every <rule>.yml
+  test/rules.test.ts         runs every ✅/❌ example
 ```
 
 No barrels: each package lists its modules in `package.json` `exports`
@@ -69,11 +73,11 @@ No barrels: each package lists its modules in `package.json` `exports`
 Every convention is written down and checked in a `+rule/<rule>/` folder next to the code it covers.
 A rule applies to files of its kind in the folder holding `+rule/`, and below.
 
-| file             | role                                                                | read by                                       |
-| :--------------- | :------------------------------------------------------------------ | :-------------------------------------------- |
-| `<rule>.md`      | **the contract**: what's allowed and why, ✅/❌ examples. Required. | people, agents, `pnpm test:rules`             |
-| `<rule>.yml`     | **shape**: what a file may export and import                        | ast-grep (`tools/lint/ast-grep.build.ts`)     |
-| `<rule>.lint.ts` | **meaning**: file system, scopes, values, comments                  | oxlint via effect-oxlint (`oxlint.config.ts`) |
+| file             | role                                                                | read by                                                        |
+| :--------------- | :------------------------------------------------------------------ | :------------------------------------------------------------- |
+| `<rule>.md`      | **the contract**: what's allowed and why, ✅/❌ examples. Required. | people, agents, `pnpm test:rules`                              |
+| `<rule>.yml`     | **shape**: what a file may export and import                        | ast-grep (`tools/lint/src/feature/ast-grep/ast-grep.build.ts`) |
+| `<rule>.lint.ts` | **meaning**: file system, scopes, values, comments                  | oxlint via effect-oxlint (`oxlint.config.ts`)                  |
 
 The ✅/❌ blocks in each `<rule>.md` are the rule tests. Each ✅ passes both tools, and each ❌
 fails with the id its heading names (`→ component-style-files/tokens-only`).

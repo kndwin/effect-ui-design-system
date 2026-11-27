@@ -20,7 +20,7 @@ const kebab = /^[a-z0-9]+(-[a-z0-9]+)*$/
 
 export const getKebabProblem = ({ path }: PathInput): string | undefined => {
   const within = mapPathToPosixPath({ path }).match(
-    /(?:^|\/)(?:packages\/(?:themes\/)?[^/]+|apps\/[^/]+)\/((?:src|test)\/.*)$/
+    /(?:^|\/)(?:packages\/(?:themes\/)?[^/]+|apps\/[^/]+|tools\/[^/]+)\/((?:src|test)\/.*)$/
   )?.[1]
   if (within === undefined) return undefined
   const segments = within.split("/")

@@ -3,11 +3,11 @@ import { dirname, parse } from "node:path"
 import * as Effect from "effect/Effect"
 import * as Match from "effect/Match"
 import { Rule, RuleContext } from "effect-oxlint"
-import * as RuleModule from "../../tools/lint/rule-module.make.ts"
-import { allowed } from "../../tools/lint/kinds.constant.ts"
-import { mapRuleKindToDocPath } from "../../tools/lint/kinds.pure.map.ts"
-import { isGoverned } from "../../tools/lint/kinds.pure.predicate.ts"
-import { getFileKind, getKebabProblem } from "../../tools/lint/kinds.pure.ts"
+import * as RuleModule from "../../tools/lint/src/platform/rule-module/rule-module.make.ts"
+import { allowed } from "../../tools/lint/src/platform/kind/kinds.constant.ts"
+import { mapRuleKindToDocPath } from "../../tools/lint/src/platform/kind/kinds.pure.map.ts"
+import { isGoverned } from "../../tools/lint/src/platform/kind/kinds.pure.predicate.ts"
+import { getFileKind, getKebabProblem } from "../../tools/lint/src/platform/kind/kinds.pure.ts"
 
 const findDoc = (dir: string, kind: string): boolean => {
   for (let d = dir; d !== parse(d).root; d = dirname(d))

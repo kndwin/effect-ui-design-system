@@ -1,11 +1,11 @@
 import { defineConfig } from "oxlint"
-import { ruleIds } from "./tools/lint/plugin.build.ts"
+import { ruleIds } from "./tools/lint/src/feature/oxlint/plugin.build.ts"
 
 export default defineConfig({
   plugins: ["typescript", "unicorn", "oxc", "import"],
   categories: { correctness: "error", suspicious: "warn" },
   ignorePatterns: ["vendor/**", "**/dist/**", "**/node_modules/**"],
-  jsPlugins: ["./tools/lint/plugin.build.ts"],
+  jsPlugins: ["./tools/lint/src/feature/oxlint/plugin.build.ts"],
   rules: {
     "typescript/no-explicit-any": "off",
     "import/no-unassigned-import": "off",
