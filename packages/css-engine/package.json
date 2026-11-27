@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./rules": "./src/rules.schema.ts",
-    "./runtime": "./src/runtime.pure.ts",
-    "./vite": "./src/vite.build.ts"
+    "./rules": "./src/platform/rules/rules.schema.ts",
+    "./runtime": "./src/feature/recipe/runtime.pure.ts",
+    "./vite": "./src/platform/vite/vite.build.ts"
   },
   "scripts": {
     "test": "bun --bun x vitest run"

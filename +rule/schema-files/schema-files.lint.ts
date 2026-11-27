@@ -16,7 +16,7 @@ const rootOf = (node: any): string | undefined => {
 const allowedImport = (source: string) =>
   source === "effect" ||
   source === "@effect/ui" ||
-  (source.startsWith(".") && source.endsWith(".schema.ts")) ||
+  (source.startsWith(".") && (source.endsWith(".schema.ts") || source.endsWith(".route.ts"))) ||
   /^@[\w-]+\/[\w-]+\/\w*Schema$/.test(source)
 
 export default RuleModule.make(import.meta.url, {

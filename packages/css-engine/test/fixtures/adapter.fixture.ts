@@ -1,4 +1,4 @@
-import type { ComposeOutputInput, Output } from "../../src/rules.schema.ts"
+import type { ComposeOutputInput, Output } from "../../src/platform/rules/rules.schema.ts"
 
 export const composeOutput = ({ value, exportName }: ComposeOutputInput): Output | undefined => {
   if (typeof value !== "object" || value === null || !("card" in value)) return undefined

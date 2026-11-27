@@ -27,27 +27,37 @@ pnpm ci      # oxfmt → oxlint + ast-grep → tsc (TypeScript 7) → every pack
 
 ## Packages
 
+Every package with real code, and the docs app, has the same `src/` layout
+(`+rule/feature-folders/feature-folders.md`): `feature/<name>/` for a self-contained capability,
+`platform/<name>/` for what features stand on and what puts them together. A feature never
+imports another feature.
+
 ```
 packages/
   design-system/   @acme/design-system: the generic library. No ui-kit, no CSS engine.
-    src/tokens/      token.constant.ts, token.pure.ts, token-color.make.ts, … (one per kind)
-    src/theme/       theme.make.ts        Theme.make(Tokens, { name, values, modes })
-    src/style/       style.make.ts        Style.make(Parts)({ base, variants, compound }); rule.constant.ts
-    src/variant/     variant.make.ts      Variant.make(Schema, …), Variant.makeFlag(…)
-    src/kit/         kit.make.ts          Kit.make / Kit.makeSingle: the parts-and-states descriptor type
-    src/element/     element.make.ts      Element.make(Style): a component from a style, for any element
-    src/manifest/    manifest.make.ts     tokens + components, as data
-    src/compile/     compile.pure.ts      the adapter for @acme/css-engine
+    src/platform/token/      token.pure.ts, token-color.make.ts, … (one make per kind)
+    src/platform/kit/        Kit.make / Kit.makeSingle: the parts-and-states descriptor type
+    src/platform/variant/    Variant.make(Schema, …), Variant.makeFlag(…)
+    src/platform/manifest/   tokens + components, as data
+    src/platform/compile/    the adapter for @acme/css-engine
+    src/feature/style/       Style.make(Parts)({ … }), getStyleClasses, Element.make(Style)
+    src/feature/theme/       Theme.make(Tokens, { name, values, modes })
   components/      @acme/components
-    src/contract.token.ts   🔒 the token contract
-    src/scales.schema.ts    🔒 variant value lists (Schemas)
-    src/<name>/<name>.parts.constant.ts    the ui-kit DOM contract: parts and states
-    src/<name>/<name>.component.style.ts   how it looks (data)
-    src/<name>/<name>.component.ts         what it renders; wires ui-kit; or just Element.make(Style)
-      button avatar code-block text swatch, layout/ (Stack, Grid, Center, Section, Layout…)
+    src/platform/token/      🔒 contract.token.ts: the token contract
+    src/platform/scale/      🔒 scales.schema.ts: variant value lists
+    src/platform/manifest/   every style and the contract, as data
+    src/feature/<name>/      button avatar code-block layout text swatch:
+                             parts.constant, component.style, component (+ define/update/view/command)
   themes/          @acme/theme-shadcn, @acme/theme-astryx   (<name>.theme.ts)
   css-engine/      @acme/css-engine: generic, Effect-based, no design-system knowledge
-apps/docs/         composed only from @acme/components; no stylesheet
+    src/platform/            rules (the adapter contract), css, hash, message, engine, vite
+    src/feature/             recipe (+ the browser runtime), codegen
+apps/docs/         composed only from @acme/components; routed with Route + BrowserRouter
+  src/main.ts                mount App with BrowserRouter.layer
+  src/platform/app/          app.route (Route.union), schema, define, update, subscription, view, component
+  src/platform/{theme,content,example,ui}/   shared by the pages
+  src/feature/{introduction,theming,component-docs,tokens}/   x.route.ts + x.view.ts
+  src/feature/theme-builder/ schema, define, update, view, component, customize.pure(.map/.predicate)
 tools/lint/        finds every +rule/<rule>/<rule>.{lint.ts,yml}, runs them, tests every <rule>.md (all Effect programs)
 ```
 
@@ -72,6 +82,8 @@ fails with the id its heading names (`→ component-style-files/tokens-only`).
 | :---------------------- | :-------------------- | :----------------------------------------------------------------------------------------------- |
 | `allowed-file-kinds`    | root                  | allowed kinds, kebab-case names, a rule doc above every file, colocated tests, no barrels        |
 | `no-comments`           | root                  | no comments in any `.ts`, except `@ts-expect-error` and `// Arrange / Act / Assert` in tests     |
+| `component-parts`       | root                  | define/update/view/command/subscription/route files; Commands only in `*.command.ts`             |
+| `feature-folders`       | root                  | `src/feature/*` and `src/platform/*` only; a feature never imports another feature               |
 | `function-names`        | root                  | names by file kind: get/compose, mapXToY, is/has/should, make…, …Schema                          |
 | `no-ternary`            | root                  | no `a ? b : c`: branch with `Match` from `effect`                                                |
 | `pure-files`            | root                  | data kinds have no effects; `*.pure.ts` exports only functions and has a `*.pure.test.ts`        |
