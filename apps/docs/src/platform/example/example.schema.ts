@@ -17,3 +17,9 @@ export type ExampleProps = typeof ExamplePropsSchema.Type
 export const ExampleModelSchema = Schema.Struct({ tab: TabSchema })
 
 export const ExampleMessageSchema = UiSchema.TaggedEnum({ PressedTab: { tab: TabSchema } })
+
+export const MapSourceToExampleMetaInputSchema = Schema.Struct({ source: Schema.String, file: Schema.String })
+export type MapSourceToExampleMetaInput = typeof MapSourceToExampleMetaInputSchema.Type
+
+export const ExampleMetaSchema = Schema.Struct({ title: Schema.String, order: Schema.Number })
+export type ExampleMeta = typeof ExampleMetaSchema.Type

@@ -1,20 +1,25 @@
+import { Component } from "@effect/ui"
 import type { Html } from "@effect/ui/html"
 import type { Child } from "@effect/ui/View"
-import { Array, Order, Record, String } from "effect"
+import { Array, Order, Record } from "effect"
+import { mapSourceToExampleMeta } from "./example.pure.map.ts"
 
-interface ExampleModule {
-  readonly default: <Msg>(h: Html.H<Msg>, options: { readonly key: string }) => Child<Msg>
-  readonly title?: string
-
-  readonly order?: number
-}
-
-const modules = import.meta.glob<ExampleModule>("./catalog/*/*.component.ts", { eager: true })
+const modules = import.meta.glob<Component.Any>("./catalog/*/*.component.ts", { import: "default" })
 const sources = import.meta.glob<string>("./catalog/*/*.component.ts", {
   eager: true,
   query: "?raw",
   import: "default"
 })
+
+const makeExample = (id: string, path: string) => {
+  const Lazy = Component.lazy(id, () => modules[path]!())
+  return <Msg>(h: Html.H<Msg>, options: { readonly key: string }): Child<Msg> =>
+    Lazy(h, {
+      key: options.key,
+      props: {},
+      fallback: () => h.span.attr("aria-busy", "true").children("Loading…")
+    }) as Child<Msg>
+}
 
 export interface Example {
   readonly id: string
@@ -23,23 +28,23 @@ export interface Example {
   readonly order: number
 
   readonly file: string
-  readonly component: ExampleModule["default"]
+  readonly component: ReturnType<typeof makeExample>
   readonly source: string
 }
 
 const byOrder = Order.mapInput(Order.Number, (e: Example) => e.order)
 
 export const examples: ReadonlyArray<Example> = Array.sort(
-  Array.map(Record.toEntries(modules), ([path, mod]): Example => {
+  Array.map(Record.toEntries(sources), ([path, source]): Example => {
     const [, page, file] = path.match(/\.\/catalog\/([^/]+)\/([^/]+)\.component\.ts$/)!
+    const id = `${page}-${file}`
     return {
-      id: `${page}-${file}`,
+      id,
       page: page!,
-      title: mod.title ?? String.capitalize(file!.replaceAll("-", " ")),
-      order: mod.order ?? 99,
+      ...mapSourceToExampleMeta({ source, file: file! }),
       file: path.slice(2),
-      component: mod.default,
-      source: sources[path]!
+      component: makeExample(id, path),
+      source
     }
   }),
   byOrder
