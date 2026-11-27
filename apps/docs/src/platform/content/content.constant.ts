@@ -324,6 +324,18 @@ export const pages: ReadonlyArray<Page> = [
     lead: "Stat tiles, goal meters, a tabbed activity feed and a range picker: the shape of most analytics overviews."
   },
   {
+    id: "file-explorer",
+    section: "Templates",
+    title: "File explorer",
+    lead: "Drill through folders column by column, climb back with the breadcrumbs, and see a file's details beside the columns."
+  },
+  {
+    id: "wizard",
+    section: "Templates",
+    title: "Form wizard",
+    lead: "A linear stepper with a progress track: each step validates before Next, Back keeps what you typed, and a review step confirms it all."
+  },
+  {
     id: "inbox",
     section: "Templates",
     title: "Inbox",
