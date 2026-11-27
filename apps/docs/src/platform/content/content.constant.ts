@@ -54,6 +54,54 @@ const componentPages: {
     kit: "Slider",
     lead: "A range input with a draggable thumb. ui-kit places the indicator and thumb through CSS variables; the style only reads them."
   },
+  "number-field": {
+    title: "Number Field",
+    kit: "NumberField",
+    lead: "A number input with stepper buttons, arrow-key and wheel steps, and a scrubbable label. It formats with Intl and submits the raw number."
+  },
+  "otp-field": {
+    title: "OTP Field",
+    kit: "OTPField",
+    lead: "One-time code slots. The value is Redacted, paste fills every slot, and Completed fires once the last slot is filled."
+  },
+  fieldset: {
+    title: "Fieldset",
+    kit: "Fieldset",
+    lead: "A native fieldset named by its legend. Disabling it disables every Field inside."
+  },
+  form: {
+    title: "Form",
+    kit: "Form",
+    lead: "A form that hands you its entries on submit and moves focus to the first invalid field. Validation stays yours."
+  },
+  "checkbox-group": {
+    title: "Checkbox Group",
+    kit: "CheckboxGroup",
+    source: "feature/checkbox/checkbox-group",
+    lead: "Checkboxes that share one value array, with an optional parent that shows mixed and ticks every member."
+  },
+  "toggle-group": {
+    title: "Toggle Group",
+    kit: "ToggleGroup",
+    source: "feature/toggle/toggle-group",
+    lead: "Toggles with one tab stop and arrow-key focus. Single or multiple selection, horizontal or vertical. Items reuse the Toggle style."
+  },
+  progress: {
+    title: "Progress",
+    kit: "Progress",
+    lead: "How far a task has got. Pass null for indeterminate; the indicator width comes from the value."
+  },
+  meter: {
+    title: "Meter",
+    kit: "Meter",
+    source: "feature/progress/progress",
+    lead: "A measurement within a known range, like storage used. It shares the Progress style."
+  },
+  "preview-card": {
+    title: "Preview Card",
+    kit: "PreviewCard",
+    lead: "A card that opens on hovering or focusing a link, after a delay. The link keeps working and no focus is trapped."
+  },
   toggle: {
     title: "Toggle",
     kit: "Toggle",
