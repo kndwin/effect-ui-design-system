@@ -31,7 +31,14 @@
     "./popover": "./src/feature/popover/popover.component.ts",
     "./tooltip": "./src/feature/tooltip/tooltip.component.ts",
     "./menu": "./src/feature/menu/menu.component.ts",
-    "./toast": "./src/feature/toast/toast.component.ts"
+    "./toast": "./src/feature/toast/toast.component.ts",
+    "./tabs": "./src/feature/tabs/tabs.component.ts",
+    "./accordion": "./src/feature/accordion/accordion.component.ts",
+    "./collapsible": "./src/feature/collapsible/collapsible.component.ts",
+    "./separator": "./src/feature/separator/separator.component.ts",
+    "./scroll-area": "./src/feature/scroll-area/scroll-area.component.ts",
+    "./toolbar": "./src/feature/toolbar/toolbar.component.ts",
+    "./navigation-menu": "./src/feature/navigation-menu/navigation-menu.component.ts"
   },
   "scripts": {
     "test": "bun --bun x vitest run"

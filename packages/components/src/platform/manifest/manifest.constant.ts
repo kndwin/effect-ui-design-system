@@ -1,4 +1,11 @@
 import * as Manifest from "@acme/design-system/Manifest"
+import { TabsStyle } from "../../feature/tabs/tabs.component.style.ts"
+import { AccordionStyle } from "../../feature/accordion/accordion.component.style.ts"
+import { CollapsibleStyle } from "../../feature/collapsible/collapsible.component.style.ts"
+import { SeparatorStyle } from "../../feature/separator/separator.component.style.ts"
+import { ScrollAreaStyle } from "../../feature/scroll-area/scroll-area.component.style.ts"
+import { ToolbarStyle } from "../../feature/toolbar/toolbar.component.style.ts"
+import { NavigationMenuStyle } from "../../feature/navigation-menu/navigation-menu.component.style.ts"
 import { DialogStyle } from "../../feature/dialog/dialog.component.style.ts"
 import { DrawerStyle } from "../../feature/drawer/drawer.component.style.ts"
 import { PopoverStyle } from "../../feature/popover/popover.component.style.ts"
@@ -51,6 +58,13 @@ export const manifest = Manifest.make({
     TooltipStyle,
     MenuStyle,
     ToastStyle,
+    TabsStyle,
+    AccordionStyle,
+    CollapsibleStyle,
+    SeparatorStyle,
+    ScrollAreaStyle,
+    ToolbarStyle,
+    NavigationMenuStyle,
     StackStyle,
     StackItemStyle,
     GridStyle,
