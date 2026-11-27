@@ -16,7 +16,13 @@ export const ValueSchema = Schema.Array(Schema.String)
               )
             )
             .join(", "),
-        encode: (s) => s.split(", ")
+        encode: (s) =>
+          s.split(", ").map((f) =>
+            Match.value(f.startsWith('"')).pipe(
+              Match.when(true, () => f.slice(1, -1)),
+              Match.orElse(() => f)
+            )
+          )
       })
     )
   ) as unknown as Schema.Codec<string, ReadonlyArray<string>>

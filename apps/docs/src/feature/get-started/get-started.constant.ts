@@ -65,20 +65,21 @@ export const themeCommand = "pnpm weft theme shadcn --name brand"
 
 export const themeFile = `import { Tokens } from "./components/ui/tokens.ts"
 import * as Theme from "@weft/design-system/Theme"
+import { Layer } from "effect"
 
 export const brand = Theme.make(Tokens, {
   name: "brand",
   default: true,
-  values: {
-    Colors: {
+  layer: Layer.mergeAll(
+    Layer.succeed(Tokens.Colors, {
       accent: "oklch(0.49 0.22 293)",
       accentFg: "oklch(0.99 0 0)",
       // …every other colour
-    },
+    }),
     // …Spacing, Size, Radius, Font and the rest of the contract
-  },
+  ),
   modes: {
-    dark: { Colors: { /* only what changes in dark */ } }
+    dark: Layer.succeed(Tokens.Colors, { /* the colours in dark */ })
   }
 })`
 

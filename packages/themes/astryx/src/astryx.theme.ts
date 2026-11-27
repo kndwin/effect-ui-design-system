@@ -1,10 +1,11 @@
 import { Tokens } from "@weft/components/tokens"
 import * as Theme from "@weft/design-system/Theme"
+import { Layer } from "effect"
 
 export const astryx = Theme.make(Tokens, {
   name: "astryx",
-  values: {
-    Colors: {
+  layer: Layer.mergeAll(
+    Layer.succeed(Tokens.Colors, {
       surface: "#ffffff",
       surfaceMuted: "#f1f1f1",
       fg: "#000000",
@@ -16,9 +17,8 @@ export const astryx = Theme.make(Tokens, {
       dangerFg: "#ffffff",
       ring: "#1b1b1b",
       overlay: "rgb(0 0 0 / 0.45)"
-    },
-
-    Code: {
+    }),
+    Layer.succeed(Tokens.Code, {
       surface: "#f1f1f1",
       fg: "#000000",
       muted: "#6b6b6b",
@@ -26,18 +26,32 @@ export const astryx = Theme.make(Tokens, {
       lineHighlighted: "#0000000d",
       lineAdded: "#0b991f1f",
       lineRemoved: "#c9303a1f"
-    },
-    Syntax: {
+    }),
+    Layer.succeed(Tokens.Syntax, {
       comment: "#919191",
       string: "#0B991F",
       keyword: "#6B1EFD",
       number: "#EB6E00",
       type: "#0171E3",
       call: "#c2389b"
-    },
-    Hues: { blue: "#0171E3", green: "#0B991F", amber: "#EB6E00", rose: "#F5394F", onHue: "#ffffff" },
-    Spacing: { 1: "0.25rem", 2: "0.5rem", 3: "0.75rem", 4: "1rem", 6: "1.5rem", 8: "2rem", 12: "3rem" },
-    Size: {
+    }),
+    Layer.succeed(Tokens.Hues, {
+      blue: "#0171E3",
+      green: "#0B991F",
+      amber: "#EB6E00",
+      rose: "#F5394F",
+      onHue: "#ffffff"
+    }),
+    Layer.succeed(Tokens.Spacing, {
+      "1": "0.25rem",
+      "2": "0.5rem",
+      "3": "0.75rem",
+      "4": "1rem",
+      "6": "1.5rem",
+      "8": "2rem",
+      "12": "3rem"
+    }),
+    Layer.succeed(Tokens.Size, {
       controlSm: 28,
       controlMd: 32,
       avatarSm: 24,
@@ -59,10 +73,20 @@ export const astryx = Theme.make(Tokens, {
       dialog: 480,
       drawer: 380,
       tooltip: 240
-    },
-    Radius: { check: 6, control: 12, avatarSquare: 8, container: 16, full: 9999 },
-    Stroke: { border: 1, focus: 2, focusOffset: 3 },
-    Text: {
+    }),
+    Layer.succeed(Tokens.Radius, {
+      check: 6,
+      control: 12,
+      avatarSquare: 8,
+      container: 16,
+      full: 9999
+    }),
+    Layer.succeed(Tokens.Stroke, {
+      border: 1,
+      focus: 2,
+      focusOffset: 3
+    }),
+    Layer.succeed(Tokens.Text, {
       xs: "0.75rem",
       sm: "0.875rem",
       md: "1.0625rem",
@@ -70,15 +94,27 @@ export const astryx = Theme.make(Tokens, {
       xl: "1.5rem",
       "2xl": "2.1875rem",
       code: "0.8125rem"
-    },
-    Font: { body: ["Figtree", "system-ui", "sans-serif"], mono: ["SF Mono", "ui-monospace", "Menlo", "monospace"] },
-    Weight: { regular: 400, medium: 500, semibold: 600 },
-    Shadow: { overlay: "0 16px 40px -12px rgb(0 0 0 / 0.3)", control: "none" },
-    Motion: { fast: "175 millis" }
-  },
+    }),
+    Layer.succeed(Tokens.Font, {
+      body: ["Figtree", "system-ui", "sans-serif"],
+      mono: ["SF Mono", "ui-monospace", "Menlo", "monospace"]
+    }),
+    Layer.succeed(Tokens.Weight, {
+      regular: 400,
+      medium: 500,
+      semibold: 600
+    }),
+    Layer.succeed(Tokens.Shadow, {
+      overlay: "0 16px 40px -12px rgb(0 0 0 / 0.3)",
+      control: "none"
+    }),
+    Layer.succeed(Tokens.Motion, {
+      fast: "175 millis"
+    })
+  ),
   modes: {
-    dark: {
-      Colors: {
+    dark: Layer.mergeAll(
+      Layer.succeed(Tokens.Colors, {
         surface: "#262626",
         surfaceMuted: "#1b1b1b",
         fg: "#ffffff",
@@ -88,9 +124,10 @@ export const astryx = Theme.make(Tokens, {
         accentFg: "#111111",
         danger: "#ff705d",
         dangerFg: "#1b1b1b",
-        ring: "#f1f1f1"
-      },
-      Code: {
+        ring: "#f1f1f1",
+        overlay: "rgb(0 0 0 / 0.45)"
+      }),
+      Layer.succeed(Tokens.Code, {
         surface: "#1b1b1b",
         fg: "#ffffff",
         muted: "#9e9e9e",
@@ -98,16 +135,22 @@ export const astryx = Theme.make(Tokens, {
         lineHighlighted: "#ffffff0f",
         lineAdded: "#64af4c2e",
         lineRemoved: "#ff705d2e"
-      },
-      Syntax: {
+      }),
+      Layer.succeed(Tokens.Syntax, {
         comment: "#7a7a7a",
         string: "#64af4c",
         keyword: "#a98bff",
         number: "#ff9a4d",
         type: "#6d9cfe",
         call: "#f78bd8"
-      },
-      Hues: { blue: "#6d9cfe", green: "#64af4c" }
-    }
+      }),
+      Layer.succeed(Tokens.Hues, {
+        blue: "#6d9cfe",
+        green: "#64af4c",
+        amber: "#EB6E00",
+        rose: "#F5394F",
+        onHue: "#ffffff"
+      })
+    )
   }
 })

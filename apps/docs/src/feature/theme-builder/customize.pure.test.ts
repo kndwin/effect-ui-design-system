@@ -2,7 +2,7 @@ import { astryx } from "@weft/theme-astryx"
 import { shadcn } from "@weft/theme-shadcn"
 import { assert, describe, it } from "@effect/vitest"
 import { getThemeVars } from "../../platform/theme/theme.pure.ts"
-import { getControls, getOverrides } from "./customize.pure.ts"
+import { getControls, getCustomThemeSource, getOverrides } from "./customize.pure.ts"
 const themes = [shadcn, astryx]
 
 const initialChoices = { custom: false, accent: null, radius: null, sizing: null, font: null, mono: null, scale: 100 }
@@ -44,5 +44,18 @@ describe("theme builder", () => {
     const vars = getOverrides({ choices, themes, theme: shadcn, mode: "light" })
     // Assert
     assert.deepStrictEqual(vars, {})
+  })
+
+  it("writes the custom theme as layers, with the chosen accent", () => {
+    // Arrange
+    const choices = { ...initialChoices, custom: true, accent: "blue" }
+    // Act
+    const source = getCustomThemeSource({ choices, themes, theme: shadcn })
+    // Assert
+    const blue = getThemeVars({ theme: shadcn, mode: "light" })["--hue-blue"]
+    assert.include(source, 'export const custom = Theme.make(Tokens, {\n  name: "custom",\n  default: true,')
+    assert.include(source, `    Layer.succeed(Tokens.Colors, {`)
+    assert.include(source, `      accent: ${JSON.stringify(blue)},`)
+    assert.include(source, "  modes: {\n    dark: Layer.mergeAll(")
   })
 })

@@ -78,7 +78,7 @@ export const GetStartedPage = <Msg>(h: Html.H<Msg>) => [
     CodeBlock(h, { code: themeCommand, language: "shell", key: "theme-command" }),
     Note(
       h,
-      "Change the values to make it yours. To try values first, pick custom in the theme panel. The compiler and the build both fail on a missing token or a bad value."
+      "Each token group is provided with Layer.succeed, and dark mode is a layer of the groups it changes. Change the values to make it yours, or build one in the theme panel and copy it from Theming. The compiler and the build both fail on a missing token or a bad value."
     ),
     CodeBlock(h, { code: themeFile, title: "src/brand.theme.ts", key: "theme" })
   ]),

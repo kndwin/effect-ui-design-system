@@ -20,7 +20,7 @@ export const update = AppDef.update({
     $.evolve({ choices: initialChoices }).run(
       Router.patchSearch(AppRoute, $.model.route, { theme }).pipe(Command.asNoop)
     ),
-  PressedPanel: ($) => $.evolve({ panel: (open) => !open }),
+  ChangedPanel: ($, { open }) => $.evolve({ panel: open }),
   Chose: ($, { choices }) => $.evolve({ choices }),
   ResetChoices: ($) => $.evolve({ choices: { ...initialChoices, custom: true } })
 })

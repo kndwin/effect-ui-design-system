@@ -12,7 +12,7 @@ export const ValueSchema = Schema.String.pipe(
     Schema.String,
     SchemaTransformation.transform<string, string>({
       decode: (v) => `${Duration.toMillis(v as Duration.Input)}ms`,
-      encode: (v) => v
+      encode: (v) => `${Number.parseFloat(v)} millis`
     })
   )
 ) as unknown as Schema.Codec<string, Duration.Input & string>

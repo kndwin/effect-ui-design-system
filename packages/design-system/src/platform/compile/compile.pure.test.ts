@@ -1,3 +1,4 @@
+import { Layer } from "effect"
 import { assert, describe, it } from "@effect/vitest"
 import * as Kit from "../kit/kit.make.ts"
 import * as Style from "../../feature/style/style.make.ts"
@@ -25,7 +26,7 @@ describe("compile (the css-engine adapter)", () => {
 
   it("turns a Theme into global rules", () => {
     // Arrange
-    const theme = Theme.make({ Colors }, { name: "t", values: { Colors: { accent: "#000" } } })
+    const theme = Theme.make({ Colors }, { name: "t", layer: Layer.succeed(Colors, { accent: "#000" }) })
     // Act
     const out = composeOutput({ value: theme, exportName: "t" })
     // Assert

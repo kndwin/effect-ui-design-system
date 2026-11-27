@@ -311,7 +311,7 @@ export const pages: ReadonlyArray<Page> = [
     id: "theming",
     section: "Getting started",
     title: "Theming",
-    lead: "A theme is a package that fills in every token of the contract, with optional modes layered on top. It is checked by the compiler, and bad values fail the build."
+    lead: "A theme fills in every token of the contract with Effect layers: one Layer.succeed per token group, and modes as layers on top. The compiler checks that every group is provided, and bad values fail the build."
   },
   ...Array.sort(
     ComponentIdSchema.literals.map(getComponentPage),

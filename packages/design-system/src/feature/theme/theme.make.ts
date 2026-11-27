@@ -1,13 +1,11 @@
-import { Array, Cause, Data, Exit, Match, Record, Schema, SchemaIssue } from "effect"
+import { Array, Cause, Context, Data, Effect, Exit, Layer, Match, Record, Schema, SchemaIssue } from "effect"
 import { GroupTypeId } from "../../platform/token/token.constant.ts"
-import type { AnyGroup, Input } from "../../platform/token/token.pure.ts"
+import type { AnyGroup, ServiceOf } from "../../platform/token/token.pure.ts"
 import { mapTokenKeyToCssVarName } from "../../platform/token/token.pure.map.ts"
 
 export type Contract = Readonly<Record<string, AnyGroup>>
 
-export type Values<T extends Contract> = { readonly [G in keyof T]: Input<T[G]> }
-
-export type ModeValues<T extends Contract> = { readonly [G in keyof T]?: Partial<Input<T[G]>> }
+export type Services<T extends Contract> = ServiceOf<T[keyof T]>
 
 export interface Theme<Name extends string = string, Mode extends string = string> {
   readonly "~weft": "Theme"
@@ -71,13 +69,21 @@ const decode = (tokens: Contract, values: unknown, theme: string, mode?: string)
   )
 }
 
+const valuesOf = (tokens: Contract, layer: Layer.Layer<never>) => {
+  const context = Effect.runSync(Effect.scoped(Layer.build(layer)))
+  return Record.getSomes(Record.map(tokens, (group) => Context.getOption(context, group)))
+}
+
+const changedFrom = (base: Readonly<Record<string, string>>, vars: Readonly<Record<string, string>>) =>
+  Record.filter(vars, (value, name) => base[name] !== value)
+
 export const make = <const T extends Contract, const Name extends string, const Mode extends string = never>(
   tokens: T,
   options: {
     readonly name: Name
     readonly default?: boolean
-    readonly values: Values<T>
-    readonly modes?: { readonly [M in Mode]: ModeValues<T> }
+    readonly layer: Layer.Layer<Services<T>>
+    readonly modes?: { readonly [M in Mode]: Layer.Layer<never> }
   }
 ): Theme<Name, Mode> => {
   const { name } = options
@@ -98,9 +104,9 @@ export const make = <const T extends Contract, const Name extends string, const 
       Match.orElse(() => self)
     )
   }
-  const base = decode(tokens, options.values, name)
-  const modes = Record.map((options.modes ?? {}) as Record<string, ModeValues<T>>, (values, mode) =>
-    decode(tokens, values, name, mode)
+  const base = decode(tokens, valuesOf(tokens, options.layer as Layer.Layer<never>), name)
+  const modes = Record.map((options.modes ?? {}) as Record<string, Layer.Layer<never>>, (layer, mode) =>
+    changedFrom(base, decode(tokens, valuesOf(tokens, layer), name, mode))
   )
   return {
     "~weft": "Theme",

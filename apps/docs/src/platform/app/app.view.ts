@@ -1,5 +1,6 @@
 import { Button, ButtonLink } from "@weft/components/button"
 import { Layout, LayoutContent, LayoutHeader, LayoutPanel } from "@weft/components/layout/layout"
+import { Popover } from "@weft/components/popover"
 import { HStack, VStack } from "@weft/components/layout/stack"
 import { Text } from "@weft/components/text"
 import { Head } from "@effect/ui"
@@ -9,7 +10,7 @@ import { ComponentDocsPage } from "../../feature/component-docs/component-docs.v
 import { GetStartedPage } from "../../feature/get-started/get-started.view.ts"
 import { IntroductionPage } from "../../feature/introduction/introduction.view.ts"
 import { ThemeBuilder } from "../../feature/theme-builder/theme-builder.component.ts"
-import { getOverrides } from "../../feature/theme-builder/customize.pure.ts"
+import { getCustomThemeSource, getOverrides } from "../../feature/theme-builder/customize.pure.ts"
 import { mapVarsToInlineStyle } from "../../feature/theme-builder/customize.pure.map.ts"
 import { isCustomized } from "../../feature/theme-builder/customize.pure.predicate.ts"
 import { TemplatePage } from "../../feature/templates/templates.view.ts"
@@ -52,17 +53,33 @@ const Header = AppDef.fragment((h, model: AppModel) =>
           Match.orElse(() => "☀")
         )
       }),
-      Button(h, {
+      Popover(h, {
+        key: "theme-panel",
         size: "sm",
+        wide: true,
         tone: Match.value(model.panel).pipe(
           Match.when(true, () => "primary" as const),
           Match.orElse(() => "neutral" as const)
         ),
-        onPress: AppMessageSchema.PressedPanel(),
-        children: Match.value(isCustomized({ choices: model.choices })).pipe(
+        open: model.panel,
+        onOpenChange: ({ open }) => AppMessageSchema.ChangedPanel({ open }),
+        trigger: Match.value(isCustomized({ choices: model.choices })).pipe(
           Match.when(true, () => "Theme: custom"),
           Match.orElse(() => `Theme: ${model.route.search.theme}`)
-        )
+        ),
+        children: [
+          ThemeBuilder(h, {
+            key: "theme-builder",
+            props: { theme: model.route.search.theme, mode: model.route.search.mode, choices: model.choices },
+            onEmit: {
+              PickedTheme: ({ theme }) => AppMessageSchema.PickedTheme({ theme }),
+              PickedMode: ({ mode }) => AppMessageSchema.PickedMode({ mode }),
+              Chose: ({ choices }) => AppMessageSchema.Chose({ choices }),
+              Reset: () => AppMessageSchema.ResetChoices(),
+              Closed: () => AppMessageSchema.ChangedPanel({ open: false })
+            }
+          })
+        ]
       }),
       Text(h.a, { size: "sm", tone: "muted" })
         .attr("href", "https://github.com/kndwin/weft")
@@ -115,7 +132,20 @@ const Body = AppDef.fragment((h, model: AppModel, page: Page) =>
   AppRoute.match(model.route, {
     Introduction: () => IntroductionPage(h),
     GetStarted: () => GetStartedPage(h),
-    Theming: () => ThemingPage(h),
+    Theming: () =>
+      ThemingPage(
+        h,
+        {
+          theme: model.route.search.theme,
+          customized: isCustomized({ choices: model.choices }),
+          custom: getCustomThemeSource({
+            choices: model.choices,
+            themes,
+            theme: getTheme({ name: model.route.search.theme })
+          })
+        },
+        AppMessageSchema.ChangedPanel({ open: true })
+      ),
     Component: () => ComponentDocsPage(h, page, getLook(model)),
     Template: () => TemplatePage(h, page, getLook(model)),
     Tokens: () => {
@@ -164,27 +194,7 @@ export const view = AppDef.view((h, model) => {
       LayoutPanel(h.nav, { side: "start" })
         .attr("aria-label", "Pages")
         .children(Sidebar(h, model, getPage(model))),
-      LayoutContent(h.main).children(Content(h, model)),
-      Match.value(model.panel).pipe(
-        Match.when(true, () =>
-          LayoutPanel(h.aside, { side: "end" })
-            .attr("aria-label", "Theme")
-            .children(
-              ThemeBuilder(h, {
-                key: "theme-builder",
-                props: { theme: look.theme, mode: look.mode, choices: model.choices },
-                onEmit: {
-                  PickedTheme: ({ theme }) => AppMessageSchema.PickedTheme({ theme }),
-                  PickedMode: ({ mode }) => AppMessageSchema.PickedMode({ mode }),
-                  Chose: ({ choices }) => AppMessageSchema.Chose({ choices }),
-                  Reset: () => AppMessageSchema.ResetChoices(),
-                  Closed: () => AppMessageSchema.PressedPanel()
-                }
-              })
-            )
-        ),
-        Match.orElse(() => undefined)
-      )
+      LayoutContent(h.main).children(Content(h, model))
     )
 })
 

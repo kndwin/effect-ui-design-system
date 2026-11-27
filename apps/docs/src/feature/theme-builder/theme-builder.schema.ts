@@ -55,5 +55,12 @@ export const GetOverridesInputSchema = Schema.Struct({
 })
 export type GetOverridesInput = typeof GetOverridesInputSchema.Type
 
+export const GetCustomThemeSourceInputSchema = Schema.Struct({
+  choices: ChoicesSchema,
+  themes: Schema.Array(ThemeDataSchema),
+  theme: ThemeDataSchema
+})
+export type GetCustomThemeSourceInput = typeof GetCustomThemeSourceInputSchema.Type
+
 export const MapVarsToInlineStyleInputSchema = Schema.Struct({ vars: VarsSchema })
 export type MapVarsToInlineStyleInput = typeof MapVarsToInlineStyleInputSchema.Type

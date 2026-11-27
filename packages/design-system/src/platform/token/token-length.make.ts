@@ -13,7 +13,11 @@ export const ValueSchema = Schema.Union([
           Match.when(Match.number, (n) => `${n}px`),
           Match.orElse((s) => s)
         ),
-      encode: (v) => v
+      encode: (v) =>
+        Match.value(/^-?\d*\.?\d+px$/.test(v)).pipe(
+          Match.when(true, () => Number.parseFloat(v)),
+          Match.orElse(() => v)
+        )
     }) as any
   )
 ) as unknown as Schema.Codec<string, number | `${number}px` | `${number}rem`>
