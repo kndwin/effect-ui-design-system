@@ -12,6 +12,7 @@ export const getPage = ({ route }: GetPageInput): Page | undefined =>
       page.id ===
       AppRoute.match(route, {
         Introduction: () => "introduction",
+        GetStarted: () => "get-started",
         Theming: () => "theming",
         Component: ({ params }) => params.id,
         Template: ({ params }) => params.id,
@@ -24,6 +25,7 @@ export const getPageRoute = ({ id, route }: GetPageRouteInput): AppRoute => {
   const search = route.search
   return Match.value(id).pipe(
     Match.when("introduction", () => AppRoute.Introduction({ search })),
+    Match.when("get-started", () => AppRoute.GetStarted({ search })),
     Match.when("theming", () => AppRoute.Theming({ search })),
     Match.when("tokens", () => AppRoute.Tokens({ search })),
     Match.when(Schema.is(ComponentIdSchema), (componentId) =>

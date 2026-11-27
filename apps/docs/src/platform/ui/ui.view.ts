@@ -1,6 +1,4 @@
-import { Button } from "@weft/components/button"
 import { Section } from "@weft/components/layout/section"
-import { HStack } from "@weft/components/layout/stack"
 import { Text } from "@weft/components/text"
 import type { Html } from "@effect/ui/html"
 
@@ -11,29 +9,6 @@ export const InlineCode = <Msg>(h: Html.H<Msg>, text: string) => Text(h.code, { 
 
 export const Pill = <Msg>(h: Html.H<Msg>, text: string) =>
   Text(Section(h.code, { surface: "muted", pad: "1" }), { mono: true, size: "xs", tone: "muted" }).children(text)
-
-export const Segmented = <Msg>(
-  h: Html.H<Msg>,
-  label: string,
-  items: ReadonlyArray<readonly [key: string, text: string, active: boolean, msg: Msg]>
-) =>
-  Section(h.div, { surface: "muted", pad: "1" })
-    .attr("role", "group")
-    .attr("aria-label", label)
-    .children(
-      HStack(h.div, { gap: "1" }).children(
-        ...items.map(([key, text, active, msg]) =>
-          Button(h, {
-            tone: "ghost",
-            size: "sm",
-            pressed: active,
-            onPress: msg,
-            label: `${label}: ${key}`,
-            children: text
-          })
-        )
-      )
-    )
 
 const logoWarp = "M12.5 4.5V27.5M19.5 4.5V27.5"
 const logoWeft = "M4.5 8.5H23.25a3.75 3.75 0 0 1 0 7.5H8.75a3.75 3.75 0 0 0 0 7.5H27.5"

@@ -3,11 +3,11 @@ import { HStack, VStack } from "@weft/components/layout/stack"
 import { Swatch } from "@weft/components/swatch"
 import { Text } from "@weft/components/text"
 import { Select } from "@weft/components/select"
-import { Match } from "effect"
+import { ToggleGroup } from "@weft/components/toggle-group"
+import { Match, Schema } from "effect"
 import { getTheme } from "../../platform/theme/theme.pure.ts"
 import { themes } from "../../platform/theme/themes.constant.ts"
 import { ModeSchema } from "../../platform/theme/theme.schema.ts"
-import { Segmented } from "../../platform/ui/ui.view.ts"
 import { getControls } from "./customize.pure.ts"
 import { scales } from "./theme-builder.constant.ts"
 import { ThemeBuilderDef } from "./theme-builder.define.ts"
@@ -45,21 +45,25 @@ export const view = ThemeBuilderDef.view((h) => {
             Match.orElse((picked) => ThemeBuilderMessageSchema.PressedTheme({ theme: picked }))
           )
       }),
-      Segmented(
-        h,
-        "Mode",
-        ModeSchema.literals.map(
-          (m) =>
-            [
-              m,
-              Match.value(m).pipe(
-                Match.when("light", () => "☀ Light"),
-                Match.orElse(() => "☾ Dark")
-              ),
-              mode === m,
-              ThemeBuilderMessageSchema.PressedMode({ mode: m })
-            ] as const
-        )
+      HStack(h.div).children(
+        ToggleGroup(h, {
+          key: "mode",
+          label: "Mode",
+          size: "sm",
+          items: ModeSchema.literals.map((m) => ({
+            value: m,
+            label: Match.value(m).pipe(
+              Match.when("light", () => "☀ Light"),
+              Match.orElse(() => "☾ Dark")
+            )
+          })),
+          value: [mode],
+          onToggle: ({ value }) =>
+            Match.value(value[0]).pipe(
+              Match.when(Schema.is(ModeSchema), (m) => ThemeBuilderMessageSchema.PressedMode({ mode: m })),
+              Match.orElse(() => undefined)
+            )
+        })
       )
     ),
     ...Match.value(choices.custom).pipe(
@@ -105,10 +109,19 @@ export const view = ThemeBuilderDef.view((h) => {
         ),
         row(
           "Scale",
-          Segmented(
-            h,
-            "Scale",
-            scales.map((s) => [String(s), `${s}%`, choices.scale === s, choose({ scale: s })] as const)
+          HStack(h.div).children(
+            ToggleGroup(h, {
+              key: "scale",
+              label: "Scale",
+              size: "sm",
+              items: scales.map((s) => ({ value: String(s), label: `${s}%` })),
+              value: [String(choices.scale)],
+              onToggle: ({ value }) =>
+                Match.value(scales.find((s) => String(s) === value[0])).pipe(
+                  Match.when(undefined, () => undefined),
+                  Match.orElse((scale) => choose({ scale }))
+                )
+            })
           )
         ),
         Button(h, { size: "sm", fill: true, onPress: ThemeBuilderMessageSchema.PressedReset(), children: "Reset" })

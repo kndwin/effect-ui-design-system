@@ -11,7 +11,7 @@ import { view } from "./code-block.view.ts"
 
 export type CodeBlockProps = Style.Props<typeof CodeBlockStyle>
 
-const CodeBlockImpl = CodeBlockDef.make({ init: () => ({ copied: false }), update, view })
+const CodeBlockImpl = CodeBlockDef.make({ init: () => ({ copied: false, expanded: false }), update, view })
 
 export const CodeBlock = <Msg>(h: Html.H<Msg>, options: CodeBlockOptions & CodeBlockProps): Child<Msg> => {
   const classes = getStyleClasses({ style: CodeBlockStyle, props: options })
@@ -29,6 +29,7 @@ export const CodeBlock = <Msg>(h: Html.H<Msg>, options: CodeBlockOptions & CodeB
       marks: options.marks as Record<string, LineMark> | undefined,
       wrap: options.wrap,
       copy: options.copy,
+      collapsible: options.collapsible,
       extraClass: options.class,
       classes
     }

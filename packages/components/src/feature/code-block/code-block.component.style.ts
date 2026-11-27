@@ -1,5 +1,6 @@
 import * as Style from "@weft/design-system/Style"
 import * as TokenColor from "@weft/design-system/TokenColor"
+import * as TokenLength from "@weft/design-system/TokenLength"
 import * as Variant from "@weft/design-system/Variant"
 import { CodeBlockParts } from "./code-block.parts.constant.ts"
 import { CodeToneSchema, ControlSizeSchema } from "../../platform/scale/scales.schema.ts"
@@ -9,6 +10,7 @@ import {
   Font,
   Motion,
   Radius,
+  Shadow,
   Size as Sizes,
   Spacing,
   Stroke,
@@ -80,7 +82,46 @@ export const CodeBlockStyle = Style.make(CodeBlockParts)({
       lineHeight: 1.7,
       whiteSpace: "pre",
       tabSize: 2,
-      states: { wrap: { whiteSpace: "pre-wrap", overflowWrap: "anywhere" }, focusVisible: { outline: "none" } }
+      states: {
+        wrap: { whiteSpace: "pre-wrap", overflowWrap: "anywhere" },
+        focusVisible: { outline: "none" },
+        collapsed: { maxHeight: TokenLength.makeCalc`${Sizes.header} * 2`, overflow: "hidden" }
+      }
+    },
+    expand: {
+      position: "absolute",
+      insetInline: 0,
+      bottom: 0,
+      display: "flex",
+      alignItems: "flex-end",
+      justifyContent: "center",
+      height: Sizes.header,
+      paddingBottom: Spacing[3],
+      backgroundImage: `linear-gradient(to bottom, ${TokenColor.makeAlpha(Code.surface, 0)}, ${Code.surface})`
+    },
+    expandButton: {
+      height: Sizes.controlSm,
+      paddingInline: Spacing[3],
+      fontFamily: Font.body,
+      fontSize: Text.sm,
+      fontWeight: Weight.medium,
+      color: Code.fg,
+      background: Code.surface,
+      borderWidth: Stroke.border,
+      borderStyle: "solid",
+      borderColor: Code.border,
+      borderRadius: Radius.control,
+      boxShadow: Shadow.control,
+      cursor: "pointer",
+      states: {
+        hover: { borderColor: Code.muted },
+        focusVisible: {
+          outlineStyle: "solid",
+          outlineWidth: Stroke.focus,
+          outlineOffset: Stroke.focusOffset,
+          outlineColor: Colors.ring
+        }
+      }
     },
     line: {
       display: "block",

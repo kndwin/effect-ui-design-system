@@ -1,4 +1,3 @@
-import { UiSchema } from "@effect/ui"
 import { Schema } from "effect"
 import { ModeSchema } from "../theme/theme.schema.ts"
 
@@ -10,9 +9,7 @@ export const ExamplePropsSchema = Schema.Struct({
 })
 export type ExampleProps = typeof ExamplePropsSchema.Type
 
-export const ExampleModelSchema = Schema.Struct({ codeOpen: Schema.Boolean })
-
-export const ExampleMessageSchema = UiSchema.TaggedEnum({ ToggledCode: { open: Schema.Boolean } })
+export const ExampleModelSchema = Schema.Struct({})
 
 export const MapSourceToExampleMetaInputSchema = Schema.Struct({ source: Schema.String, file: Schema.String })
 export type MapSourceToExampleMetaInput = typeof MapSourceToExampleMetaInputSchema.Type

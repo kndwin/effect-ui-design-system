@@ -7,7 +7,9 @@ const CodeBlockDescriptor = Kit.make({
     header: { states: {} },
     title: { states: {} },
     copy: { states: { copied: "[data-copied]", floating: "[data-floating]" } },
-    content: { states: { wrap: "[data-wrap]" } },
+    content: { states: { wrap: "[data-wrap]", collapsed: "[data-collapsed]" } },
+    expand: { states: {} },
+    expandButton: { states: {} },
     line: {
       states: { added: "[data-mark=added]", removed: "[data-mark=removed]", highlighted: "[data-mark=highlighted]" }
     },
