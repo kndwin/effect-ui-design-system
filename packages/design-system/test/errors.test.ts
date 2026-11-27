@@ -1,12 +1,12 @@
 import { assert, describe, it } from "@effect/vitest"
 import { Effect } from "effect"
-import * as Kit from "../src/kit/kit.make.ts"
-import * as Manifest from "../src/manifest/manifest.make.ts"
-import * as Style from "../src/style/style.make.ts"
-import { getStyleClasses } from "../src/style/style.pure.ts"
-import { mapSlotRuleToSelectors } from "../src/style/style.pure.map.ts"
-import * as Theme from "../src/theme/theme.make.ts"
-import * as TokenColor from "../src/tokens/token-color.make.ts"
+import * as Kit from "../src/platform/kit/kit.make.ts"
+import * as Manifest from "../src/platform/manifest/manifest.make.ts"
+import * as Style from "../src/feature/style/style.make.ts"
+import { getStyleClasses } from "../src/feature/style/style.pure.ts"
+import { mapSlotRuleToSelectors } from "../src/feature/style/style.pure.map.ts"
+import * as Theme from "../src/feature/theme/theme.make.ts"
+import * as TokenColor from "../src/platform/token/token-color.make.ts"
 
 const failure = <E>(f: () => unknown) => Effect.try({ try: f, catch: (e) => e as E }).pipe(Effect.flip)
 

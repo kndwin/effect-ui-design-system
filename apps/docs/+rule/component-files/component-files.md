@@ -20,7 +20,7 @@ export const Docs = Html.component({ name: "Docs" })
 
 ## ✅ docs example
 
-```ts good path=apps/docs/src/examples/rule-test/sizes.component.ts
+```ts good path=apps/docs/src/platform/example/catalog/rule-test/sizes.component.ts
 import { Html } from "@effect/ui/html"
 
 export const title = "Sizes"
@@ -37,7 +37,7 @@ export const Badge = (h: { span: unknown }) => h.span
 
 ## ❌ an example without its title and order → component-files/example-metadata
 
-```ts bad path=apps/docs/src/examples/rule-test/untitled.component.ts
+```ts bad path=apps/docs/src/platform/example/catalog/rule-test/untitled.component.ts
 import { Html } from "@effect/ui/html"
 
 export default Html.component({ name: "Untitled" })

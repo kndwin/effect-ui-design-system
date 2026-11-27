@@ -1,7 +1,13 @@
 import "@acme/theme-shadcn"
 import "@acme/theme-astryx"
-import { BrowserHost } from "@effect/ui/html"
+import { Router } from "@effect/ui"
+import { BrowserHost, BrowserRouter } from "@effect/ui/html"
 import { Effect, Layer } from "effect"
-import { Docs } from "./docs.component.ts"
+import { App } from "./platform/app/app.component.ts"
+import { AppRoute } from "./platform/app/app.route.ts"
 
-Layer.launch(BrowserHost.mount(Docs, {}, document.getElementById("root")!)).pipe(Effect.runFork)
+BrowserHost.mount(App, Router.props(AppRoute), document.getElementById("root")!).pipe(
+  Layer.provide(BrowserRouter.layer({ routes: AppRoute })),
+  Layer.launch,
+  Effect.runFork
+)

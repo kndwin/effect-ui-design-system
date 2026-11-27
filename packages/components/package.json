@@ -4,19 +4,19 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./button": "./src/button/button.component.ts",
-    "./avatar": "./src/avatar/avatar.component.ts",
-    "./code-block": "./src/code-block/code-block.component.ts",
-    "./tokens": "./src/contract.token.ts",
-    "./scales": "./src/scales.schema.ts",
-    "./manifest": "./src/manifest.constant.ts",
-    "./layout/stack": "./src/layout/stack.component.ts",
-    "./layout/grid": "./src/layout/grid.component.ts",
-    "./layout/center": "./src/layout/center.component.ts",
-    "./layout/section": "./src/layout/section.component.ts",
-    "./layout/layout": "./src/layout/layout.component.ts",
-    "./text": "./src/text/text.component.ts",
-    "./swatch": "./src/swatch/swatch.component.ts"
+    "./button": "./src/feature/button/button.component.ts",
+    "./avatar": "./src/feature/avatar/avatar.component.ts",
+    "./code-block": "./src/feature/code-block/code-block.component.ts",
+    "./tokens": "./src/platform/token/contract.token.ts",
+    "./scales": "./src/platform/scale/scales.schema.ts",
+    "./manifest": "./src/platform/manifest/manifest.constant.ts",
+    "./layout/stack": "./src/feature/layout/stack.component.ts",
+    "./layout/grid": "./src/feature/layout/grid.component.ts",
+    "./layout/center": "./src/feature/layout/center.component.ts",
+    "./layout/section": "./src/feature/layout/section.component.ts",
+    "./layout/layout": "./src/feature/layout/layout.component.ts",
+    "./text": "./src/feature/text/text.component.ts",
+    "./swatch": "./src/feature/swatch/swatch.component.ts"
   },
   "scripts": {
     "test": "bun --bun x vitest run"

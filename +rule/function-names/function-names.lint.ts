@@ -7,6 +7,7 @@ interface Convention {
   readonly suffix: string
   readonly pattern: RegExp
   readonly expected: string
+  readonly every?: boolean
 }
 
 const conventions: ReadonlyArray<Convention> = [
@@ -23,7 +24,23 @@ const conventions: ReadonlyArray<Convention> = [
     suffix: ".component.ts",
     pattern: /^([A-Z]\w*|on[A-Z]\w*)$/,
     expected: "a PascalCase component, or on… for a handler"
-  }
+  },
+  { suffix: ".define.ts", pattern: /^[A-Z]\w*Def$/, expected: "…Def", every: true },
+  {
+    suffix: ".update.ts",
+    pattern: /^(update|handle[A-Z]\w*)$/,
+    expected: "update, or handle… for a slice",
+    every: true
+  },
+  {
+    suffix: ".view.ts",
+    pattern: /^(view|head|[A-Z]\w*)$/,
+    expected: "view, head, or a PascalCase fragment",
+    every: true
+  },
+  { suffix: ".command.ts", pattern: /^[A-Z]\w*$/, expected: "a PascalCase Command", every: true },
+  { suffix: ".subscription.ts", pattern: /^subscriptions$/, expected: "subscriptions", every: true },
+  { suffix: ".route.ts", pattern: /^[A-Z]\w*Route$/, expected: "…Route", every: true }
 ]
 
 const isFunctionLike = (init: any): boolean =>
@@ -57,7 +74,7 @@ export default RuleModule.make(import.meta.url, {
       return {
         ExportNamedDeclaration: (node: any) =>
           Effect.forEach(
-            exportedNames(node).filter((e) => e.isFunction),
+            exportedNames(node).filter((e) => e.isFunction || convention?.every === true),
             ({ name }) =>
               Match.value(convention).pipe(
                 Match.when(undefined, () => Effect.void),

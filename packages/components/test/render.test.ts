@@ -2,9 +2,9 @@ import { UiSchema } from "@effect/ui"
 import { Html, HtmlServer } from "@effect/ui/html"
 import { assert, describe, it } from "@effect/vitest"
 import { Effect, Schema } from "effect"
-import { Avatar } from "../src/avatar/avatar.component.ts"
-import { Button } from "../src/button/button.component.ts"
-import { CodeBlock } from "../src/code-block/code-block.component.ts"
+import { Avatar } from "../src/feature/avatar/avatar.component.ts"
+import { Button } from "../src/feature/button/button.component.ts"
+import { CodeBlock } from "../src/feature/code-block/code-block.component.ts"
 
 const Msg = UiSchema.TaggedEnum({ Pressed: {} })
 const Demo = Html.component({ name: "Demo", model: Schema.Struct({}), message: Msg }).make({

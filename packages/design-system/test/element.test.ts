@@ -1,5 +1,5 @@
 import { assert, describe, it } from "@effect/vitest"
-import { make } from "../src/element/element.make.ts"
+import { make } from "../src/feature/style/element.make.ts"
 
 const element = {
   added: [] as Array<string | false | null | undefined>,

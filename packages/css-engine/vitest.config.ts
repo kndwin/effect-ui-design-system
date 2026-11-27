@@ -1,5 +1,5 @@
 import { defineConfig } from "vitest/config"
-import { makePlugin } from "./src/vite.build.ts"
+import { makePlugin } from "./src/platform/vite/vite.build.ts"
 
 export default defineConfig({
   plugins: [makePlugin({ include: /\.style\.fixture\.ts$/, adapter: "./adapter.fixture.ts" })],
