@@ -92,7 +92,7 @@ export default Html.component({
         .children(
           ...Array.filter(activity, (item) => !mentionsOnly || item.mention).map((item) =>
             HStack(h.li, { gap: "3", align: "center" }).children(
-              Avatar(h, { name: item.who, size: "sm" }),
+              Avatar(h, { key: `${mentionsOnly}-${item.who}`, name: item.who, size: "sm" }),
               StackItem(Text(h.span, { size: "sm" }), { grow: true }).children(
                 Text(h.strong, { weight: "medium" }).children(item.who),
                 ` ${item.what}`
