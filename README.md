@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/logo.svg" alt="" width="96" height="96" />
+  <img src="tools/assets/logo.svg" alt="" width="96" height="96" />
 </p>
 
 <h1 align="center">Weft</h1>
