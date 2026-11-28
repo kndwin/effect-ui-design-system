@@ -18,6 +18,7 @@ import { TemplatePage } from "../../feature/templates/templates.view.ts"
 import { ThemingPage } from "../../feature/theming/theming.view.ts"
 import { LlmsPage } from "../../feature/llms/llms.view.ts"
 import { TokensPage } from "../../feature/tokens/tokens.view.ts"
+import { DesignSystemPage } from "../../feature/design-system/design-system.view.ts"
 import { getLlmsIndex, getMarkdownPath } from "../markdown/markdown.pure.ts"
 import { pages } from "../content/content.constant.ts"
 import type { Page } from "../content/content.schema.ts"
@@ -155,6 +156,7 @@ const Body = AppDef.fragment((h, model: AppModel, page: Page) =>
     Component: () => ComponentDocsPage(h, page, getLook(model)),
     Template: () => TemplatePage(h, page, getLook(model)),
     Llms: () => LlmsPage(h, getLlmsIndex({ pages })),
+    DesignSystem: () => DesignSystemPage(h),
     Tokens: () => {
       const { theme, mode } = model.route.search
       const base = getTheme({ name: theme })

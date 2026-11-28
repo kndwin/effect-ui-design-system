@@ -384,6 +384,12 @@ export const pages: ReadonlyArray<Page> = [
     lead: "Preferences in a wide modal: a searchable section list beside the chosen section's switches and fields, saved or cancelled from the footer."
   },
   {
+    id: "design-system",
+    section: "Foundations",
+    title: "Design system",
+    lead: "@weft/design-system, the package Weft is built on: token groups, part descriptors, typed styles with variants, and themes as Effect layers, compiled to static CSS when Vite builds."
+  },
+  {
     id: "tokens",
     section: "Foundations",
     title: "Tokens",

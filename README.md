@@ -8,7 +8,8 @@
   A themeable design system for <a href="https://github.com/Effect-TS/ui"><code>@effect/ui-kit</code></a>, styled at build time.
   <br />
   <a href="https://weft-docs.kndwin.workers.dev"><strong>Docs</strong></a> ·
-  <a href="https://weft-docs.kndwin.workers.dev/get-started">Get started</a>
+  <a href="https://weft-docs.kndwin.workers.dev/get-started">Get started</a> ·
+  <a href="https://weft-docs.kndwin.workers.dev/design-system">Design system</a>
 </p>
 
 Components are styled against a token contract, and a theme fills that contract in. Like shadcn,
@@ -35,13 +36,13 @@ pnpm weft theme shadcn --name brand
 
 ## Packages
 
-| package               | what it is                                                   |
-| :-------------------- | :----------------------------------------------------------- |
-| `@weft/design-system` | token kinds, `Theme`, `Variant` and `Style`                  |
-| `@weft/css-engine`    | the Vite plugin that compiles styles to CSS at build time    |
-| `@weft/cli`           | `weft install`, `weft add` and `weft theme`                  |
-| `@weft/components`    | the components as source, which `weft add` copies from       |
-| `@weft/theme-*`       | the shadcn and astryx themes, which `weft theme` starts from |
+| package               | what it is                                                                                               |
+| :-------------------- | :------------------------------------------------------------------------------------------------------- |
+| `@weft/design-system` | token kinds, `Theme`, `Variant` and `Style` ([docs](https://weft-docs.kndwin.workers.dev/design-system)) |
+| `@weft/css-engine`    | the Vite plugin that compiles styles to CSS at build time                                                |
+| `@weft/cli`           | `weft install`, `weft add` and `weft theme`                                                              |
+| `@weft/components`    | the components as source, which `weft add` copies from                                                   |
+| `@weft/theme-*`       | the shadcn and astryx themes, which `weft theme` starts from                                             |
 
 ## Develop
 

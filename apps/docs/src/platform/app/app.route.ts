@@ -6,6 +6,7 @@ import { ThemingRoute } from "../../feature/theming/theming.route.ts"
 import { TemplatesRoute } from "../../feature/templates/templates.route.ts"
 import { LlmsRoute } from "../../feature/llms/llms.route.ts"
 import { TokensRoute } from "../../feature/tokens/tokens.route.ts"
+import { DesignSystemRoute } from "../../feature/design-system/design-system.route.ts"
 import { ThemeSearchSchema } from "../theme/theme.schema.ts"
 
 export const AppRoute = Route.union({
@@ -15,6 +16,7 @@ export const AppRoute = Route.union({
   Llms: LlmsRoute,
   Component: ComponentDocsRoute,
   Template: TemplatesRoute,
+  DesignSystem: DesignSystemRoute,
   Tokens: TokensRoute,
   NotFound: Route.make("/*", { search: ThemeSearchSchema.fields })
 })

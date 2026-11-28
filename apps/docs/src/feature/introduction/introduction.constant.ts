@@ -58,7 +58,9 @@ export const introductionSections: ReadonlyArray<ContentSection> = [
           }
         ]
       }),
-      TextBlockSchema.make({ text: "Ready to build? Get started walks through a first app." })
+      TextBlockSchema.make({
+        text: "Design system covers @weft/design-system in depth. Ready to build? Get started walks through a first app."
+      })
     ]
   }
 ]

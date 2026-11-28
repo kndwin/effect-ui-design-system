@@ -2,6 +2,7 @@ import { manifest } from "@weft/components/manifest"
 import { Array, Match, Record } from "effect"
 import { getInstallationSection } from "../../feature/component-docs/component-docs.pure.ts"
 import { getStartedNotice, getStartedSteps } from "../../feature/get-started/get-started.constant.ts"
+import { designSystemNotice, designSystemSections } from "../../feature/design-system/design-system.constant.ts"
 import { introductionSections } from "../../feature/introduction/introduction.constant.ts"
 import { llmsSections } from "../../feature/llms/llms.constant.ts"
 import { themesIntro, themingSections } from "../../feature/theming/theming.constant.ts"
@@ -68,6 +69,10 @@ const getBodyMarkdown = (page: Page): ReadonlyArray<string> =>
       ].join("\n\n")
     ]),
     Match.when("llms", () => llmsSections.map((section) => getSectionMarkdown(section))),
+    Match.when("design-system", () => [
+      mapBlockToMarkdown({ block: designSystemNotice }),
+      ...designSystemSections.map((section) => getSectionMarkdown(section))
+    ]),
     Match.when("tokens", getTokensMarkdown),
     Match.orElse(() =>
       Match.value(page.section).pipe(

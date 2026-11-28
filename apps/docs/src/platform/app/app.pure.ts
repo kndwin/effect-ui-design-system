@@ -17,6 +17,7 @@ export const getPage = ({ route }: GetPageInput): Page | undefined =>
         Llms: () => "llms",
         Component: ({ params }) => params.id,
         Template: ({ params }) => params.id,
+        DesignSystem: () => "design-system",
         Tokens: () => "tokens",
         NotFound: () => ""
       })
@@ -29,6 +30,7 @@ export const getPageRoute = ({ id, route }: GetPageRouteInput): AppRoute => {
     Match.when("get-started", () => AppRoute.GetStarted({ search })),
     Match.when("theming", () => AppRoute.Theming({ search })),
     Match.when("llms", () => AppRoute.Llms({ search })),
+    Match.when("design-system", () => AppRoute.DesignSystem({ search })),
     Match.when("tokens", () => AppRoute.Tokens({ search })),
     Match.when(Schema.is(ComponentIdSchema), (componentId) =>
       AppRoute.Component({ params: { id: componentId }, search })
