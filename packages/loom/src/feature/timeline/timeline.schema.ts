@@ -10,6 +10,9 @@ export const ClipSchema = Schema.Struct({
 })
 export type Clip = typeof ClipSchema.Type
 
+export const RecordingSchema = Schema.Struct({ clips: Schema.Array(ClipSchema), args: Schema.String })
+export type Recording = typeof RecordingSchema.Type
+
 export const ClipsInputSchema = Schema.Struct({ clips: Schema.Array(ClipSchema) })
 export type ClipsInput = typeof ClipsInputSchema.Type
 

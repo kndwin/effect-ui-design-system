@@ -1,4 +1,4 @@
-import { componentsJson, tsconfig, viteConfig, weftBase } from "@weft/cli/templates"
+import { tsconfig, viteConfig, weftBase, weftConfig } from "@weft/cli/templates"
 import {
   CodeBlockSchema,
   type ContentSection,
@@ -109,7 +109,7 @@ export const getStartedSteps: ReadonlyArray<ContentSection> = [
       text("Start from an empty folder with this package.json."),
       CodeBlockSchema.make({ code: appPackage, title: "package.json", language: "plain" }),
       text(
-        "Add the Weft CLI from the latest release, then let it install the rest: Effect, @effect/ui and @effect/ui-kit, @weft/design-system, the CSS engine, Vite and TypeScript, all pinned to the same release. It uses the package manager your lockfile or components.json names."
+        "Add the Weft CLI from the latest release, then let it install the rest: Effect, @effect/ui and @effect/ui-kit, @weft/design-system, the Weft Vite plugin, Vite and TypeScript, all pinned to the same release. It uses the package manager your lockfile names, or the one you pass with --package-manager."
       ),
       CodeBlockSchema.make({ code: cliCommand, language: "shell" }),
       text("To see the commands first without running them, pass --dry-run.")
@@ -119,11 +119,11 @@ export const getStartedSteps: ReadonlyArray<ContentSection> = [
     heading: "What weft install sets up",
     blocks: [
       text(
-        "It also writes three files when they're missing, and keeps yours if they exist. components.json tells the CLI where things go: ui is where weft add copies components, and themes is where weft theme writes themes. You can also pin packageManager there."
+        "It also writes three files when they're missing, and keeps yours if they exist. weft.config.ts tells the CLI where things go: paths.ui is where weft add copies components, and paths.themes is where weft theme writes themes. Once you have a theme, list it in themes, and Loom uses it."
       ),
-      CodeBlockSchema.make({ code: componentsJson, title: "components.json", language: "plain" }),
+      CodeBlockSchema.make({ code: weftConfig, title: "weft.config.ts" }),
       text(
-        "vite.config.ts adds the CSS engine, which evaluates every *.component.style.ts and *.theme.ts during the build and replaces them with class names and static CSS. Nothing is styled at runtime. It also points @/ at src."
+        "vite.config.ts adds the Weft plugin. It evaluates every *.component.style.ts and *.theme.ts during the build and replaces them with class names and static CSS, so nothing is styled at runtime. In dev it also serves Loom at /__weft/loom: a playground and message scenarios for every *.loom.ts. It also points @/ at src."
       ),
       CodeBlockSchema.make({ code: viteConfig, title: "vite.config.ts" }),
       text("tsconfig.json resolves @/ the same way, so components import as @/components/ui/button."),

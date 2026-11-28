@@ -1,6 +1,8 @@
-import { Data, Effect, FileSystem, Match, Option, Path, Schema } from "effect"
-import { configFile, defaultThemes, defaultUi } from "./config.constant.ts"
+import { pathToFileURL } from "node:url"
+import { Data, Effect, FileSystem, Option, Path, Schema } from "effect"
+import { configFile } from "./config.constant.ts"
 import { ConfigSchema } from "./config.schema.ts"
+import { make } from "./weft-config.make.ts"
 
 export class InvalidConfigError extends Data.TaggedError("InvalidConfigError")<{ readonly reason: string }> {
   override get message() {
@@ -8,24 +10,22 @@ export class InvalidConfigError extends Data.TaggedError("InvalidConfigError")<{
   }
 }
 
+const decodeConfig = Schema.decodeUnknownEffect(ConfigSchema)
+
 export const loadConfig = Effect.fn("cli/config/loadConfig")(function* (cwd: string) {
   const fs = yield* FileSystem.FileSystem
   const path = yield* Path.Path
   const file = path.join(cwd, configFile)
-  if (!(yield* fs.exists(file))) return {}
-  const text = yield* fs.readFileString(file)
-  return yield* Schema.decodeUnknownEffect(Schema.fromJsonString(ConfigSchema))(text).pipe(
+  if (!(yield* fs.exists(file))) return make()
+  const module = yield* Effect.tryPromise({
+    try: () => import(pathToFileURL(file).href) as Promise<{ readonly default?: unknown }>,
+    catch: (error) => new InvalidConfigError({ reason: String(error) })
+  })
+  const config = yield* decodeConfig(make((module.default ?? {}) as Parameters<typeof make>[0])).pipe(
     Effect.mapError((error) => new InvalidConfigError({ reason: error.message }))
   )
+  return config
 })
-
-const pick = (flag: Option.Option<string>, configured: string | undefined, fallback: string) =>
-  Option.getOrElse(flag, () =>
-    Match.value(configured).pipe(
-      Match.when(undefined, () => fallback),
-      Match.orElse((value) => value)
-    )
-  )
 
 export const loadPaths = Effect.fn("cli/config/loadPaths")(function* (
   cwd: string,
@@ -34,7 +34,7 @@ export const loadPaths = Effect.fn("cli/config/loadPaths")(function* (
   const config = yield* loadConfig(cwd)
   return {
     config,
-    ui: pick(flags.ui, config.ui, defaultUi),
-    themes: pick(flags.themes, config.themes, defaultThemes)
+    ui: Option.getOrElse(flags.ui, () => config.paths.ui),
+    themes: Option.getOrElse(flags.themes, () => config.paths.themes)
   }
 })

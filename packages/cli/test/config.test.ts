@@ -7,11 +7,11 @@ import { Effect, Option } from "effect"
 import { InvalidConfigError, loadPaths } from "../src/platform/config/config.build.ts"
 
 describe("loadPaths", () => {
-  it.effect("takes a flag over components.json, and components.json over the defaults", () =>
+  it.effect("takes a flag over weft.config.ts, and weft.config.ts over the defaults", () =>
     Effect.gen(function* () {
       // Arrange
       const cwd = mkdtempSync(join(tmpdir(), "weft-config-"))
-      writeFileSync(join(cwd, "components.json"), JSON.stringify({ ui: "app/ui" }))
+      writeFileSync(join(cwd, "weft.config.ts"), 'export default { paths: { ui: "app/ui" } }\n')
       // Act
       const configured = yield* loadPaths(cwd, { ui: Option.none(), themes: Option.none() })
       const flagged = yield* loadPaths(cwd, { ui: Option.some("lib/ui"), themes: Option.none() })
@@ -21,11 +21,22 @@ describe("loadPaths", () => {
     }).pipe(Effect.provide(NodeServices.layer))
   )
 
-  it.effect("fails on a components.json it can't read", () =>
+  it.effect("uses the defaults without a weft.config.ts", () =>
     Effect.gen(function* () {
       // Arrange
       const cwd = mkdtempSync(join(tmpdir(), "weft-config-"))
-      writeFileSync(join(cwd, "components.json"), JSON.stringify({ packageManager: "pip" }))
+      // Act
+      const paths = yield* loadPaths(cwd, { ui: Option.none(), themes: Option.none() })
+      // Assert
+      assert.deepStrictEqual([paths.ui, paths.themes], ["src/components/ui", "src"])
+    }).pipe(Effect.provide(NodeServices.layer))
+  )
+
+  it.effect("fails on a weft.config.ts with the wrong shape", () =>
+    Effect.gen(function* () {
+      // Arrange
+      const cwd = mkdtempSync(join(tmpdir(), "weft-config-"))
+      writeFileSync(join(cwd, "weft.config.ts"), "export default { paths: { ui: 3 } }\n")
       // Act
       const error = yield* Effect.flip(loadPaths(cwd, { ui: Option.none(), themes: Option.none() }))
       // Assert

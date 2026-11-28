@@ -11,6 +11,9 @@ importers:
       '@effect/ui':
         specifier: link:vendor/effect-ui/packages/ui
         version: link:vendor/effect-ui/packages/ui
+      '@effect/ui-devtools':
+        specifier: link:vendor/effect-ui/packages/ui-devtools
+        version: link:vendor/effect-ui/packages/ui-devtools
       '@effect/ui-kit':
         specifier: link:vendor/effect-ui/packages/ui-kit
         version: link:vendor/effect-ui/packages/ui-kit
@@ -97,52 +100,12 @@ importers:
       '@weft/css-engine':
         specifier: workspace:*
         version: link:../../packages/css-engine
-      alchemy:
-        specifier: 2.0.0-beta.87
-        version: 2.0.0-beta.87(@effect/platform-bun@4.1.6(effect@4.1.6))(@effect/platform-node@4.1.6(effect@4.1.6)(redis@6.4.0))(effect@4.1.6)(vite@8.3.8(@types/node@22.20.7)(esbuild@0.28.2)(yaml@2.9.1))(ws@8.23.0)
-      vite:
-        specifier: 8.3.8
-        version: 8.3.8(@types/node@22.20.7)(esbuild@0.28.2)(yaml@2.9.1)
-      vitest:
-        specifier: 5.1.1
-        version: 5.1.1(@types/node@22.20.7)(vite@8.3.8(@types/node@22.20.7)(esbuild@0.28.2)(yaml@2.9.1))
-
-  apps/loom:
-    dependencies:
-      '@effect/ui':
-        specifier: link:../../vendor/effect-ui/packages/ui
-        version: link:../../vendor/effect-ui/packages/ui
-      '@effect/ui-kit':
-        specifier: link:../../vendor/effect-ui/packages/ui-kit
-        version: link:../../vendor/effect-ui/packages/ui-kit
-      '@weft/components':
-        specifier: workspace:*
-        version: link:../../packages/components
-      '@weft/design-system':
-        specifier: workspace:*
-        version: link:../../packages/design-system
       '@weft/loom':
         specifier: workspace:*
         version: link:../../packages/loom
-      '@weft/theme-shadcn':
-        specifier: workspace:*
-        version: link:../../packages/themes/shadcn
-      effect:
-        specifier: 4.1.6
-        version: 4.1.6
-    devDependencies:
-      '@effect/platform-bun':
-        specifier: 4.1.6
-        version: 4.1.6(effect@4.1.6)
-      '@effect/vitest':
-        specifier: 4.1.6
-        version: 4.1.6(effect@4.1.6)(vitest@5.1.1(@types/node@22.20.7)(vite@8.3.8(@types/node@22.20.7)(esbuild@0.28.2)(yaml@2.9.1)))
-      '@types/node':
-        specifier: ^22.20.7
-        version: 22.20.7
-      '@weft/css-engine':
-        specifier: workspace:*
-        version: link:../../packages/css-engine
+      alchemy:
+        specifier: 2.0.0-beta.87
+        version: 2.0.0-beta.87(@effect/platform-bun@4.1.6(effect@4.1.6))(@effect/platform-node@4.1.6(effect@4.1.6)(redis@6.4.0))(effect@4.1.6)(vite@8.3.8(@types/node@22.20.7)(esbuild@0.28.2)(yaml@2.9.1))(ws@8.23.0)
       vite:
         specifier: 8.3.8
         version: 8.3.8(@types/node@22.20.7)(esbuild@0.28.2)(yaml@2.9.1)
@@ -158,6 +121,9 @@ importers:
       '@weft/components':
         specifier: workspace:*
         version: link:../components
+      '@weft/design-system':
+        specifier: workspace:*
+        version: link:../design-system
       '@weft/theme-astryx':
         specifier: workspace:*
         version: link:../themes/astryx
@@ -245,12 +211,37 @@ importers:
 
   packages/loom:
     dependencies:
+      '@weft/components':
+        specifier: workspace:*
+        version: link:../components
+      '@weft/design-system':
+        specifier: workspace:*
+        version: link:../design-system
+    devDependencies:
       '@effect/ui':
         specifier: link:../../vendor/effect-ui/packages/ui
         version: link:../../vendor/effect-ui/packages/ui
+      '@effect/ui-devtools':
+        specifier: link:../../vendor/effect-ui/packages/ui-devtools
+        version: link:../../vendor/effect-ui/packages/ui-devtools
+      '@effect/ui-kit':
+        specifier: link:../../vendor/effect-ui/packages/ui-kit
+        version: link:../../vendor/effect-ui/packages/ui-kit
+      '@effect/vitest':
+        specifier: 4.1.6
+        version: 4.1.6(effect@4.1.6)(vitest@5.1.1(@types/node@22.20.7)(vite@8.3.8(@types/node@22.20.7)(esbuild@0.28.2)(yaml@2.9.1)))
+      '@types/node':
+        specifier: ^22.20.7
+        version: 22.20.7
       effect:
-        specifier: ^4.1.6
+        specifier: 4.1.6
         version: 4.1.6
+      vite:
+        specifier: 8.3.8
+        version: 8.3.8(@types/node@22.20.7)(esbuild@0.28.2)(yaml@2.9.1)
+      vitest:
+        specifier: 5.1.1
+        version: 5.1.1(@types/node@22.20.7)(vite@8.3.8(@types/node@22.20.7)(esbuild@0.28.2)(yaml@2.9.1))
 
   packages/themes/astryx:
     dependencies:
@@ -277,6 +268,22 @@ importers:
       effect:
         specifier: 4.1.6
         version: 4.1.6
+
+  packages/vite:
+    dependencies:
+      '@weft/css-engine':
+        specifier: workspace:*
+        version: link:../css-engine
+      '@weft/loom':
+        specifier: workspace:*
+        version: link:../loom
+    devDependencies:
+      '@types/node':
+        specifier: ^22.20.7
+        version: 22.20.7
+      vite:
+        specifier: 8.3.8
+        version: 8.3.8(@types/node@22.20.7)(esbuild@0.28.2)(yaml@2.9.1)
 
 packages:
 

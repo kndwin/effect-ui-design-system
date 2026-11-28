@@ -26,6 +26,7 @@
     "@effect/vitest": "4.1.6",
     "@types/node": "^22.20.7",
     "@weft/css-engine": "workspace:*",
+    "@weft/loom": "workspace:*",
     "alchemy": "2.0.0-beta.87",
     "vite": "8.3.8",
     "vitest": "5.1.1"

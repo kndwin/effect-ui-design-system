@@ -1,4 +1,4 @@
-import type * as Loom from "@weft/loom/Loom"
+import type * as Loom from "../loom/loom.make.ts"
 import { HostDef } from "./host.define.ts"
 import { update } from "./host.update.ts"
 import { view } from "./host.view.ts"

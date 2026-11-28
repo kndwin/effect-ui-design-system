@@ -39,5 +39,7 @@ jobs:
           ./packages/css-engine
           ./packages/cli
           ./packages/components
+          ./packages/loom
+          ./packages/vite
           ./packages/themes/shadcn
           ./packages/themes/astryx

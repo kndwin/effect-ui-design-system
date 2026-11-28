@@ -8,6 +8,7 @@ export default Loom.make({
   args: {
     label: "Fruit",
     value: null,
+    disabled: false,
     items: [
       { value: "apple", label: "Apple" },
       { value: "pear", label: "Pear" }

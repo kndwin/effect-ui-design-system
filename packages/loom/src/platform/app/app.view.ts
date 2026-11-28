@@ -15,12 +15,14 @@ import {
   getSeqAt,
   getTicks
 } from "../../feature/timeline/timeline.pure.ts"
+import { getControls } from "../../feature/controls/controls.pure.ts"
+import type { Control } from "../../feature/controls/controls.schema.ts"
 import { mapTimeToLabel } from "../../feature/timeline/timeline.pure.map.ts"
 import type { Clip } from "../../feature/timeline/timeline.schema.ts"
 import { LoomCanvas } from "../canvas/canvas.command.ts"
 import { Logo } from "../ui/ui.view.ts"
 import { AppDef } from "./app.define.ts"
-import { type AppModel, AppMessageSchema, type LoomEntry, type Selected } from "./app.schema.ts"
+import { type AppModel, AppMessageSchema, type LoomEntry, type Selected, type ThemeEntry } from "./app.schema.ts"
 
 type H = Html.H<typeof AppMessageSchema.Type>
 
@@ -70,6 +72,9 @@ const Sidebar = AppDef.fragment((h, model: AppModel) =>
   )
 )
 
+const hasDark = (themes: ReadonlyArray<ThemeEntry>, model: AppModel) =>
+  themes.some((theme) => theme.name === model.theme && theme.modes.includes("dark"))
+
 const Header = AppDef.fragment((h, model: AppModel) =>
   LayoutHeader(h.header).children(
     HStack(h.div, { gap: "2" }).children(
@@ -77,17 +82,35 @@ const Header = AppDef.fragment((h, model: AppModel) =>
       Text(h.span, { weight: "semibold" }).children("Weft"),
       Text(h.span, { tone: "muted" }).children("Loom")
     ),
-    HStack(h.div, { gap: "3" }).children(
-      Text(h.span, { size: "sm", tone: "muted" }).children(`Theme ${h.props.theme}`),
-      Button(h, {
-        size: "sm",
-        onPress: AppMessageSchema.PressedMode(),
-        children: when(
-          model.mode === "light",
-          () => "☾ Dark",
-          () => "☀ Light"
-        )
-      })
+    HStack(h.div, { gap: "2" }).children(
+      Text(h.span, { size: "sm", tone: "muted" }).children("Theme"),
+      ...h.props.themes.map((theme) =>
+        Button(h, {
+          size: "sm",
+          tone: when(
+            theme.name === model.theme,
+            () => "neutral" as const,
+            () => "ghost" as const
+          ),
+          onPress: AppMessageSchema.PressedTheme({ theme: theme.name }),
+          children: theme.name
+        })
+      ),
+      ...when(
+        hasDark(h.props.themes, model),
+        () => [
+          Button(h, {
+            size: "sm",
+            onPress: AppMessageSchema.PressedMode(),
+            children: when(
+              model.mode === "light",
+              () => "☾ Dark",
+              () => "☀ Light"
+            )
+          })
+        ],
+        () => []
+      )
     )
   )
 )
@@ -118,17 +141,23 @@ const Canvas = AppDef.fragment((h, model: AppModel) =>
       Text(h.div, { size: "xs", tone: "muted", mono: true })
         .attr("style", css({ position: "absolute", top: "12px", left: "16px" }))
         .children(title(model)),
-      h.div.attr("style", css({ width: "280px", "padding-bottom": "120px" })).onMount(
-        LoomCanvas({
-          title: model.selected.title,
-          scenario: model.selected.scenario,
-          run: model.run,
-          seq: Match.value(model.at).pipe(
-            Match.when(null, () => null),
-            Match.orElse((at) => getSeqAt({ clips: model.clips, at }))
-          )
-        }).pipe(Mount.map((clips) => AppMessageSchema.Recorded({ clips })))
-      )
+      h.div
+        .attr(
+          "style",
+          css({ width: "fit-content", "min-width": "280px", "max-width": "90%", "padding-bottom": "120px" })
+        )
+        .onMount(
+          LoomCanvas({
+            title: model.selected.title,
+            scenario: model.selected.scenario,
+            run: model.run,
+            seq: Match.value(model.at).pipe(
+              Match.when(null, () => null),
+              Match.orElse((at) => getSeqAt({ clips: model.clips, at }))
+            ),
+            edit: model.edit
+          }).pipe(Mount.map((recording) => AppMessageSchema.Recorded(recording)))
+        )
     )
 )
 
@@ -371,35 +400,124 @@ const Block = (h: H, heading: string, body: string) =>
       .children(body)
   )
 
+const field = css({
+  width: "100%",
+  "box-sizing": "border-box",
+  padding: "6px 8px",
+  "border-radius": "6px",
+  border: "1px solid var(--color-border)",
+  background: "var(--color-surface)",
+  color: "var(--color-fg)",
+  font: "inherit",
+  "font-size": "13px"
+})
+
+const ControlInput = (h: H, control: Control) =>
+  Match.value(control.kind).pipe(
+    Match.when("boolean", () =>
+      Button(h, {
+        size: "sm",
+        tone: when(
+          control.value === "true",
+          () => "primary" as const,
+          () => "neutral" as const
+        ),
+        onPress: AppMessageSchema.EditedArg({
+          name: control.name,
+          kind: "boolean",
+          value: String(control.value !== "true")
+        }),
+        children: control.value
+      })
+    ),
+    Match.when("json", () =>
+      Text(h.pre, { size: "xs", mono: true })
+        .attr("style", css({ margin: 0, "white-space": "pre-wrap", opacity: 0.7 }))
+        .children(control.value)
+    ),
+    Match.when("multiline", () =>
+      h.textarea
+        .attr("aria-label", control.name)
+        .attr("rows", "6")
+        .attr("style", `${field};font-family:var(--font-mono);font-size:12px;resize:vertical`)
+        .children(control.value)
+        .on("change", ({ value }) => AppMessageSchema.EditedArg({ name: control.name, kind: "text", value }))
+    ),
+    Match.orElse((kind) =>
+      h.input
+        .attr("aria-label", control.name)
+        .attr(
+          "type",
+          when(
+            kind === "number",
+            () => "number",
+            () => "text"
+          )
+        )
+        .attr("style", field)
+        .attr("value", control.value)
+        .on("change", ({ value }) => AppMessageSchema.EditedArg({ name: control.name, kind, value }))
+    )
+  )
+
+const Controls = (h: H, model: AppModel) =>
+  VStack(h.div, { gap: "3", align: "stretch" }).children(
+    Text(h.div, { size: "xs", tone: "muted", caps: true }).children("Controls"),
+    ...getControls({ args: model.args }).map((control) =>
+      VStack(h.label, { gap: "1", align: "stretch" }).children(
+        Text(h.span, { size: "xs", mono: true }).children(control.name),
+        ControlInput(h, control)
+      )
+    )
+  )
+
+const live = (model: AppModel) => model.selected.scenario === "" && model.at === null
+
 const Inspector = AppDef.fragment((h, model: AppModel) =>
-  Option.match(getCurrentClip({ clips: model.clips, at: model.at }), {
-    onNone: () =>
-      VStack(h.div, { gap: "4", align: "stretch" }).children(
+  VStack(h.div, { gap: "6", align: "stretch" }).children(
+    ...when(
+      live(model),
+      () => [Controls(h, model)],
+      () => []
+    ),
+    Option.match(getCurrentClip({ clips: model.clips, at: model.at }), {
+      onNone: () =>
         Text(h.div, { tone: "muted", size: "sm" }).children(
           "No messages yet. Interact with the component, or run a scenario."
-        )
-      ),
-    onSome: (clip) =>
-      VStack(h.div, { gap: "4", align: "stretch" }).children(
-        Block(
-          h,
-          `Message #${clip.seq}`,
-          `${clip.tag}${when(
-            clip.payload === "",
-            () => "",
-            () => ` ${clip.payload}`
-          )}`
         ),
-        Block(h, `${model.selected.title} model`, clip.model),
-        Block(h, "Args", clip.args)
-      )
-  })
+      onSome: (clip) =>
+        VStack(h.div, { gap: "4", align: "stretch" }).children(
+          Block(
+            h,
+            `Message #${clip.seq}`,
+            `${clip.tag}${when(
+              clip.payload === "",
+              () => "",
+              () => ` ${clip.payload}`
+            )}`
+          ),
+          Block(h, `${model.selected.title} model`, clip.model),
+          ...when(
+            live(model),
+            () => [],
+            () => [Block(h, "Args", clip.args)]
+          )
+        )
+    })
+  )
 )
 
 export const view = AppDef.view((h, model) =>
   Layout(h.div)
-    .attr("data-theme", h.props.theme)
-    .attr("data-mode", model.mode)
+    .attr("data-theme", model.theme)
+    .attr(
+      "data-mode",
+      when(
+        hasDark(h.props.themes, model),
+        () => model.mode,
+        () => "light"
+      )
+    )
     .children(
       Header(h, model),
       LayoutPanel(h.aside, { side: "start" }).children(Sidebar(h, model)),

@@ -12,7 +12,10 @@ export const App = AppDef.make({
     run: 0,
     clips: [],
     at: null,
-    mode: "light" as const
+    mode: "light" as const,
+    theme: $.props.theme,
+    args: "",
+    edit: { count: 0, patch: "" }
   }),
   update,
   view

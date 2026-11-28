@@ -11,6 +11,7 @@
     "packages/themes/*/src",
     "apps/*/src",
     "apps/*/*.build.ts",
+    "apps/*/weft.config.ts",
     "apps/*/alchemy.run.ts",
     "apps/*/vitest.config.ts",
     "tools",

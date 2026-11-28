@@ -31,14 +31,16 @@ pnpm weft add button dialog stack
 pnpm weft theme shadcn --name brand
 ```
 
-`components.json` sets where components and themes go. For coding agents, the docs serve [`llms.txt`](https://weft-docs.kndwin.workers.dev/llms.txt), and every page is available as Markdown.
+`weft.config.ts` sets where components and themes go, and which themes Loom shows. In dev, the Vite plugin serves Loom at `/__weft/loom`: a playground and message scenarios for each component's `*.loom.ts`. For coding agents, the docs serve [`llms.txt`](https://weft-docs.kndwin.workers.dev/llms.txt), and every page is available as Markdown.
 
 ## Packages
 
 | package               | what it is                                                   |
 | :-------------------- | :----------------------------------------------------------- |
 | `@weft/design-system` | token kinds, `Theme`, `Variant` and `Style`                  |
-| `@weft/css-engine`    | the Vite plugin that compiles styles to CSS at build time    |
+| `@weft/vite`          | the Vite plugin: compiles styles at build time, serves Loom  |
+| `@weft/css-engine`    | the engine that compiles styles to CSS                       |
+| `@weft/loom`          | Loom: `Loom.make` for `*.loom.ts`, and its viewer            |
 | `@weft/cli`           | `weft install`, `weft add` and `weft theme`                  |
 | `@weft/components`    | the components as source, which `weft add` copies from       |
 | `@weft/theme-*`       | the shadcn and astryx themes, which `weft theme` starts from |
@@ -50,7 +52,7 @@ pnpm weft theme shadcn --name brand
 ```bash
 git clone --recurse-submodules https://github.com/kndwin/weft
 pnpm install
-pnpm docs   # the docs app
+pnpm docs   # the docs app, with Loom at /__weft/loom
 pnpm ci     # format, lint, typecheck, test and build
 ```
 

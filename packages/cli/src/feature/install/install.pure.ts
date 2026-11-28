@@ -49,6 +49,14 @@ export const getInstallCommands = ({
       `${effectUiBase}/ui-kit@${effectUiCommit}`,
       `${weftBase}/design-system@${release}`
     ],
-    [...add, "-D", "vite@^8", "typescript", `${weftBase}/css-engine@${release}`, `${weftBase}/cli@${release}`]
+    [
+      ...add,
+      "-D",
+      "vite@^8",
+      "typescript",
+      `${effectUiBase}/ui-devtools@${effectUiCommit}`,
+      `${weftBase}/vite@${release}`,
+      `${weftBase}/cli@${release}`
+    ]
   ]
 }

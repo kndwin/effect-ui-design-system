@@ -1,0 +1,38 @@
+{
+  "name": "@weft/vite",
+  "version": "0.0.0",
+  "description": "The Weft Vite plugin: compiles styles and themes at build time, and serves Loom at /__weft/loom in dev.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kndwin/weft.git",
+    "directory": "packages/vite"
+  },
+  "files": [
+    "dist",
+    "src",
+    "!src/**/*.test.ts"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./src/platform/vite/vite.build.ts"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": "./dist/platform/vite/vite.build.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "dependencies": {
+    "@weft/css-engine": "workspace:*",
+    "@weft/loom": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.7",
+    "vite": "8.3.8"
+  },
+  "peerDependencies": {
+    "vite": "^8.0.0"
+  }
+}

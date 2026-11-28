@@ -17,5 +17,8 @@ export const GetInstallCommandsInputSchema = Schema.Struct({
 })
 export type GetInstallCommandsInput = typeof GetInstallCommandsInputSchema.Type
 
-export const InstallOptionsSchema = Schema.Struct({ dryRun: Schema.Boolean })
+export const InstallOptionsSchema = Schema.Struct({
+  dryRun: Schema.Boolean,
+  packageManager: Schema.Option(PackageManagerSchema)
+})
 export type InstallOptions = typeof InstallOptionsSchema.Type

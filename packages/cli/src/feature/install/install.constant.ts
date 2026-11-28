@@ -6,18 +6,13 @@ export const effectUiBase = "https://pkg.pr.new/Effect-TS/ui/@effect"
 
 export const weftBase = "https://pkg.pr.new/kndwin/weft/@weft"
 
-export const viteConfig = `import { makePlugin } from "@weft/css-engine/vite"
+export const viteConfig = `import { makePlugin } from "@weft/vite"
 import { fileURLToPath } from "node:url"
 import { defineConfig } from "vite"
 
 export default defineConfig({
   resolve: { alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) } },
-  plugins: [
-    makePlugin({
-      include: /\\.(component\\.style|theme)\\.ts$/,
-      adapter: "@weft/design-system/Compile"
-    })
-  ]
+  plugins: [makePlugin()]
 })
 `
 
@@ -36,12 +31,13 @@ export const tsconfig = `{
     "types": ["vite/client"],
     "paths": { "@/*": ["./src/*"] }
   },
-  "include": ["src", "vite.config.ts"]
+  "include": ["src", "vite.config.ts", "weft.config.ts"]
 }
 `
 
-export const componentsJson = `{
-  "ui": "src/components/ui",
-  "themes": "src"
-}
+export const weftConfig = `import * as WeftConfig from "@weft/cli/WeftConfig"
+
+export default WeftConfig.make({
+  paths: { ui: "src/components/ui", themes: "src" }
+})
 `

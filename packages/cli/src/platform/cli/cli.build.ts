@@ -15,7 +15,7 @@ const overwrite = Flag.Boolean("overwrite").pipe(
 )
 
 const ui = Flag.String("ui").pipe(
-  Flag.withDescription('Where your components live. Defaults to "ui" in components.json, then src/components/ui.'),
+  Flag.withDescription("Where your components live. Defaults to paths.ui in weft.config.ts, then src/components/ui."),
   Flag.optional
 )
 
@@ -42,7 +42,7 @@ const theme = Command.make(
     base: Argument.String("base").pipe(Argument.withDescription("The theme to start from: shadcn or astryx.")),
     name: Flag.String("name").pipe(Flag.withDescription("Your theme's name."), Flag.withDefault("brand")),
     dir: Flag.String("dir").pipe(
-      Flag.withDescription('Where the theme file goes. Defaults to "themes" in components.json, then src.'),
+      Flag.withDescription("Where the theme file goes. Defaults to paths.themes in weft.config.ts, then src."),
       Flag.optional
     ),
     ui,
@@ -79,15 +79,16 @@ const install = Command.make(
     dryRun: Flag.Boolean("dry-run").pipe(
       Flag.withDescription("Print what would be installed and written, and change nothing."),
       Flag.withDefault(false)
+    ),
+    packageManager: Flag.Literals("package-manager", ["pnpm", "npm", "yarn", "bun"]).pipe(
+      Flag.withDescription("The package manager to install with. Detected from the lockfile when left out."),
+      Flag.optional
     )
   },
-  (options) =>
-    runInstall(options).pipe(
-      Effect.catchTags({ UnpublishedCliError: fail, CommandFailedError: fail, InvalidConfigError: fail })
-    )
+  (options) => runInstall(options).pipe(Effect.catchTags({ UnpublishedCliError: fail, CommandFailedError: fail }))
 ).pipe(
   Command.withDescription(
-    "Install Effect, @effect/ui and Weft at this CLI's release, and add components.json, vite.config.ts and tsconfig.json if they're missing."
+    "Install Effect, @effect/ui and Weft at this CLI's release, and add weft.config.ts, vite.config.ts and tsconfig.json if they're missing."
   )
 )
 

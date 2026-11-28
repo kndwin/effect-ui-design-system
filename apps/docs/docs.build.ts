@@ -1,4 +1,5 @@
 import * as CssEngine from "@weft/css-engine/vite"
+import * as LoomVite from "@weft/loom/vite"
 import { BunRuntime, BunServices } from "@effect/platform-bun"
 import { Effect, FileSystem, Layer, Match, Path, String } from "effect"
 import { Command, Flag } from "effect/cli"
@@ -67,7 +68,7 @@ const config = Effect.gen(function* () {
     root,
     configFile: false,
     define: { "import.meta.env.VITE_WEFT_RELEASE": JSON.stringify(release) },
-    plugins: [css, markdownPlugin]
+    plugins: [css, markdownPlugin, LoomVite.makePlugin()]
   } satisfies InlineConfig
 })
 

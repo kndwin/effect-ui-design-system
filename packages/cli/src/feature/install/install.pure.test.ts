@@ -3,7 +3,7 @@ import { Option } from "effect"
 import { getInstallCommands, getPackageManager, getRelease } from "./install.pure.ts"
 
 describe("getPackageManager", () => {
-  it("prefers components.json, then the lockfile, then the user agent", () => {
+  it("prefers --package-manager, then the lockfile, then the user agent", () => {
     // Arrange
     const inputs = [
       { configured: "bun" as const, lockfiles: ["pnpm-lock.yaml"] },

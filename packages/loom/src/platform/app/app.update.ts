@@ -1,4 +1,5 @@
 import { Match } from "effect"
+import { composePatch } from "../../feature/controls/controls.pure.ts"
 import { getSteppedAt } from "../../feature/timeline/timeline.pure.ts"
 import { AppDef } from "./app.define.ts"
 
@@ -20,5 +21,11 @@ export const update = AppDef.update({
       Match.orElse(() => "light" as const)
     )
   }),
-  Recorded: ($, { clips }) => ({ ...$.model, clips })
+  PressedTheme: ($, { theme }) => ({ ...$.model, theme }),
+  EditedArg: ($, { name, kind, value }) => ({
+    ...$.model,
+    at: null,
+    edit: { count: $.model.edit.count + 1, patch: composePatch({ name, kind, value }) }
+  }),
+  Recorded: ($, { clips, args }) => ({ ...$.model, clips, args })
 })

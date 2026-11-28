@@ -1,22 +1,54 @@
 {
   "name": "@weft/loom",
   "version": "0.0.0",
-  "private": true,
   "description": "Loom: a playground and message scenarios for each Weft component.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kndwin/weft.git",
     "directory": "packages/loom"
   },
+  "files": [
+    "dist",
+    "src",
+    "!src/**/*.test.ts"
+  ],
   "type": "module",
   "exports": {
     "./Loom": "./src/platform/loom/loom.make.ts",
-    "./LoomSchema": "./src/platform/loom/loom.schema.ts"
+    "./LoomSchema": "./src/platform/loom/loom.schema.ts",
+    "./App": "./src/platform/app/app.component.ts",
+    "./Canvas": "./src/platform/canvas/canvas.command.ts",
+    "./vite": "./src/platform/vite/vite.build.ts"
+  },
+  "publishConfig": {
+    "exports": {
+      "./Loom": "./dist/platform/loom/loom.make.js",
+      "./LoomSchema": "./dist/platform/loom/loom.schema.js",
+      "./App": "./dist/platform/app/app.component.js",
+      "./Canvas": "./dist/platform/canvas/canvas.command.js",
+      "./vite": "./dist/platform/vite/vite.build.js"
+    }
+  },
+  "scripts": {
+    "test": "bun --bun x vitest run",
+    "build": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@effect/ui": "link:../../vendor/effect-ui/packages/ui"
+    "@weft/components": "workspace:*",
+    "@weft/design-system": "workspace:*"
+  },
+  "devDependencies": {
+    "@effect/ui": "link:../../vendor/effect-ui/packages/ui",
+    "@effect/ui-devtools": "link:../../vendor/effect-ui/packages/ui-devtools",
+    "@effect/ui-kit": "link:../../vendor/effect-ui/packages/ui-kit",
+    "@effect/vitest": "4.1.6",
+    "@types/node": "^22.20.7",
+    "effect": "4.1.6",
+    "vite": "8.3.8",
+    "vitest": "5.1.1"
   },
   "peerDependencies": {
-    "effect": "^4.1.6"
+    "effect": "^4.1.6",
+    "vite": "^8.0.0"
   }
 }

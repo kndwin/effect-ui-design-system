@@ -1,10 +1,9 @@
 import { fileURLToPath } from "node:url"
 import { Array, Console, Data, Effect, FileSystem, Option, Path, Schema } from "effect"
 import { ChildProcess, ChildProcessSpawner } from "effect/process"
-import { loadConfig } from "../../platform/config/config.build.ts"
 import { configFile } from "../../platform/config/config.constant.ts"
 import { loadPackageRoot, runWriteFile } from "../../platform/recipe/recipe.build.ts"
-import { componentsJson, tsconfig, viteConfig } from "./install.constant.ts"
+import { tsconfig, viteConfig, weftConfig } from "./install.constant.ts"
 import { getInstallCommands, getPackageManager, getRelease } from "./install.pure.ts"
 import type { InstallOptions } from "./install.schema.ts"
 
@@ -51,13 +50,12 @@ export const runInstall = Effect.fn("cli/install/runInstall")(function* (options
   const fs = yield* FileSystem.FileSystem
   const path = yield* Path.Path
   const cwd = process.cwd()
-  const config = yield* loadConfig(cwd)
   const lockfiles = yield* Effect.filter(
     ["pnpm-lock.yaml", "bun.lock", "bun.lockb", "yarn.lock", "package-lock.json"],
     (file) => fs.exists(path.join(cwd, file))
   )
   const packageManager = getPackageManager({
-    ...Option.match(Option.fromNullishOr(config.packageManager), {
+    ...Option.match(options.packageManager, {
       onNone: () => ({}),
       onSome: (configured) => ({ configured })
     }),
@@ -74,7 +72,7 @@ export const runInstall = Effect.fn("cli/install/runInstall")(function* (options
   }
   const files = Array.map(
     [
-      [configFile, componentsJson],
+      [configFile, weftConfig],
       ["vite.config.ts", viteConfig],
       ["tsconfig.json", tsconfig]
     ] as const,

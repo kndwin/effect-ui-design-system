@@ -1,7 +1,7 @@
 {
   "name": "@weft/cli",
   "version": "0.0.0",
-  "description": "weft add and weft theme: copy Weft components and a starter theme into your app.",
+  "description": "weft install, weft add and weft theme, and WeftConfig for weft.config.ts.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kndwin/weft.git",
@@ -19,7 +19,8 @@
   "type": "module",
   "exports": {
     "./add": "./src/feature/add/add.build.ts",
-    "./templates": "./src/feature/install/install.constant.ts"
+    "./templates": "./src/feature/install/install.constant.ts",
+    "./WeftConfig": "./src/platform/config/weft-config.make.ts"
   },
   "publishConfig": {
     "bin": {
@@ -27,7 +28,8 @@
     },
     "exports": {
       "./add": "./dist/feature/add/add.build.js",
-      "./templates": "./dist/feature/install/install.constant.js"
+      "./templates": "./dist/feature/install/install.constant.js",
+      "./WeftConfig": "./dist/platform/config/weft-config.make.js"
     }
   },
   "scripts": {
@@ -37,6 +39,7 @@
   "dependencies": {
     "@effect/platform-node": "4.1.6",
     "@weft/components": "workspace:*",
+    "@weft/design-system": "workspace:*",
     "@weft/theme-astryx": "workspace:*",
     "@weft/theme-shadcn": "workspace:*",
     "effect": "4.1.6"
