@@ -1,0 +1,22 @@
+{
+  "name": "@weft/loom",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Loom: a playground and message scenarios for each Weft component.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kndwin/weft.git",
+    "directory": "packages/loom"
+  },
+  "type": "module",
+  "exports": {
+    "./Loom": "./src/platform/loom/loom.make.ts",
+    "./LoomSchema": "./src/platform/loom/loom.schema.ts"
+  },
+  "dependencies": {
+    "@effect/ui": "link:../../vendor/effect-ui/packages/ui"
+  },
+  "peerDependencies": {
+    "effect": "^4.1.6"
+  }
+}

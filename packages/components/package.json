@@ -10,7 +10,8 @@
   "files": [
     "dist",
     "src",
-    "!src/**/*.test.ts"
+    "!src/**/*.test.ts",
+    "!src/**/*.loom.ts"
   ],
   "type": "module",
   "exports": {
@@ -147,6 +148,7 @@
     "@effect/ui-kit": "link:../../vendor/effect-ui/packages/ui-kit",
     "@effect/vitest": "4.1.6",
     "@weft/css-engine": "workspace:*",
+    "@weft/loom": "workspace:*",
     "effect": "4.1.6",
     "vitest": "5.1.1"
   },

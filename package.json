@@ -9,6 +9,7 @@
     "fmt:check": "bun --bun x oxfmt --check",
     "test": "pnpm -r --workspace-concurrency=1 test",
     "docs": "pnpm --filter docs dev",
+    "loom": "pnpm --filter loom dev",
     "build": "pnpm --filter docs build",
     "build:packages": "pnpm --filter './packages/**' run build",
     "ci": "pnpm fmt:check && pnpm lint && pnpm check && pnpm test && pnpm test:rules && pnpm build",

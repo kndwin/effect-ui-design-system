@@ -13,6 +13,7 @@ lint fails without one.
 | `*.token.ts`                                                                                 | the token contract                                          | `+rule/token-files/token-files.md`                     |
 | `*.theme.ts`                                                                                 | only `Theme.make(Tokens, …)`                                | `+rule/theme-files/theme-files.md`                     |
 | `*.make.ts`                                                                                  | a module's interface: exports `make`                        | `+rule/make-files/make-files.md`                       |
+| `*.loom.ts`                                                                                  | a playground and scenarios for a component                  | `+rule/loom-files/loom-files.md`                       |
 | `*.schema.ts`                                                                                | Schemas and their types                                     | `+rule/schema-files/schema-files.md`                   |
 | `*.constant.ts`                                                                              | plain values and their types                                | `+rule/constant-files/constant-files.md`               |
 | `*.pure.ts`                                                                                  | pure getters and composers                                  | `+rule/pure-files/pure-files.md`                       |

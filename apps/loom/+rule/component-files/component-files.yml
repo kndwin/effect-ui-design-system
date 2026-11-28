@@ -1,0 +1,12 @@
+id: component-files/app-component
+language: TypeScript
+severity: error
+message: An app's *.component.ts exports an Html.component, or makes one from its *.define.ts. See +rule/component-files/component-files.md.
+rule:
+  kind: program
+  not:
+    has:
+      stopBy: end
+      any:
+        - pattern: $HTML.component({ $$$ })
+        - pattern: $DEF.make({ $$$ })

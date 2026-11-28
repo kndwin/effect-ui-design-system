@@ -1,0 +1,10 @@
+id: loom-files/default-loom
+language: TypeScript
+severity: error
+message: A *.loom.ts file has `export default Loom.make({ … })`. See packages/components/+rule/loom-files/loom-files.md.
+rule:
+  kind: program
+  not:
+    has:
+      kind: export_statement
+      regex: ^export default Loom\.make\(

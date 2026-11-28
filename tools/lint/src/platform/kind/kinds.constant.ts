@@ -44,6 +44,7 @@ export const kinds: Readonly<Record<string, ReadonlyArray<string>>> = {
     ".theme.ts"
   ],
   "make-files": [".make.ts"],
+  "loom-files": [".loom.ts"],
   "schema-files": [".schema.ts"],
   "constant-files": [".constant.ts"],
   "test-files": [".test.ts"],
@@ -66,6 +67,7 @@ export const fileKinds = [
   { suffix: ".token.ts", doc: "token-files" },
   { suffix: ".theme.ts", doc: "theme-files" },
   { suffix: ".make.ts", doc: "make-files" },
+  { suffix: ".loom.ts", doc: "loom-files" },
   { suffix: ".schema.ts", doc: "schema-files" },
   { suffix: ".constant.ts", doc: "constant-files" },
   { suffix: ".pure.map.test.ts", doc: "test-files", colocated: true },
