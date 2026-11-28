@@ -1,19 +1,39 @@
 import { fileURLToPath } from "node:url"
-import { Console, Effect, FileSystem, HashSet, Path, Schema } from "effect"
-import { mapPathToRecipeFile, mapSourceToImports, mapSourceToRecipeSource } from "./recipe.pure.map.ts"
+import { Console, Effect, FileSystem, HashSet, Path, Record, Schema } from "effect"
+import {
+  mapPathToRecipeFile,
+  mapPathToSourcePath,
+  mapSourceToImports,
+  mapSourceToRecipeSource
+} from "./recipe.pure.map.ts"
 import { ComponentPackageSchema, type WriteRecipeOptions } from "./recipe.schema.ts"
 
-export const loadComponentsRoot = Effect.fn("cli/recipe/loadComponentsRoot")(function* () {
+export const loadPackageRoot = Effect.fn("cli/recipe/loadPackageRoot")(function* (file: string) {
+  const fs = yield* FileSystem.FileSystem
   const path = yield* Path.Path
-  const tokens = fileURLToPath(import.meta.resolve("@weft/components/tokens"))
-  return path.resolve(path.dirname(tokens), "..", "..", "..")
+  let dir = path.dirname(file)
+  while (!(yield* fs.exists(path.join(dir, "package.json"))) && path.dirname(dir) !== dir) dir = path.dirname(dir)
+  return dir
+})
+
+export const loadComponentsRoot = Effect.fn("cli/recipe/loadComponentsRoot")(function* () {
+  return yield* loadPackageRoot(fileURLToPath(import.meta.resolve("@weft/components/tokens")))
+})
+
+export const loadSourceFile = Effect.fn("cli/recipe/loadSourceFile")(function* (specifier: string) {
+  const fs = yield* FileSystem.FileSystem
+  const path = yield* Path.Path
+  const file = fileURLToPath(import.meta.resolve(specifier))
+  const root = yield* loadPackageRoot(file)
+  return yield* fs.readFileString(path.join(root, mapPathToSourcePath({ path: path.relative(root, file) })))
 })
 
 export const loadExports = Effect.fn("cli/recipe/loadExports")(function* (root: string) {
   const fs = yield* FileSystem.FileSystem
   const path = yield* Path.Path
   const text = yield* fs.readFileString(path.join(root, "package.json"))
-  return (yield* Schema.decodeUnknownEffect(Schema.fromJsonString(ComponentPackageSchema))(text)).exports
+  const { exports } = yield* Schema.decodeUnknownEffect(Schema.fromJsonString(ComponentPackageSchema))(text)
+  return Record.map(exports, (file) => `./${mapPathToSourcePath({ path: file.replace(/^\.\//, "") })}`)
 })
 
 export const scanRecipeFiles = Effect.fn("cli/recipe/scanRecipeFiles")(function* (

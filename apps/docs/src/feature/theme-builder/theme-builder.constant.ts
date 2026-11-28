@@ -1,4 +1,4 @@
-import type { Choices } from "./theme-builder.schema.ts"
+import type { Choices } from "@weft/components/CustomizeSchema"
 
 export const scales = [90, 100, 110] as const
 

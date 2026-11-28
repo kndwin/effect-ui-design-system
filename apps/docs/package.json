@@ -13,6 +13,7 @@
   "dependencies": {
     "@effect/ui": "link:../../vendor/effect-ui/packages/ui",
     "@effect/ui-kit": "link:../../vendor/effect-ui/packages/ui-kit",
+    "@weft/cli": "workspace:*",
     "@weft/components": "workspace:*",
     "@weft/design-system": "workspace:*",
     "@weft/theme-astryx": "workspace:*",

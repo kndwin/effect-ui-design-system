@@ -1,6 +1,12 @@
-const weft = "https://pkg.pr.new/kndwin/effect-ui-design-system/@weft"
-const effectUi = "https://pkg.pr.new/Effect-TS/ui/@effect"
-const effectUiCommit = "9dc3482"
+import { componentsJson, tsconfig, viteConfig, weftBase } from "@weft/cli/templates"
+import {
+  CodeBlockSchema,
+  type ContentSection,
+  NoticeBlockSchema,
+  TextBlockSchema
+} from "../../platform/content/block.schema.ts"
+
+const release: string = import.meta.env["VITE_WEFT_RELEASE"]
 
 export const appPackage = `{
   "name": "my-app",
@@ -9,45 +15,10 @@ export const appPackage = `{
   "scripts": { "dev": "vite", "build": "vite build" }
 }`
 
-export const installCommand = `pnpm add effect@4.1.6 \\
-  ${effectUi}/ui@${effectUiCommit} \\
-  ${effectUi}/ui-kit@${effectUiCommit} \\
-  ${weft}/design-system@main
-pnpm add -D vite@8 typescript \\
-  ${weft}/css-engine@main \\
-  ${weft}/cli@main`
+export const cliCommand = `pnpm add -D ${weftBase}/cli@${release}
+pnpm weft install`
 
-export const viteConfig = `import { makePlugin } from "@weft/css-engine/vite"
-import { fileURLToPath } from "node:url"
-import { defineConfig } from "vite"
-
-export default defineConfig({
-  resolve: { alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) } },
-  plugins: [
-    makePlugin({
-      include: /\\.(component\\.style|theme)\\.ts$/,
-      adapter: "@weft/design-system/Compile"
-    })
-  ]
-})`
-
-export const tsconfig = `{
-  "compilerOptions": {
-    "target": "ES2023",
-    "module": "Preserve",
-    "moduleResolution": "Bundler",
-    "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
-    "noEmit": true,
-    "strict": true,
-    "exactOptionalPropertyTypes": true,
-    "skipLibCheck": true,
-    "lib": ["ES2023", "DOM", "DOM.Iterable"],
-    "types": ["vite/client"],
-    "paths": { "@/*": ["./src/*"] }
-  },
-  "include": ["src", "vite.config.ts"]
-}`
+export const dryRunCommand = "pnpm weft install --dry-run"
 
 export const addCommand = "pnpm weft add button text stack layout"
 
@@ -124,3 +95,87 @@ export const indexFile = `<!doctype html>
 </html>`
 
 export const devCommand = "pnpm dev"
+
+const text = (value: string) => TextBlockSchema.make({ text: value })
+
+export const getStartedNotice = NoticeBlockSchema.make({
+  text: "Weft components are recipes. You copy their source into your app and own it, like shadcn. Your app depends on @weft/design-system only for token kinds, Theme, Style and the build step. Weft isn't on npm yet: every release is published to pkg.pr.new, and @effect/ui comes from its own pkg.pr.new snapshots. weft install sorts out both."
+})
+
+export const getStartedSteps: ReadonlyArray<ContentSection> = [
+  {
+    heading: "Create your app",
+    blocks: [
+      text("Start from an empty folder with this package.json."),
+      CodeBlockSchema.make({ code: appPackage, title: "package.json", language: "plain" }),
+      text(
+        "Add the Weft CLI from the latest release, then let it install the rest: Effect, @effect/ui and @effect/ui-kit, @weft/design-system, the CSS engine, Vite and TypeScript, all pinned to the same release. It uses the package manager your lockfile or components.json names."
+      ),
+      CodeBlockSchema.make({ code: cliCommand, language: "shell" }),
+      text("To see the commands first without running them, pass --dry-run.")
+    ]
+  },
+  {
+    heading: "What weft install sets up",
+    blocks: [
+      text(
+        "It also writes three files when they're missing, and keeps yours if they exist. components.json tells the CLI where things go: ui is where weft add copies components, and themes is where weft theme writes themes. You can also pin packageManager there."
+      ),
+      CodeBlockSchema.make({ code: componentsJson, title: "components.json", language: "plain" }),
+      text(
+        "vite.config.ts adds the CSS engine, which evaluates every *.component.style.ts and *.theme.ts during the build and replaces them with class names and static CSS. Nothing is styled at runtime. It also points @/ at src."
+      ),
+      CodeBlockSchema.make({ code: viteConfig, title: "vite.config.ts" }),
+      text("tsconfig.json resolves @/ the same way, so components import as @/components/ui/button."),
+      CodeBlockSchema.make({ code: tsconfig, title: "tsconfig.json", language: "plain", collapsible: true })
+    ]
+  },
+  {
+    heading: "Add components",
+    blocks: [
+      text(
+        "weft add copies each component into src/components/ui, along with everything it imports: the token contract, shared scales, ui-kit parts and any other component it uses. Imports are rewritten to point at your copies."
+      ),
+      CodeBlockSchema.make({ code: addCommand, language: "shell" }),
+      CodeBlockSchema.make({ code: uiTree, language: "plain" }),
+      text(
+        "Run it with no names to list every component. A file you already have is kept, so your edits are safe; pass --overwrite to take the latest version instead."
+      ),
+      CodeBlockSchema.make({ code: listCommand, language: "shell" })
+    ]
+  },
+  {
+    heading: "Create your theme",
+    blocks: [
+      text(
+        "A theme fills in every token of your contract, and modes override part of it. weft theme starts yours from a copy of a shipped one (shadcn or astryx), named and wired to your contract."
+      ),
+      CodeBlockSchema.make({ code: themeCommand, language: "shell" }),
+      text(
+        "Or design it in the theme panel first: pick custom, choose an accent, radius, density and fonts, and Theming gives you the weft theme command that writes that exact theme."
+      ),
+      text(
+        "Each token group is provided with Layer.succeed, and dark mode is a layer of the groups it changes. Change the values to make it yours, or build one in the theme panel and copy it from Theming. The compiler and the build both fail on a missing token or a bad value."
+      ),
+      CodeBlockSchema.make({ code: themeFile, title: "src/brand.theme.ts" })
+    ]
+  },
+  {
+    heading: "Mount and render",
+    blocks: [
+      text("Importing the theme adds its CSS variables."),
+      CodeBlockSchema.make({ code: indexFile, title: "index.html", language: "plain" }),
+      CodeBlockSchema.make({ code: mainFile, title: "src/main.ts" }),
+      CodeBlockSchema.make({ code: appFile, title: "src/app.component.ts", lineNumbers: true }),
+      CodeBlockSchema.make({ code: devCommand, language: "shell" })
+    ]
+  },
+  {
+    heading: "Make it yours",
+    blocks: [
+      text(
+        'The components are your code now. Change a style file and the CSS rebuilds; add a variant, a part or a token as you need. Add data-mode="dark" to any element to switch the mode below it. Theming covers the contract in depth, and Templates show whole pages built from these components.'
+      )
+    ]
+  }
+]

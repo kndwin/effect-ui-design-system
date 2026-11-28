@@ -8,10 +8,11 @@ import { Match, Schema } from "effect"
 import { getTheme } from "../../platform/theme/theme.pure.ts"
 import { themes } from "../../platform/theme/themes.constant.ts"
 import { ModeSchema } from "../../platform/theme/theme.schema.ts"
-import { getControls } from "./customize.pure.ts"
+import { getControls } from "@weft/components/customize"
 import { scales } from "./theme-builder.constant.ts"
 import { ThemeBuilderDef } from "./theme-builder.define.ts"
-import { type Choices, ThemeBuilderMessageSchema } from "./theme-builder.schema.ts"
+import type { Choices } from "@weft/components/CustomizeSchema"
+import { ThemeBuilderMessageSchema } from "./theme-builder.schema.ts"
 
 export const view = ThemeBuilderDef.view((h) => {
   const { theme, mode, choices } = h.props

@@ -4,7 +4,7 @@
   "description": "Token kinds, Theme, Variant and Style for Weft, a themeable design system for @effect/ui-kit.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kndwin/effect-ui-design-system.git",
+    "url": "git+https://github.com/kndwin/weft.git",
     "directory": "packages/design-system"
   },
   "files": [

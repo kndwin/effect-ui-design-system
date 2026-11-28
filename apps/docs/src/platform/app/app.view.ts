@@ -10,12 +10,15 @@ import { ComponentDocsPage } from "../../feature/component-docs/component-docs.v
 import { GetStartedPage } from "../../feature/get-started/get-started.view.ts"
 import { IntroductionPage } from "../../feature/introduction/introduction.view.ts"
 import { ThemeBuilder } from "../../feature/theme-builder/theme-builder.component.ts"
-import { getCustomThemeSource, getOverrides } from "../../feature/theme-builder/customize.pure.ts"
+import { getCustomThemeSource, getOverrides } from "@weft/components/customize"
+import { getCustomThemeCommand } from "../../feature/theme-builder/customize.pure.ts"
 import { mapVarsToInlineStyle } from "../../feature/theme-builder/customize.pure.map.ts"
 import { isCustomized } from "../../feature/theme-builder/customize.pure.predicate.ts"
 import { TemplatePage } from "../../feature/templates/templates.view.ts"
 import { ThemingPage } from "../../feature/theming/theming.view.ts"
+import { LlmsPage } from "../../feature/llms/llms.view.ts"
 import { TokensPage } from "../../feature/tokens/tokens.view.ts"
+import { getLlmsIndex, getMarkdownPath } from "../markdown/markdown.pure.ts"
 import { pages } from "../content/content.constant.ts"
 import type { Page } from "../content/content.schema.ts"
 import { getTheme, getThemeVars } from "../theme/theme.pure.ts"
@@ -141,13 +144,17 @@ const Body = AppDef.fragment((h, model: AppModel, page: Page) =>
           custom: getCustomThemeSource({
             choices: model.choices,
             themes,
-            theme: getTheme({ name: model.route.search.theme })
-          })
+            theme: getTheme({ name: model.route.search.theme }),
+            name: "custom",
+            tokensImport: "./components/ui/tokens.ts"
+          }),
+          command: getCustomThemeCommand({ theme: model.route.search.theme, choices: model.choices })
         },
         AppMessageSchema.ChangedPanel({ open: true })
       ),
     Component: () => ComponentDocsPage(h, page, getLook(model)),
     Template: () => TemplatePage(h, page, getLook(model)),
+    Llms: () => LlmsPage(h, getLlmsIndex({ pages })),
     Tokens: () => {
       const { theme, mode } = model.route.search
       const base = getTheme({ name: theme })
@@ -172,7 +179,24 @@ const Content = AppDef.fragment((h, model: AppModel) =>
     Match.orElse((page) =>
       VStack(h.div, { gap: "8" }).children(
         VStack(h.header, { gap: "2" }).children(
-          Text(h.div, { size: "sm", tone: "muted", weight: "medium" }).children(page.section),
+          HStack(h.div, { justify: "between", align: "center", gap: "2", wrap: true }).children(
+            Text(h.div, { size: "sm", tone: "muted", weight: "medium" }).children(page.section),
+            HStack(h.div, { gap: "2", align: "center" }).children(
+              Button(h, {
+                size: "sm",
+                onPress: AppMessageSchema.PressedCopyPage(),
+                label: "Copy this page as Markdown",
+                children: Match.value(model.copied).pipe(
+                  Match.when(true, () => "Copied"),
+                  Match.orElse(() => "Copy page")
+                )
+              }),
+              ButtonLink(h.a.attr("href", getMarkdownPath({ page })).attr("target", "_top"), {
+                tone: "ghost",
+                size: "sm"
+              }).children("Markdown")
+            )
+          ),
           Text(h.h1, { size: "2xl", weight: "semibold" }).children(page.title),
           Text(h.p, { size: "lg", tone: "muted" }).children(page.lead)
         ),

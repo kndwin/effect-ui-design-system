@@ -41,4 +41,19 @@ describe("mapSourceToRecipe", () => {
       ].join("\n")
     )
   })
+
+  it("points a style file at the copied contract and scales", () => {
+    // Arrange
+    const source = [
+      'import { Colors } from "../../platform/token/contract.token.ts"',
+      'import { ToneSchema } from "../scale/scales.schema.ts"'
+    ].join("\n")
+    // Act
+    const recipe = mapSourceToRecipe({ source })
+    // Assert
+    assert.strictEqual(
+      recipe,
+      ['import { Colors } from "./tokens.ts"', 'import { ToneSchema } from "./scales.ts"'].join("\n")
+    )
+  })
 })

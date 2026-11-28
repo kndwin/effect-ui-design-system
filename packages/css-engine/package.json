@@ -4,7 +4,7 @@
   "description": "The Effect CSS engine behind Weft: compiles typed style files to static CSS at build time.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kndwin/effect-ui-design-system.git",
+    "url": "git+https://github.com/kndwin/weft.git",
     "directory": "packages/css-engine"
   },
   "files": [

@@ -5,7 +5,7 @@ import { update } from "./app.update.ts"
 import { head, view } from "./app.view.ts"
 
 export const App = AppDef.make({
-  init: ($) => ({ route: $.props.route, panel: false, choices: initialChoices }),
+  init: ($) => ({ route: $.props.route, panel: false, choices: initialChoices, copied: false }),
   update,
   subscriptions,
   head,
