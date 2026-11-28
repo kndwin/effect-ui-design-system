@@ -42,8 +42,8 @@ const recipeOf = (exportName: string, def: Definition, slot: string): Recipe => 
     ),
     compoundVariants: Array.flatMap(def.compound, (c) =>
       Match.value(c[slot]).pipe(
-        Match.when(true, () => [{ variants: c.when, style: toRule(c[slot], states) }]),
-        Match.orElse(() => [])
+        Match.when(undefined, () => []),
+        Match.orElse((rule) => [{ variants: c.when, style: toRule(rule, states) }])
       )
     )
   }

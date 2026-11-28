@@ -1,9 +1,10 @@
-import { Layer } from "effect"
+import { Layer, Schema } from "effect"
 import { assert, describe, it } from "@effect/vitest"
 import * as Kit from "../kit/kit.make.ts"
 import * as Style from "../../feature/style/style.make.ts"
 import * as Theme from "../../feature/theme/theme.make.ts"
 import * as TokenColor from "../token/token-color.make.ts"
+import * as Variant from "../variant/variant.make.ts"
 import { composeOutput } from "./compile.pure.ts"
 
 const Colors = TokenColor.make("color", ["accent"])
@@ -22,6 +23,23 @@ describe("compile (the css-engine adapter)", () => {
       color: "var(--color-accent)",
       selectors: { "&[data-open]": { opacity: 1 } }
     })
+  })
+
+  it("keeps a compound rule on each slot it styles", () => {
+    // Arrange
+    const CardStyle = Style.make(Parts)({
+      variants: {
+        tone: Variant.make(Schema.Literals(["plain", "loud"]), { plain: {}, loud: {} }),
+        raised: Variant.makeFlag({})
+      },
+      compound: [{ when: { tone: "loud", raised: true }, root: { color: Colors.accent } }]
+    })
+    // Act
+    const out = composeOutput({ value: CardStyle, exportName: "CardStyle" })
+    // Assert
+    assert.deepStrictEqual(out?.recipes?.root?.compoundVariants, [
+      { variants: { tone: "loud", raised: true }, style: { color: "var(--color-accent)" } }
+    ])
   })
 
   it("turns a Theme into global rules", () => {
